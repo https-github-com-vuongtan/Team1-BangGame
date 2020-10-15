@@ -43,7 +43,7 @@ let player = {
   dynamite: false,
   hand: [
       {"id": 1, "name": 'empty', }
-  ],
+  ]
 }
 //Interval for getting time
 let myVar = setInterval(checkcurrenttime, 100);
@@ -127,43 +127,36 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==3){
 function getrandomcharactercards(items){
   let item = items[Math.floor(Math.random() * items.length)];
   let charactername=item["charactername"]
-  let maxlife=item["maxLife"]
   playerData[0].character=charactername
-  playerData[0].maxLife=maxlife
-
+  playerData[0].maxLife = playerData[0].currentLife = item["maxlifepoints"];
   let index = items.indexOf(item);
   items.splice(index, 1);
 
    item = items[Math.floor(Math.random() * items.length)];
     charactername=item["charactername"]
-    maxlife=item["maxLife"]
    playerData[1].character=charactername
-   playerData[1].maxLife=maxlife
-
+   playerData[1].maxLife = playerData[1].currentLife = item["maxlifepoints"];
    index = items.indexOf(item);
   items.splice(index, 1);
 
    item = items[Math.floor(Math.random() * items.length)];
     charactername=item["charactername"]
-    maxlife=item["maxLife"]
-    playerData[2].maxLife=maxlife
    playerData[2].character=charactername
+   playerData[2].maxLife = playerData[2].currentLife = item["maxlifepoints"];
    index = items.indexOf(item);
   items.splice(index, 1);
 
    item = items[Math.floor(Math.random() * items.length)];
     charactername=item["charactername"]
-    maxlife=item["maxLife"]
-    playerData[3].maxLife=maxlife
    playerData[3].character=charactername
+   playerData[3].maxLife = playerData[3].currentLife = item["maxlifepoints"];
    index = items.indexOf(item);
   items.splice(index, 1);
 
    item = items[Math.floor(Math.random() * items.length)];
     charactername=item["charactername"]
-    maxlife=item["maxLife"]
-    playerData[4].maxLife=maxlife
-    playerData[4].character=charactername
+   playerData[4].character=charactername
+   playerData[4].maxLife = playerData[4].currentLife = item["maxlifepoints"];
 }
 
 
@@ -248,7 +241,7 @@ let newPlayer =  {
   jail: false,
   dynamite: false,
   hand: [
-      {"id": 1, "name": 'empty', }
+      {"id": 1, "name": 'empty', },
   ],
 }
 playerData.push(newPlayer);

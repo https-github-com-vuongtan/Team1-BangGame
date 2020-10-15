@@ -16,12 +16,12 @@ window.onload = function(e){
   $.get('/desuser', function(res){
     $('#waiting').text(res)
   });
-  $.get('/socketid', function(res){
-    socketid=res
+  $.get('/socketid', function (res) {
+    socketid = res
   });
   getdescriptionofuser()
   getstatusgame()
-  updatechatbox () 
+  updatechatbox()
   updateActionLog()
   randomdelivercharactercard()
   getinforphase()
