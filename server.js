@@ -9,6 +9,10 @@ const { MongoClient } = require("mongodb");
 const mongoose = require('mongoose');
 const getrandomcharactercards = require("./Modules-ServerSide/randomCharacterModule")
 const getrandomrolecards = require("./Modules-ServerSide/randomRoleModule")
+const getpauseandend = require("./Modules-ServerSide/PauseAndEndServerModule")
+
+
+
 let count=0
 let listdesuser=[]
 let checkuserexist=false
@@ -26,11 +30,14 @@ let minutes=""
 let seconds=""
 let idround=1
 
+
 let statusphase=""
+let statuspause=""
+let pausetime=0
 let listcharactercards= require("./json lists/CharacterCardsList.json")
 let listedrolecards = require("./json lists/roleCardList.json")
 let newPlayer = require("./json lists/playerDataList.json")
-
+let myvar2;
 
 let player = {
   name: "name",
@@ -55,12 +62,21 @@ let player = {
 let myVar = setInterval(checkcurrenttime, 100);
 //Interval for updating phase
 let myVar1 = setInterval(updatephase, 100);
+//Interval for pausing time
+
+
 
 //Run node as a web server for hosting static files (html)
 app.use(express.static(__dirname+"/public"))
 
 function checkcurrenttime(){
-  currenttime=new Date()
+  if(statuspause!="off"){
+    currenttime=new Date()
+  }
+    if(statuspause=="on"){
+      phasetime.setSeconds (phasetime.getSeconds() + pausetime);
+      statuspause=""
+    }
       // Find the distance between now and the count down date
     let distance = phasetime - currenttime;  
      minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -78,14 +94,33 @@ function checkcurrenttime(){
     io.emit("bangUpdate",JSON.stringify(playerData))
     statuscharactercard="Finished"
   }
-  
 if(phasetime!=""){
   let data={min:minutes,sec:seconds,name:statusphase.name,phase:statusphase.phase}
   io.emit("timeupdate",data)
 }
-
-
 }
+app.get("/pause",function(req,res){
+  let status=req.query.stat
+  console.log(status)
+  if(status=="off"){
+    res.send("OK")
+    pausetime=0
+    getpauseandend.setintervaltime(pausetime)
+    statuspause="off"
+  }
+  else if(status=="on"){
+    res.send("OK")
+    pausetime= getpauseandend.returnpausetime()
+    statuspause="on"
+  }
+})
+app.get("/endphase",function(req,res){
+  phasetime=getpauseandend.endphase(phasetime,currenttime)
+  res.send("OK")
+
+})
+
+
 //Function for updating phase
 function updatephase(){
 if(statusgame=='START GAME'&&phasestatus==""){

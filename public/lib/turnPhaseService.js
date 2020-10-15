@@ -3,6 +3,7 @@ function getinforphase(){
     socket.on("infophase",data=>{
      console.log("Roundof: " +data.name+"---RoundofID: "+data.id+"----Phase: "+data.phase)
      phaseuser=data.name
+     socketphase=data.socket
      phasenumber=data.phase
      
     })
