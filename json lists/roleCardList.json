@@ -1,0 +1,22 @@
+[   
+    {   
+        "id":1,
+        "RoleCardName":"Sheriff"
+    },
+    {
+        "id":2,
+        "RoleCardName":"Outlaw"
+    },
+    {
+        "id":3,
+        "RoleCardName":"Outlaw"
+    },
+    {
+        "id":4,
+        "RoleCardName":"Renegade"
+    },
+    {
+        "id":5,
+        "RoleCardName":"Deputy"
+    }
+]

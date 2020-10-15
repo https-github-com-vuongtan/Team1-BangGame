@@ -4,16 +4,17 @@
   "main": "public/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
     "moment": "^2.27.0",
-    "socket.io": "^2.3.0",
     "mongodb": "3.6.2",
-    "mongoose": "5.10.7"
+    "mongoose": "5.10.7",
+    "nodemon": "^2.0.4",
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {},
   "description": "Create Registration function => When user input username ( not exist in game room) => Redirect to playing game=> Assign ID (Position) for this player </br>  If one person go out the playing game page => Update the position for all remain users</br>  Check validation for user input in registration</br>  Update the amount of waiting players</br>  If have enough 5 players=> Game Status= Game Start</br>",

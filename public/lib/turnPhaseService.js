@@ -4,6 +4,7 @@ function getinforphase(){
      console.log("Roundof: " +data.name+"---RoundofID: "+data.id+"----Phase: "+data.phase)
      phaseuser=data.name
      phasenumber=data.phase
+     
     })
   }
   //Function Update up to second about phase information

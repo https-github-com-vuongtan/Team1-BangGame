@@ -1,7 +1,6 @@
-
 html, body {
-  height: 95vh;
-  width: 90vw;
+  height: 99vh;
+  width: 99vw;
   margin: auto;
   }
 
@@ -164,7 +163,7 @@ width:20px;
     grid-template-rows: 1fr 1fr 240px;
     grid-row-gap: 5px;
     padding: 10px;
-    height:100%;
+    height:98vh;
     margin-bottom:0px;
 }
   .leftGrid {
@@ -370,16 +369,7 @@ width: 150px;
 height: 245px;
 margin: 2px;
 }
-.messagePanelforphase
-{
-  background-color: rgb(190, 177, 160);
-  text-align: center;
-column-span: 1;
-border-radius:5px;
-width: 150px;
-height: 245px;
-margin: 122px;
-}
+
 #messageWindow
 {
 font-size:0.7em;
@@ -604,7 +594,6 @@ direction:rtl;
 {
 background-color: rgb(108, 75, 108);
 }
-
 #mainRoleCard
 {
 grid-column-start:5;
@@ -619,24 +608,18 @@ direction:rtl;
 {
 background-color: rgb(108, 75, 108);
 }
-
 #b5
 {
 background-color: rgb(196, 128, 174);
-
 }
-
 #c5
 {
 background-color: rgb(141, 180, 231);
-
 }
-
 #d5
 {
 background-color: rgb(150, 148, 118);
 }
-
 #e5
 {
 background-color: rgb(252, 222, 191);
@@ -646,4 +629,3 @@ background-color: rgb(252, 222, 191);
 {
   display: none !important;
 }
-

@@ -23,10 +23,10 @@
         <div id="welcomeScreen" class="welcomeGrid">
             <div class="welcomeHeader">
                 <div>
-                    <button class="btn-orange" id="LeaderboardBtn">Leaderboard</button>
+                    <button data-target="leaderModal" class="btn-orange modal-trigger" id="LeaderboardBtn">Leaderboard</button>
                 </div>
                 <div>
-                    <button class="btn-orange" id="RulesBtn">How to Play</button>
+                    <button data-target="rulesModal" class="btn-orange modal-trigger" id="RulesBtn">How to Play</button>
                 </div>
 
             </div>
@@ -53,12 +53,16 @@
         </div>
 
         <div id="gameboard" class="">
+
             <div class="topPane">
                 <div id="c5" class="leftGrid">
                     <div class="playerName">
                         .playerName
                     </div>
                     <div class="bulletTray">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
                     </div>
                     <div class="privateHand">
                         <img src="assets/cardBack.png" alt="" class="responsive">
@@ -67,21 +71,19 @@
                         <img src="assets/cardOverlap.png" alt="" class="responsive">
                     </div>
                     <div class="characterCard">
-                        <img id="topleft" alt="description" class="responsive cardOnly">
+                        <img id="topleft"  alt="description" class="responsive cardOnly">
                     </div>
                     <div class="cardsInPlay">
                         <img id="c5WeaponCard" src=" " alt="description" class="responsive cardOnly">
                     </div>
                 </div>
                 <div class="topMiddleGrid">
-
                     <div class="undercoverRoles">
                         <img src="assets/invertedOutlaw.png" alt="" class="responsive">
                         <img src="assets/invertedOutlaw.png" alt="" class="responsive">
                         <img src="assets/invertedRenegade.png" alt="" class="responsive">
                         <img src="assets/invertedDeputy.png" alt="" class="responsive">
                     </div>
-
                 </div>
                 <div id="d5" class="rightGrid">
 
@@ -94,11 +96,13 @@
                         <img id="d5WeaponCard" src="assets/cards/winchester.png" alt="description" class="responsive cardOnly">
                     </div>
                     <div class="characterCard">
-                        <img id="topright" alt="Black Jack description" class="responsive cardOnly">
+                        <img id="topright"  alt="Black Jack description" class="responsive cardOnly">
 
                     </div>
                     <div class="bulletTray">
-
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
                     </div>
                     <div class="privateHand">
                         <img src="assets/cardBack.png" alt="" class="responsive">
@@ -114,14 +118,13 @@
 
             <div class="midPane">
                 <div id="b5" class="leftGrid">
-
                     <div class="playerName">
                         .playerName
                     </div>
-
-
                     <div class="bulletTray">
-
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
                     </div>
                     <div class="privateHand">
                         <img src="assets/cardBack.png" alt="" class="responsive">
@@ -130,9 +133,7 @@
                         <img src="assets/cardOverlap.png" alt="" class="responsive">
                     </div>
                     <div class="characterCard">
-                        <!--.characterCard-->
-                        <img id="midleft" alt="Black Jack description" class="responsive">
-
+                        <img id="midleft"  alt="description" class="responsive cardOnly">
                     </div>
                     <div class="cardsInPlay">
                         <!--.cardsInPlay-->
@@ -147,8 +148,9 @@
                     <div class="deckGrid">
                         <img src="assets/cardDeck.png" alt="scope" class="responsive">
                         <img src="assets/discardPile.png" alt="scope" class="responsive">
+
                     </div>
-                    <div class="deckInstructions"> 
+                    <div class="deckInstructions">
                     </div>
 
                 </div>
@@ -160,8 +162,8 @@
 
                     <div class="characterCard">
                         <!--.characterCard-->
-                        <img id="midright" alt="Black Jack description" class="responsive cardOnly">
-                        <img src="assets/SheriffStar.png" alt="Black Jack description" class="sheriffStar responsive">
+                        <img id="midright"  alt="Black Jack description" class="responsive cardOnly">
+                        <!-- <img  src="assets/SheriffStar.png" alt="Black Jack description" class="sheriffStar responsive"> -->
 
                     </div>
                     <div class="cardsInPlay">
@@ -173,6 +175,11 @@
 
                     </div>
                     <div class="bulletTray">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
 
                     </div>
                     <div class="privateHand">
@@ -198,6 +205,7 @@
                         <div>
                             <button class="btn-sand" id="RulesBtn" style="height:28px; width: 100px">Rules</button>
                         </div>
+
                     </div>
 
 
@@ -215,31 +223,29 @@
 
                     </div>
                     <div id="mainCharacterCard">
-                        <img id="maincharacterimage" alt="" class="responsive">
+                        <img id="maincharacterimage"  alt="" class="responsive">
 
                     </div>
                     <div id="mainCardsInPlay">
-                        <img id="mainCharacterWeapon" src="assets/cards/schofield.png" alt="scope" class="responsive">
-                      <!-- <img src="assets/cards/scope.png" alt="scope" class="responsive">
-                        <img src="assets/cards/mustang.png" alt="scope" class="responsive"> -->
+                        <img id="mainCharacterWeapon" src="assets/cards/schofield.png" alt="weapon" class="responsive">
+
                     </div>
 
                     <div id="mainHand">
-                        <img src="assets/cards/bang.png" alt="bang" class="responsive">
-                        <img src="assets/cards/bang.png" alt="bang" class="responsive">
-                        <img src="assets/cards/bang.png" alt="bang" class="responsive">
-                        <img src="assets/cards/bang.png" alt="bang" class="responsive">
-                        <img src="assets/cards/bang.png" alt="bang" class="responsive">
-                        <img src="assets/cards/bang.png" alt="bang" class="responsive">
+
 
                     </div>
                     <div id="mainBullets">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+                        <img src="assets/bullet.png" alt="" class="responsive">
+
                     </div>
                     <div id="mainName">
                         Playername
                     </div>
                     <div id="mainRoleCard">
-                        <img src="assets/cards/Renegade.png" alt="" class="responsive">
                     </div>
                 </div>
 
@@ -279,13 +285,119 @@
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="index.js"></script>
+    
     <script src="lib/libraryLoader.js"></script>
- <div id="lib">
-    <!-- Scripts, Ipmort here from lib -->
-
-</div>
-
+    <div id="lib"><!-- Scripts, Ipmort here from lib --></div>
+    <script src="index.js"></script>
 </body>
 
+
+  <!--Bang Modal Structure -->
+  <div id="bangModal" class="modal bottom-sheet">
+    <div class="modal-content">
+      <h4>Play Your Bang!</h4>
+      <div class="row">
+          <!-- Player 1 -->
+        <div class="col s1 m1 l1 offset-l1 offset-s1 offset-m1">
+            <div class="card" id="c5bangModal">
+              <div class="card-image">
+                 <a data-target="" class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+              </div>
+              <div class="card-content"></div>
+            </div>
+          </div>
+
+          <div class="col s1 m1 l1">
+            <div class="card" id="b5bangModal">
+              <div class="card-image">
+                <a class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+              </div>
+              <div class="card-content"></div>
+            </div>
+          </div>
+
+           <div class="col s1 m1 l1">
+            <div class="card" id="a5bangModal">
+              <div class="card-image"></div>
+              <div class="card-content"></div>
+            </div></div>
+
+          <div class="col s1 m1 l1">
+            <div class="card" id="d5bangModal">
+              <div class="card-image">
+                <a class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+              </div>
+              <div class="card-content"></div>
+            </div>
+          </div>
+
+          <div class="col s1 m1 l1">
+            <div class="card" id="e5bangModal">
+              <div class="card-image">
+                <a class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+              </div>
+              <div class="card-content"></div>
+            </div>
+          </div>
+    
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+  </div>
+
+    <!--Hit  Modal Structure -->
+    <div id="missedModal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+          <h4 class="modalHeader">You've been shot at!</h4>
+            <div class ="row">
+          <div class="col s1 m1 l1 offset-l1 offset-s1 offset-m1">
+            <div class="card" id="missedModalCard">
+              <div class="card-image">
+                  <img src="assets/cards/missed.png">
+                 <a data-response="yes" class="btn-floating halfway-fab waves-effect waves-light red"><i class="material-icons">add</i></a>
+              </div>
+              <div class="card-content">Play your missed card?</div>
+            </div>
+          </div>
+        </div>
+          </div>
+        <div class="modal-footer">
+          <a href="#!" data-response="no" class="modal-close waves-effect waves-green btn-flat">The hit?</a>
+        </div>
+      </div>
+
+    <!--Rules  Modal Structure -->
+    <div id="rulesModal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+          <h4 class="modalHeader">How to Play</h4>
+          <p>A bunch of text</p>
+        </div>
+        <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Done</a>
+        </div>
+      </div>
+
+          <!--Leaderboard  Modal Structure -->
+    <div id="leaderModal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+          <h4 class="description">LEADERBOARD</h4>
+           <div class="gameRoom">
+            <div id="position1"> </div>
+            <div id="position2"> </div>
+            <div id="position3"> </div>
+            <div id="position4"></div>
+            <div id="position5"></div>
+            <div id="position6"> </div>
+            <div id="position7"> </div>
+            <div id="position8"> </div>
+            <div id="position9"></div>
+            <div id="position10"></div>
+
+        </div>
+        </div>
+        <div class="modal-footer">
+          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Done</a>
+        </div>
+      </div>
 </html>

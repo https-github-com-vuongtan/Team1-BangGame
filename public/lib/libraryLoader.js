@@ -16,7 +16,14 @@ $(document).ready(function(){
    <script src="lib/chatBoxService.js"></script>
    <script src="lib/turnPhaseService.js"></script>
    <script src="lib/joinGameService.js"></script>
-    
+   <script src="lib/playerNameService.js"></script>
+   <script src="lib/updateHandService.js"></script>
+   <script src="lib/roleCardService.js"></script>
+   <script src="lib/bangModalService.js"></script>
+   <script src="lib/missedModalService.js"></script>
     `)
-}
-)
+    $('.modal').modal();
+  }
+    
+);
+

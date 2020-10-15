@@ -7,6 +7,8 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const { MongoClient } = require("mongodb");
 const mongoose = require('mongoose');
+const getrandomcharactercards = require("./Modules-ServerSide/randomCharacterModule")
+const getrandomrolecards = require("./Modules-ServerSide/randomRoleModule")
 let count=0
 let listdesuser=[]
 let checkuserexist=false
@@ -25,7 +27,11 @@ let seconds=""
 let idround=1
 
 let statusphase=""
-let listcharactercards=[{"id":1,"charactername":"Suzy Lafayette","maxLife":4},{"id":2,"charactername":"Vulture Sam","maxLife":4},{"id":3,"charactername":"Willy The Kid","maxLife":4},{"id":4,"charactername":"Rose Doolan","maxLife":4},{"id":5,"charactername":"Paul Regret","maxLife":3}]
+let listcharactercards= require("./json lists/CharacterCardsList.json")
+let listedrolecards = require("./json lists/roleCardList.json")
+let newPlayer = require("./json lists/playerDataList.json")
+
+
 let player = {
   name: "name",
   socket: "empty",
@@ -43,7 +49,7 @@ let player = {
   dynamite: false,
   hand: [
       {"id": 1, "name": 'empty', }
-  ]
+  ],
 }
 //Interval for getting time
 let myVar = setInterval(checkcurrenttime, 100);
@@ -61,11 +67,15 @@ function checkcurrenttime(){
      seconds = Math.floor((distance % (1000 * 60)) / 1000);
       //When starting game, we will start randomly give character card to each user
   if(statusgame=='START GAME'&&statuscharactercard==""){
-    getrandomcharactercards(listcharactercards)
-    console.log(playerData)
+    getrandomcharactercards.getrandomcharactercards(listcharactercards, playerData)
     io.emit("randomgivecharacter",JSON.stringify(playerData))
+    getrandomrolecards.getrandomRole(listedrolecards, playerData)
+    console.log(playerData)
+    io.emit("updateRole",JSON.stringify(playerData))
     io.emit("weaponUpdate",JSON.stringify(playerData))
-    
+    io.emit("updatePlayerName",JSON.stringify(playerData))
+    io.emit("handUpdate",JSON.stringify(playerData))
+    io.emit("bangUpdate",JSON.stringify(playerData))
     statuscharactercard="Finished"
   }
   
@@ -85,6 +95,8 @@ if(phasestatus=="Starting"){
    statusphase={id:idround,phase:1,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
    phasetime=new Date (currenttime );
    phasetime.setSeconds (phasetime.getSeconds() + 15 );
+   data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
+   io.emit("updateactionlog",data)
    io.emit("infophase",statusphase)  
    phasestatus="Ongoing"
   return;
@@ -92,7 +104,9 @@ if(phasestatus=="Starting"){
 if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
   statusphase={id:idround,phase:2,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
   phasetime=new Date (currenttime );
-  phasetime.setSeconds ( phasetime.getSeconds() + 20 );  
+  phasetime.setSeconds ( phasetime.getSeconds() + 60 );  
+  data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
+  io.emit("updateactionlog",data)
   io.emit("infophase",statusphase)  
   return;
 
@@ -100,7 +114,9 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
 if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==2){
   statusphase={id:idround,phase:3,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
    phasetime=new Date (currenttime );
-   phasetime.setSeconds (phasetime.getSeconds() + 60 );
+   phasetime.setSeconds (phasetime.getSeconds() + 20 );
+   data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
+   io.emit("updateactionlog",data)
    io.emit("infophase",statusphase)    
    return;
 
@@ -118,48 +134,7 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==3){
   io.emit("infophase",statusphase)  
   return;
 }
-
-// if(statusphase!="")
-// console.log(statusphase)
-
 }
-//Function for giving random character cards
-function getrandomcharactercards(items){
-  let item = items[Math.floor(Math.random() * items.length)];
-  let charactername=item["charactername"]
-  playerData[0].character=charactername
-  playerData[0].maxLife = playerData[0].currentLife = item["maxlifepoints"];
-  let index = items.indexOf(item);
-  items.splice(index, 1);
-
-   item = items[Math.floor(Math.random() * items.length)];
-    charactername=item["charactername"]
-   playerData[1].character=charactername
-   playerData[1].maxLife = playerData[1].currentLife = item["maxlifepoints"];
-   index = items.indexOf(item);
-  items.splice(index, 1);
-
-   item = items[Math.floor(Math.random() * items.length)];
-    charactername=item["charactername"]
-   playerData[2].character=charactername
-   playerData[2].maxLife = playerData[2].currentLife = item["maxlifepoints"];
-   index = items.indexOf(item);
-  items.splice(index, 1);
-
-   item = items[Math.floor(Math.random() * items.length)];
-    charactername=item["charactername"]
-   playerData[3].character=charactername
-   playerData[3].maxLife = playerData[3].currentLife = item["maxlifepoints"];
-   index = items.indexOf(item);
-  items.splice(index, 1);
-
-   item = items[Math.floor(Math.random() * items.length)];
-    charactername=item["charactername"]
-   playerData[4].character=charactername
-   playerData[4].maxLife = playerData[4].currentLife = item["maxlifepoints"];
-}
-
-
 
 //Function to update user id (position) after one user go out the game room
 function  order_user(deleteid)
@@ -235,13 +210,19 @@ let newPlayer =  {
   maxLife: "maxLife",
   currentLife: "currentLife",
   weapon: "colt45",
+  range: 1,
+  distanceMod: 0,
   scope: false,
   mustang: false,
   barrel: false,
   jail: false,
   dynamite: false,
+  eliminated: false,
   hand: [
-      {"id": 1, "name": 'empty', },
+      {"id": 1, "card": 'bang', },
+      {"id": 2, "card": 'bang', },
+      {"id": 3, "card": 'missed', },
+      {"id": 4, "card": 'missed', },
   ],
 }
 playerData.push(newPlayer);
@@ -342,6 +323,36 @@ app.get('/actionLog', function(req, res){
     res.send("action log hit")
     });
 
+    
+app.get('/shootBang', function(req,res){
+  const targetId = req.query.targetId
+  const attackerName = req.query.name
+  playerData.forEach(player => {
+    if(player.id==targetId){
+      player.hand.forEach(card=>{
+        console
+        if (card.some =="missed"){
+        io.to(player.socket).emit("missedOption",playerData, attackerName)
+        }
+        else{
+          player.currentLife = player.currentLife -1
+          const data ={
+            name: attackerName,
+            action: `shot ${player.name}`
+          }
+          io.emit("updateactionlog",data)
+          res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+        }
+      })
+    
+      
+    }
+     
+    })
+  //  playerData.forEach(attacker =>{})
+  })
+ 
+
 app.get('/newUser', function(data){
     const name = data.name
     const socketid = data.socket
@@ -359,6 +370,8 @@ io.on('connection', (socket) => {
       userdisconnection(socket.id)
       io.emit("updateactionlog",data) 
       });
+
+
   });
 
 
@@ -373,7 +386,6 @@ io.on('connection', (socket) => {
           console.log("Connected correctly to server");
           const db = client.db("project");
   
-           
            var col = db.collection("login");
            var myobj = { username: "voungtan", address: "Highway 37" };
            await col.insertOne(myobj);
