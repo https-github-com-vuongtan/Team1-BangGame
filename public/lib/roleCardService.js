@@ -8,6 +8,7 @@ function updateRole(){
          console.log(data.role)
          $("#mainRoleCard").append(`<img src="assets/cards/${data.role}.png" alt="${data.role}" class="responsive ${data.role}">`)
          displaySherrif(mydata,data)
+         updateBulletDisplay(mydata,data)
         }
           
       })

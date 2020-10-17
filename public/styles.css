@@ -326,16 +326,34 @@ direction: rtl;
   border-radius:5px;
   font-size:0.7em;
   font-weight: 500;
-  height:75px;
+  height:57px;
   padding:5px;
   margin-left: 5px;
   padding-left: 10px;
-  max-width:110px;
+  max-width:108px;
 }
 
-.actionLogPanel
+.turnButtonPanel
 {
+  padding:2px;
+  margin-top: 4px;
+  margin-left: 2px;
+  font-size:0.65em;
+  font-weight: 500;
+}
+
+.btn-turn {
   background-color: rgb(190, 177, 160);
+    color: rgb(0, 0, 0);
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  height: 20px;
+  border-radius:5px;
+  padding:3px;
+  font-weight: bold;
+  }
+
+.actionLogPanel
+{background-color: rgb(190, 177, 160);
 text-align: center;
 column-span: 1;
 border-radius:5px;
@@ -372,6 +390,8 @@ margin: 2px;
 
 #messageWindow
 {
+direction: ltr;
+text-align: left;
 font-size:0.7em;
 padding: 2px;
 text-align: left;

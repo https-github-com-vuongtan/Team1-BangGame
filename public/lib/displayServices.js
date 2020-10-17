@@ -15,6 +15,14 @@ const displayWelcomeScreen = () => {
   $("#gameboard").addClass("hidden");
 }
 
+const showTurnButtonPanel = () => {
+$("#turnButtonPanel").removeClass("hidden");
+}
+
+const hideTurnButtonPanel = () => {
+  $("#turnButtonPanel").addClass("hidden");
+}
+
 
 //used to determine player's relative position on the board (A5 to E5) - NOT distance, does not change with elimination.
 function getPlayerPosition(opponentPlayer, thisPlayer) {
