@@ -26,7 +26,7 @@ $(document).ready(function(){
         $.get('/newUser', data)
       }
       setTimeout(displayGameBoard(), 1000);
-        statusregis=responsedata     
+        statusregis=responsedata
       })
       $('#joinName').val("")
     }

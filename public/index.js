@@ -33,6 +33,10 @@ window.onload = function(e){
   displayHand()
   updateRole()
   updateBang()
-  //missedOption()
+  GatlingAttack()
+
+  BeerHeal()
+  beerOptionVT()
+  missOptionVT()
   // shotBang()
 }

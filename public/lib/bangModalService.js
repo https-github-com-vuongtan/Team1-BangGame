@@ -4,12 +4,9 @@ function updateBang(){
         console.log("bang modal hit")
       const mydata= JSON.parse(data)
      mydata.forEach((data) => {
-      if(data.socket==socketid){
-        
+      if(data.socket==socketid){      
          $("#a5bangModal .card-image").append(`<img data-target="${data.character}Modal" href="#${data.character}Modal"src="assets/cards/${data.character}.png" alt="${data.character}" class="responsive ${data.character}">`)
-         $("#a5bangModal .card-content").append(`${data.name}`)
-         
-        
+         $("#a5bangModal .card-content").append(`${data.name}`)            
          displayBang(mydata,data)
       }
       })

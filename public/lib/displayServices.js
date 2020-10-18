@@ -4,7 +4,7 @@
 const displayGameBoard = (req, res) => {
  $("#gameboard").removeClass("hidden");
   $("#welcomeScreen").addClass("hidden");
- res.send({ result: 200 })
+ //res.send({ result: 200 })
 }
 
 //hides the gameboard & shows the join screen
