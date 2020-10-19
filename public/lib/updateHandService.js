@@ -31,6 +31,7 @@
                if(hand[i].card=="duel"){
                 duel="true"
                }
+
                if(hand[i].card=="Wells Fargo"){
                 $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Wells" class="responsive ${hand[i].card}">`)  
                 wellfargo="true"
@@ -45,7 +46,7 @@
                   updatetypecard("bang")
                   $(`#bangModal`).modal('open') ;
                   });
-              }
+                  }
 
               if(galtingstatus=="true"){
               GatlingAttack(socketid)
@@ -58,7 +59,7 @@
               }
               if(duel=="true"){
                 Duel(socketid)
-            }
+                }
 
 
             }

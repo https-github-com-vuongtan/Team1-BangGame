@@ -3,12 +3,16 @@ function beerOptionVT(){
     let countcancel=0
     socket.on("beerOptionVT", attackerName=>{
     $(document).ready(function(){
+        $(document).click(function(e) {
+            if (!$(e.target).closest('.modal').length&& $('#id02').is(':visible')) {
+                $("#id02").modal('open')
+            }
+        });
         $("#id02").modal('open')
         countsubmit=0;
         countcancel=0;
         $("#SubmitBeer").click(function(){
             countsubmit++
-            console.log("HAHA ")
 
             let req={
                 attackname:attackerName,

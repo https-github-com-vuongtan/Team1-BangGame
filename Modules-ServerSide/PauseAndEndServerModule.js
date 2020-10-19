@@ -25,22 +25,11 @@ function endphase(phasetime,currenttime){
     return phasetime
 }
 
-function restarttimeaftergatling(countresponsegatling,countgatling,statuspause,pausetime){
-    if(countresponsegatling==countgatling){
-        pausetime= returnpausetime()
-        resettime()
-        console.log(pausetime)
-        statuspause="on"
-        countgatling=0
-        countresponsegatling=0
-      }
-}
 module.exports= {
     checkpausetime,
     setintervaltime,
     endphase,
     returntime,
     resettime,
-    restarttimeaftergatling,
     returnpausetime
 } 

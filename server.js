@@ -292,9 +292,9 @@ let newPlayer =  {
   dynamite: false,
   eliminated: false,
   hand: [
-      {"id": 1, "card": 'bang', },
+      {"id": 1, "card": 'beer', },
       {"id": 2, "card": 'duel', },
-      {"id": 3, "card": 'beer', },
+      {"id": 3, "card": 'bang', },
       {"id": 4, "card": 'Gatling', },
       {"id": 5, "card": 'missed', },
       {"id": 6, "card": 'Gatling', },
@@ -596,16 +596,136 @@ if(pausetimeforgatling=="true"){
 //Function for trigger beer action in phase 2 of user
 app.get("/beertrigger",function(req,res){
   let sock=req.query.socket
+  let statusheal=getbeer.BeerHealBlood(sock,playerData,res)
+  if(statusheal!="UnHealed"){
   getbeer.removebeerGalting(playerData,sock)
+  }
   io.emit("handUpdate",JSON.stringify(playerData))
-  getbeer.BeerHealBlood(sock,playerData,res)
+  
 })
+
+
+//Function in replying Duel action
+app.get("/responseduel",function(req,res){
+  let msg=req.query.msg
+  let attackerName=req.query.attackname
+  let socketattacker
+  let playerduel=""
+
+
+  //Find socketid of attacker
+  playerData.forEach(player=>{
+      if(player.name==attackerName){
+        socketattacker=player.socket
+      }
+  })
+
+  let socket=req.query.socket
+if(msg=="No"){
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+      let beercardstatus="false"
+      playerduel=player.name
+      const data ={
+        name: req.query.attackname,
+        action: `shot ${player.name}`
+      }
+      //Check beer card =>If having beer card and current life==1 => Automatically use beer card
+      player.hand.forEach(data=>{
+        if(data.card=="beer"){
+          beercardstatus="true"
+        }
+      })
+      if(beercardstatus=="true"&&player.currentLife==1){
+        player.currentLife=player.currentLife
+        getbeer.removebeerGalting(playerData,socket)
+        io.emit("handUpdate",JSON.stringify(playerData))
+      }
+      else{
+        player.currentLife = player.currentLife -1
+      }
+
+      io.emit("updateactionlog",data)
+      pausetime=getpauseandend.returnpausetime()
+      getpauseandend.resettime()
+      console.log(pausetime)
+      statuspause="on"
+      console.log(player.name+"is now on " +player.currentLife)
+      res.send ("OK")
+    }
+  })
+}
+else{
+  let checkbangcard="false"
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+      playerduel=player.name
+      player.hand.forEach(data=>{
+        if(data.card=="bang"){
+          checkbangcard="true"
+        }
+      })
+    }
+  })
+ 
+
+//When user do not have bang card
+if(checkbangcard=="false"){
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+      const data ={
+        name: req.query.attackname,
+        action: `shot ${player.name}`
+      }
+
+      //Check beer card =>If having beer card and current life==1 => Automatically use beer card
+      player.hand.forEach(data=>{
+        if(data.card=="beer"){
+          beercardstatus="true"
+        }
+      })
+      if(beercardstatus=="true"&&player.currentLife==1){
+        player.currentLife=player.currentLife
+        getbeer.removebeerGalting(playerData,socket)
+        io.emit("handUpdate",JSON.stringify(playerData))
+      }
+      else{
+        player.currentLife = player.currentLife -1
+      }
+
+
+
+      io.emit("updateactionlog",data)
+      pausetime=getpauseandend.returnpausetime()
+      getpauseandend.resettime()
+      console.log(pausetime)
+      statuspause="on"
+      console.log(player.name+"is now on " +player.currentLife)
+      res.send ("OK")
+    }
+  })
+}
+//If user have bang card=> User will use bang card for duello
+else if(checkbangcard=="true"){
+getduel.removeBangCard(playerData,socket)
+
+io.to(socketattacker).emit("DuelOption", playerduel)
+io.emit("handUpdate",JSON.stringify(playerData))
+res.send ("Waiting response")
+}
+}
+})
+
+
+
+
 //Function trigger DuelService
 app.get("/dueltrigger",function(req,res){
   let idvictim=req.query.targetId
    let nameattacker=req.query.name
    getduel.removeDuelCard(playerData,nameattacker)
    io.emit("handUpdate",JSON.stringify(playerData))
+// Check user have bang card or not
    playerData.forEach(player => {
      if(player.id==idvictim){
        let checkstatusbangcard="false"
@@ -614,18 +734,35 @@ app.get("/dueltrigger",function(req,res){
           checkstatusbangcard="true"
         }
       })  
+      //If having bang card=> Starting Duello
   if(checkstatusbangcard=="true"){
     io.to(player.socket).emit("DuelOption", nameattacker)
-    res.send("Finished Duel")   
-
+    pausetime=0
+    getpauseandend.setintervaltime(pausetime)
+    statuspause="off"
+    res.send("Finished Duel")
   }
-
+//If do not have bang card=> Continue check beer card=> If do not have beer card, user will be automatically decresed their life
    else if(checkstatusbangcard=="false"){
-      player.currentLife = player.currentLife -1
       const data ={
         name: req.query.attackname,
         action: `shot ${player.name}`
       }
+            //Check beer card
+        player.hand.forEach(data=>{
+              if(data.card=="beer"){
+                beercardstatus="true"
+              }
+            })
+            if(beercardstatus=="true"&&player.currentLife==1){
+              player.currentLife=player.currentLife
+              getbeer.removebeerGalting(playerData,player.socket)
+              io.emit("handUpdate",JSON.stringify(playerData))
+            }
+            else{
+              player.currentLife = player.currentLife -1
+            }
+
       io.emit("updateactionlog",data)
       console.log(player.name+"is now on " +player.currentLife)
       res.send("Finished Duel")   

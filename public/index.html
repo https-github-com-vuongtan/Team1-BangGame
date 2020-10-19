@@ -57,12 +57,8 @@
             <div class="topPane">
                 <div id="c5" class="leftGrid">
                     <div class="playerName">
-                        .playerName
                     </div>
                     <div class="bulletTray">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
                     </div>
                     <div class="privateHand">
                         <img src="assets/cardBack.png" alt="" class="responsive">
@@ -88,21 +84,16 @@
                 <div id="d5" class="rightGrid">
 
                     <div class="playerName">
-                        .playerName
                     </div>
 
                     <div class="cardsInPlay">
                         <img src="assets/cards/mustang.png" alt="description" class="responsive cardOnly" hidden>
-                        <img id="d5WeaponCard" src="assets/cards/winchester.png" alt="description" class="responsive cardOnly">
+                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt="description" class="responsive cardOnly">
                     </div>
                     <div class="characterCard">
                         <img id="topright"  alt="Black Jack description" class="responsive cardOnly">
-
                     </div>
                     <div class="bulletTray">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
                     </div>
                     <div class="privateHand">
                         <img src="assets/cardBack.png" alt="" class="responsive">
@@ -119,12 +110,8 @@
             <div class="midPane">
                 <div id="b5" class="leftGrid">
                     <div class="playerName">
-                        .playerName
                     </div>
                     <div class="bulletTray">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
                     </div>
                     <div class="privateHand">
                         <img src="assets/cardBack.png" alt="" class="responsive">
@@ -138,7 +125,7 @@
                     <div class="cardsInPlay">
                         <!--.cardsInPlay-->
                         <img src="assets/cards/scope.png" alt="scope" class="responsive" hidden>
-                        <img id="b5WeaponCard" src="assets/cards/rev carabine.png" alt="scope" class="responsive">
+                        <img id="b5WeaponCard" src="assets/cards/colt45.png" alt="scope" class="responsive">
                         <img src="assets/cards/barrel.png" alt="scope" class="responsive" hidden>
 
 
@@ -146,8 +133,8 @@
                 </div>
                 <div class="midMidGrid">
                     <div class="deckGrid">
-                        <img src="assets/cardDeck.png" alt="scope" class="responsive">
-                        <img src="assets/discardPile.png" alt="scope" class="responsive">
+                        <img id = "cardDeck" src="assets/cardDeck.png" alt="scope" class="responsive">
+                        <img id = "discardPile" src="assets/discardPile.png" alt="scope" class="responsive">
 
                     </div>
                     <div class="deckInstructions">
@@ -157,7 +144,6 @@
                 <div id="e5" class="rightGrid">
 
                     <div class="playerName">
-                        .playerName
                     </div>
 
                     <div class="characterCard">
@@ -169,17 +155,12 @@
                     <div class="cardsInPlay">
                         <!--.cardsInPlay-->
                         <img src="assets/cards/Jail.png" alt="scope" class="responsive" hidden>
-                        <img id="e5WeaponCard" src="assets/cards/winchester.png" alt="scope" class="responsive">
+                        <img id="e5WeaponCard" src="assets/cards/colt45.png" alt="scope" class="responsive">
                         <img src="assets/cards/dynamite.png" alt="scope" class="responsive" hidden>
 
 
                     </div>
                     <div class="bulletTray">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
 
                     </div>
                     <div class="privateHand">
@@ -213,21 +194,27 @@
                 </div>
 
                 <div id="a5" class="midFore">
+                    <div>
                     <div class="messagePanelforphase">
                         <div id="nameturn">
                         </div>
                         <div id="phase">
                         </div>
                         <div id="timeturn">
-                        </div>
-
+                        </div>  
                     </div>
+                    <div class="turnButtonPanel">
+                        <button class="btn-turn" id="pausetimer"
+                        style="margin-right:2px">Pause</button>
+                    <button class="btn-turn" id="endphase">End Phase</button>
+                    </div>
+                </div>
                     <div id="mainCharacterCard">
                         <img id="maincharacterimage"  alt="" class="responsive">
 
                     </div>
                     <div id="mainCardsInPlay">
-                        <img id="mainCharacterWeapon" src="assets/cards/schofield.png" alt="weapon" class="responsive">
+                        <img id="mainCharacterWeapon" src="assets/cards/colt45.png" alt="weapon" class="responsive">
 
                     </div>
 
@@ -236,11 +223,6 @@
 
                     </div>
                     <div id="mainBullets">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-                        <img src="assets/bullet.png" alt="" class="responsive">
-
                     </div>
                     <div id="mainName">
                         Playername
@@ -248,7 +230,6 @@
                     <div id="mainRoleCard">
                     </div>
                 </div>
-
 
 
 
@@ -268,11 +249,7 @@
                             <div>
                                 <button class="btn-sand" id="quitBtn"
                                     style="height:28px; width: 100px; margin: 3px">Quit
-                                    game</button>
-                                <button class="btn-sand" id="pausetimer"
-                                    style="height:28px; width: 100px; margin: 3px">Pause</button>
-                                <button class="btn-sand" id="endphase"
-                                    style="height:28px; width: 100px; margin: 3px">EndPhase</button>                                                                        
+                                    game</button>                             
                             </div>
                         </div>
                     </div>
@@ -305,7 +282,6 @@
         <script src="lib/roleCardService.js"></script>
         <script src="lib/bangModalService.js"></script>
         <script src="lib/missedModalService.js"></script>
-
         <script src="lib/PauseAndEndModule.js"></script>
         <script src="lib/GatlingService.js"></script>
         <script src="lib/missedModalServiceVT.js"></script>
@@ -315,12 +291,9 @@
         <script src="lib/DuelService.js"></script>
         <script src="lib/DuelOption.js"></script>
 
-
         
     </div>
-    
-</body>
-  <!--Missed Modal Structure -->
+     <!--Missed Modal Structure -->
 
 <div id="id01" class="modal">
   <form class="modal-content">
@@ -351,7 +324,7 @@
   </form>
 </div>
   <!--Duel Modal Structure -->
-  <div id="id03" class="modal">
+  <div id="id03" class="modal" >
     <form class="modal-content">
       <div class="container">
         <h1>Using Bang Card For Duel</h1>
@@ -364,6 +337,8 @@
       </div>
     </form>
   </div>
+</body>
+
 
   <!--Bang Modal Structure -->
   <div id="bangModal" class="modal bottom-sheet">

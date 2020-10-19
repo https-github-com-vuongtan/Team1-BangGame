@@ -5,6 +5,11 @@ function missOptionVT(){
     socket.on("missedOptionVT", attackerName=>{
 
     $(document).ready(function(){
+        $(document).click(function(e) {
+            if (!$(e.target).closest('.modal').length&& $('#id01').is(':visible')) {
+                $("#id01").modal('open')
+            }
+        });
         $("#id01").modal('open')
         countsubmit=0;
         countcancel=0;

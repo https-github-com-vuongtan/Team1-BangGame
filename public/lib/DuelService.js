@@ -6,6 +6,7 @@ function Duel(socketid){
                 socket:socketid
             }
             if(socketphase==socketid&&phasenumber==2&data.pause==0){
+            console.log("Why?")    
             updatetypecard("duel")
             $(`#bangModal`).modal('open') ;
         }

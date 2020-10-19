@@ -1,4 +1,3 @@
-
 let typecard=""
 //Function update typecard
 function updatetypecard(type){
@@ -150,8 +149,11 @@ function updateBang(){
     }
     else if(typecard=="duel")
       {
-        $.get('/dueltrigger', data)
-
+        console.log("Check again")
+        $.get('/dueltrigger', data,response=>{
+          console.log(response)
+        })
+        $(`#bangModal`).modal('close') ;
       }
     
   });
