@@ -1,3 +1,10 @@
+
+let typecard=""
+//Function update typecard
+function updatetypecard(type){
+typecard=type
+}
+
 //Update Weapon Card
 function updateBang(){
     socket.on("bangUpdate",data=>{
@@ -138,7 +145,15 @@ function updateBang(){
       targetId: $(this).data("target"),
       name: data.name
     }
+    if(typecard=="bang"){
     $.get('/shootBang', data)
+    }
+    else if(typecard=="duel")
+      {
+        $.get('/dueltrigger', data)
+
+      }
+    
   });
 
 

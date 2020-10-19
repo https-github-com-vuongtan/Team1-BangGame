@@ -34,6 +34,9 @@ window.onload = function(e){
   updateRole()
   updateBang()
 
+
+  Duel()
+  Duelopt()
   GatlingAttack()
   WellFar()
   BeerHeal()

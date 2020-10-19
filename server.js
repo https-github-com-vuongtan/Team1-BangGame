@@ -13,6 +13,7 @@ const getpauseandend = require("./Modules-ServerSide/PauseAndEndServerModule")
 const getgatling = require("./Modules-ServerSide/GaltingModule")
 const getbeer = require("./Modules-ServerSide/BeerModule")
 const getwellfargo = require("./Modules-ServerSide/WellsFargoModule")
+const getduel = require("./Modules-ServerSide/DuelModule")
 
 
 let countgatling=0
@@ -292,7 +293,7 @@ let newPlayer =  {
   eliminated: false,
   hand: [
       {"id": 1, "card": 'bang', },
-      {"id": 2, "card": 'Gatling', },
+      {"id": 2, "card": 'duel', },
       {"id": 3, "card": 'beer', },
       {"id": 4, "card": 'Gatling', },
       {"id": 5, "card": 'missed', },
@@ -599,7 +600,42 @@ app.get("/beertrigger",function(req,res){
   io.emit("handUpdate",JSON.stringify(playerData))
   getbeer.BeerHealBlood(sock,playerData,res)
 })
+//Function trigger DuelService
+app.get("/dueltrigger",function(req,res){
+  let idvictim=req.query.targetId
+   let nameattacker=req.query.name
+   getduel.removeDuelCard(playerData,nameattacker)
+   io.emit("handUpdate",JSON.stringify(playerData))
+   playerData.forEach(player => {
+     if(player.id==idvictim){
+       let checkstatusbangcard="false"
+      player.hand.forEach(data=>{
+        if(data.card=="bang"){
+          checkstatusbangcard="true"
+        }
+      })  
+  if(checkstatusbangcard=="true"){
+    io.to(player.socket).emit("DuelOption", nameattacker)
+    res.send("Finished Duel")   
 
+  }
+
+   else if(checkstatusbangcard=="false"){
+      player.currentLife = player.currentLife -1
+      const data ={
+        name: req.query.attackname,
+        action: `shot ${player.name}`
+      }
+      io.emit("updateactionlog",data)
+      console.log(player.name+"is now on " +player.currentLife)
+      res.send("Finished Duel")   
+    }
+
+
+     }
+   })
+
+})
 
 
 app.get('/shootBang', function(req,res){
