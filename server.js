@@ -12,6 +12,7 @@ const getrandomrolecards = require("./Modules-ServerSide/randomRoleModule")
 const getpauseandend = require("./Modules-ServerSide/PauseAndEndServerModule")
 const getgatling = require("./Modules-ServerSide/GaltingModule")
 const getbeer = require("./Modules-ServerSide/BeerModule")
+const getwellfargo = require("./Modules-ServerSide/WellsFargoModule")
 
 
 let countgatling=0
@@ -45,6 +46,30 @@ let newPlayer = require("./json lists/playerDataList.json");
 const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
 const { Console } = require('console');
 let myvar2;
+let playingcard=[
+  {"id": 1, "card": 'bang'},
+  {"id": 2, "card": 'missed'},
+  {"id": 3, "card": 'beer'},
+  {"id": 4, "card": 'Gatling'},
+  {"id": 5, "card": 'Gatling'},
+  {"id": 6, "card": 'beer'},
+  {"id": 7, "card": 'missed'},
+  {"id": 8, "card": 'bang'},
+  {"id": 9, "card": 'beer'},
+  {"id": 10, "card": 'missed'},
+  {"id": 11, "card": 'Gatling'},
+  {"id": 12, "card": 'missed'},
+  {"id": 13, "card": 'bang'},
+  {"id": 14, "card": 'bang'},
+  {"id": 15, "card": 'Gatling'},
+  {"id": 16, "card": 'Gatling'},
+  {"id": 17, "card": 'missed'},
+  {"id": 18, "card": 'beer'},
+  {"id": 19, "card": 'beer'},
+  {"id": 20, "card": 'bang'},
+]
+
+
 
 let player = {
   name: "name",
@@ -272,7 +297,7 @@ let newPlayer =  {
       {"id": 4, "card": 'Gatling', },
       {"id": 5, "card": 'missed', },
       {"id": 6, "card": 'Gatling', },
-      {"id": 7, "card": 'Gatling', },
+      {"id": 7, "card": 'Wells Fargo', },
       {"id": 8, "card": 'missed', },
       {"id": 9, "card": 'Gatling', },
   ],
@@ -384,6 +409,17 @@ app.get("/getpausetime",function(req,res){
   console.log(time)
   res.send({pause:time})
 })
+//Trigger wells fargo
+app.get("/wellsfargo",function(req,res){
+  let socket=req.query.socket
+  getwellfargo.randompickthreecards(playingcard,playerData,socket)
+  getwellfargo.removeWells(playerData,socket)
+  io.emit("handUpdate",JSON.stringify(playerData))
+  res.send("OK")
+})
+
+
+
 
 //Function to manage victim repsonse using beer card when gatling attack
 app.get("/responsebeercard",function(req,res){

@@ -4,6 +4,7 @@
           //Status for checking card exist  
           let galtingstatus="false"
           let beerstatus="false"
+          let wellfargo="false"
           let countliveuser=0
           $('#mainHand').empty()
           const mydata= JSON.parse(data)
@@ -19,13 +20,21 @@
                console.log(hand)
                for (var i =0; i < hand.length; i++){
                  console.log(hand[i].card)
-                $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card}">`)  
                if(hand[i].card=="Gatling"){
                 galtingstatus="true"
                }
                if(hand[i].card=="beer"){
                 beerstatus="true"
                }
+
+               if(hand[i].card=="Wells Fargo"){
+                $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Wells" class="responsive ${hand[i].card}">`)  
+                wellfargo="true"
+               }
+                else{
+                  $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card}">`)  
+                }
+
 
                 $(`.bang`).click(function() {
                   console.log(`Card Hit`)
@@ -39,6 +48,10 @@
               if(beerstatus=="true"){
                 BeerHeal(socketid,countliveuser)
                 }
+                if(wellfargo=="true"){
+                  console.log("HAHAAH")
+                  WellFar(socketid)
+                  }
             }
             })      
           })

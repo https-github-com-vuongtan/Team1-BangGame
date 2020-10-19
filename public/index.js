@@ -33,8 +33,9 @@ window.onload = function(e){
   displayHand()
   updateRole()
   updateBang()
-  GatlingAttack()
 
+  GatlingAttack()
+  WellFar()
   BeerHeal()
   beerOptionVT()
   missOptionVT()
