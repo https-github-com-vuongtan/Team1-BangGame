@@ -47,29 +47,49 @@ let newPlayer = require("./json lists/playerDataList.json");
 const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
 const { Console } = require('console');
 let myvar2;
-let playingcard=[
-  {"id": 1, "card": 'bang'},
-  {"id": 2, "card": 'missed'},
-  {"id": 3, "card": 'beer'},
-  {"id": 4, "card": 'Gatling'},
-  {"id": 5, "card": 'Gatling'},
-  {"id": 6, "card": 'beer'},
-  {"id": 7, "card": 'missed'},
-  {"id": 8, "card": 'bang'},
-  {"id": 9, "card": 'beer'},
-  {"id": 10, "card": 'missed'},
-  {"id": 11, "card": 'Gatling'},
-  {"id": 12, "card": 'missed'},
-  {"id": 13, "card": 'bang'},
-  {"id": 14, "card": 'bang'},
-  {"id": 15, "card": 'Gatling'},
-  {"id": 16, "card": 'Gatling'},
-  {"id": 17, "card": 'missed'},
-  {"id": 18, "card": 'beer'},
-  {"id": 19, "card": 'beer'},
-  {"id": 20, "card": 'bang'},
-]
+let listplaycards=[{ "id":1,"playcard":"beer"},{
+  "id":2,"playcard":"beer"},{
+  "id":3,"playcard":"missed"},{
+  "id":4,"playcard":"Gatling"},{
+  "id":5,"playcard":"Wells Fargo"},{
+  "id":6,"playcard":"duel"},{
+  "id":7,"playcard":"duel"},{
+  "id":8,"playcard":"rev carabine"},{
+  "id":9,"playcard":"duel"},{
+  "id":10,"playcard":"duel"},{
+  "id":11,"playcard":"duel"},{
+  "id":12,"playcard":"Gatling"},{
+  "id":13,"playcard":"Wells Fargo"},{
+  "id":14,"playcard":"cat balou"},{
+  "id":15,"playcard":"missed"},{
+  "id":16,"playcard":"duel"},{
+  "id":17,"playcard":"general store"},{
+  "id":18,"playcard":"missed"},{
+  "id":19,"playcard":"missed"},{
+  "id":20,"playcard":"beer"},{
+  "id":21,"playcard":"Gatling"},{
+  "id":22,"playcard":"Wells Fargo"},
+  {"id":23,"playcard":"bang"},
+  {"id":24,"playcard":"missed"},
+  {"id":25,"playcard":"Wells Fargo"},
+  {"id":26,"playcard":"missed"},
+  {"id":27,"playcard":"missed"},
+  {"id":28,"playcard":"beer"},
 
+]
+  function getrandomplaycards(playerData,items){
+  playerData.forEach(player=>{
+    let maxlife=player.maxLife
+    for(var i=0;i<maxlife;i++){
+      let item = items[Math.floor(Math.random() * items.length)];
+      let charactername=item["playcard"]
+      let element={"id":i+1,"card":charactername}
+      player.hand.push(element)
+      let index = items.indexOf(item);
+      items.splice(index, 1);
+    }
+  }) 
+  }
 
 
 let player = {
@@ -120,6 +140,7 @@ function checkcurrenttime(){
     getrandomcharactercards.getrandomcharactercards(listcharactercards, playerData)
     io.emit("randomgivecharacter",JSON.stringify(playerData))
     getrandomrolecards.getrandomRole(listedrolecards, playerData)
+    getrandomplaycards(playerData,listplaycards)
     console.log(playerData)
     io.emit("updateRole",JSON.stringify(playerData))
     io.emit("weaponUpdate",JSON.stringify(playerData))
@@ -292,15 +313,6 @@ let newPlayer =  {
   dynamite: false,
   eliminated: false,
   hand: [
-      {"id": 1, "card": 'beer', },
-      {"id": 2, "card": 'duel', },
-      {"id": 3, "card": 'bang', },
-      {"id": 4, "card": 'Gatling', },
-      {"id": 5, "card": 'missed', },
-      {"id": 6, "card": 'Gatling', },
-      {"id": 7, "card": 'Wells Fargo', },
-      {"id": 8, "card": 'missed', },
-      {"id": 9, "card": 'Gatling', },
   ],
 }
 playerData.push(newPlayer);
@@ -413,8 +425,10 @@ app.get("/getpausetime",function(req,res){
 //Trigger wells fargo
 app.get("/wellsfargo",function(req,res){
   let socket=req.query.socket
-  getwellfargo.randompickthreecards(playingcard,playerData,socket)
+  let statuspick=getwellfargo.randompickthreecards(listplaycards,playerData,socket)
+  if(statuspick=="Canpick"){
   getwellfargo.removeWells(playerData,socket)
+  }
   io.emit("handUpdate",JSON.stringify(playerData))
   res.send("OK")
 })
@@ -671,6 +685,7 @@ else{
 
 //When user do not have bang card
 if(checkbangcard=="false"){
+  let beercardstatus="false"
   playerData.forEach(player=>{
     if(player.socket==socket){
       const data ={
@@ -744,6 +759,7 @@ app.get("/dueltrigger",function(req,res){
   }
 //If do not have bang card=> Continue check beer card=> If do not have beer card, user will be automatically decresed their life
    else if(checkstatusbangcard=="false"){
+     let beercardstatus="false"
       const data ={
         name: req.query.attackname,
         action: `shot ${player.name}`

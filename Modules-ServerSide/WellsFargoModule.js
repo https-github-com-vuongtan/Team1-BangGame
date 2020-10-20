@@ -1,4 +1,5 @@
 function randompickthreecards(items,playerData,socket){
+    let statuspick="Canpick"
     if(items.length>3){
     item1 = items[Math.floor(Math.random() * items.length)];
     let index1 = items.indexOf(item1);
@@ -15,9 +16,9 @@ function randompickthreecards(items,playerData,socket){
     playerData.forEach(player => {
         if(player.socket==socket){
             let lastidcard=player.hand[player.hand.length-1].id
-            let nameofpushcard1=item1.card
-            let nameofpushcard2=item2.card
-            let nameofpushcard3=item3.card
+            let nameofpushcard1=item1.playcard
+            let nameofpushcard2=item2.playcard
+            let nameofpushcard3=item3.playcard
             let element1={"id":lastidcard+1,"card":nameofpushcard1}
             let element2={"id":lastidcard+2,"card":nameofpushcard2}
             let element3={"id":lastidcard+3,"card":nameofpushcard3}
@@ -35,8 +36,10 @@ function randompickthreecards(items,playerData,socket){
     });
 }
 else{
+    statuspick="Cannotpick"
     console.log("Do not have enough playing cards")
 }
+return statuspick
 }
 function removeWells(playerData,sock){
     playerData.forEach(player=>{
