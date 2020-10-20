@@ -14,6 +14,7 @@ const getgatling = require("./Modules-ServerSide/GaltingModule")
 const getbeer = require("./Modules-ServerSide/BeerModule")
 const getwellfargo = require("./Modules-ServerSide/WellsFargoModule")
 const getduel = require("./Modules-ServerSide/DuelModule")
+const getindians = require("./Modules-ServerSide/IndiansModule")
 
 
 let countgatling=0
@@ -49,31 +50,31 @@ const { Console } = require('console');
 let myvar2;
 let listplaycards=[{ "id":1,"playcard":"beer"},{
   "id":2,"playcard":"beer"},{
-  "id":3,"playcard":"missed"},{
+  "id":3,"playcard":"indians"},{
   "id":4,"playcard":"Gatling"},{
   "id":5,"playcard":"Wells Fargo"},{
-  "id":6,"playcard":"duel"},{
-  "id":7,"playcard":"duel"},{
-  "id":8,"playcard":"rev carabine"},{
-  "id":9,"playcard":"duel"},{
-  "id":10,"playcard":"duel"},{
-  "id":11,"playcard":"duel"},{
+  "id":6,"playcard":"indians"},{
+  "id":7,"playcard":"Gatling"},{
+  "id":8,"playcard":"Gatling"},{
+  "id":9,"playcard":"Gatling"},{
+  "id":10,"playcard":"indians"},{
+  "id":11,"playcard":"beer"},{
   "id":12,"playcard":"Gatling"},{
   "id":13,"playcard":"Wells Fargo"},{
-  "id":14,"playcard":"cat balou"},{
-  "id":15,"playcard":"missed"},{
-  "id":16,"playcard":"duel"},{
-  "id":17,"playcard":"general store"},{
-  "id":18,"playcard":"missed"},{
+  "id":14,"playcard":"Gatling"},{
+  "id":15,"playcard":"indians"},{
+  "id":16,"playcard":"missed"},{
+  "id":17,"playcard":"Gatling"},{
+  "id":18,"playcard":"indians"},{
   "id":19,"playcard":"missed"},{
   "id":20,"playcard":"beer"},{
   "id":21,"playcard":"Gatling"},{
   "id":22,"playcard":"Wells Fargo"},
-  {"id":23,"playcard":"bang"},
-  {"id":24,"playcard":"missed"},
+  {"id":23,"playcard":"missed"},
+  {"id":24,"playcard":"Gatling"},
   {"id":25,"playcard":"Wells Fargo"},
-  {"id":26,"playcard":"missed"},
-  {"id":27,"playcard":"missed"},
+  {"id":26,"playcard":"indians"},
+  {"id":27,"playcard":"beer"},
   {"id":28,"playcard":"beer"},
 
 ]
@@ -433,7 +434,116 @@ app.get("/wellsfargo",function(req,res){
   res.send("OK")
 })
 
+//Trigger Indians
+app.get("/indianstrigger",function(req,res){
+  countgatling=0
+  countresponsegatling=0
+  let socket=req.query.socket
+  let attackername
+  getindians.removeIndians(playerData,socket)
+  io.emit("handUpdate",JSON.stringify(playerData))
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+      attackername=player.name
+    }
+  })
+  playerData.forEach(player=>{
+    let statusbang="false"
+    let statusbeer="false"
+    player.hand.forEach(data=>{
+      if(data.card=="bang"){
+        statusbang="true"
+      }
+      if(data.card=="beer"){
+        statusbeer="true"
+      }
+    })
+  if(statusbang=="true"){
+    countgatling++
+    pausetime=0
+    getpauseandend.setintervaltime(pausetime)
+    statuspause="off"
+    io.to(player.socket).emit("IndiansOption",attackername)
+  }
 
+else{
+  if(statusbeer=="true"&&player.currentLife==1){
+    console.log("Hi")
+    player.currentLife = player.currentLife
+    getbeer.removebeerGalting(playerData,player.socket)
+    io.emit("handUpdate",JSON.stringify(playerData))
+  }
+  else{
+    console.log("YEAHHHHHHHH")
+  player.currentLife = player.currentLife -1
+  const data ={
+    name: req.query.attackname,
+    action: `shot ${player.name}`
+  }
+  io.emit("updateactionlog",data)
+  }
+
+}
+  })
+    if(countgatling==0){
+    playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+    }
+res.send("OK")
+})
+
+
+//Response Indians
+app.get("/responseIndians",function(req,res){
+  let msg=req.query.msg
+  let socket=req.query.socket
+  
+if(msg=="No"){
+countresponsegatling++
+playerData.forEach(player=>{
+  if(player.socket==socket){
+    let statusbeer="false"
+    player.hand.forEach(data=>{
+      if(data.card=="beer"){
+        statusbeer="true"
+      }
+    })
+    if(statusbeer=="true"&&player.currentLife==1){
+      console.log("OK")
+      getbeer.removebeerGalting(playerData,socket)
+      io.emit("handUpdate",JSON.stringify(playerData))
+    }
+    else{
+      const data ={
+        name: req.query.attackname,
+        action: `shot ${player.name}`
+      }
+    player.currentLife = player.currentLife -1
+    io.emit("updateactionlog",data)
+    }
+  }
+})
+}
+else{
+countresponsegatling++
+getduel.removeBangCard(playerData,socket)
+io.emit("handUpdate",JSON.stringify(playerData))
+}
+console.log(countresponsegatling)
+console.log(countgatling)
+
+
+if(countresponsegatling==countgatling){
+  pausetime=getpauseandend.returnpausetime()
+  getpauseandend.resettime()
+  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+  statuspause="on"
+  countgatling=0
+  countresponsegatling=0
+}
+
+
+res.send("OK")
+})
 
 
 //Function to manage victim repsonse using beer card when gatling attack
@@ -450,7 +560,6 @@ app.get("/responsebeercard",function(req,res){
           action: `shot ${player.name}`
         }
         io.emit("updateactionlog",data)
-        console.log(player.name+"is now on " +player.currentLife)
         res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
       }
     })
@@ -472,7 +581,7 @@ console.log(countresponsegatling)
 if(countresponsegatling==countgatling){
   pausetime=getpauseandend.returnpausetime()
   getpauseandend.resettime()
-  console.log(pausetime)
+  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
   statuspause="on"
   countgatling=0
   countresponsegatling=0
@@ -483,7 +592,6 @@ if(countresponsegatling==countgatling){
 app.get("/responsemissedcard",function(req,res){
 let msg=req.query.msg
 let attackerName=req.query.attackname
-console.log(attackerName)
 let socket=req.query.socket
 //When victim do not want use missed card=> server will check beer card
 if(msg=="No"){
@@ -527,12 +635,11 @@ console.log(player.name +" use 1 missed card")
 })
 
 }
-console.log(countresponsegatling)
 //Function to check enough response from victim to restart time
 if(countresponsegatling==countgatling){
   pausetime=getpauseandend.returnpausetime()
   getpauseandend.resettime()
-  console.log(pausetime)
+  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
   statuspause="on"
   countgatling=0
   countresponsegatling=0
@@ -550,7 +657,6 @@ app.get("/gatlingattack",function(req,res){
   pausetimeforgatling="false"
   let sock=req.query.socket
   let attackerName=getgatling.getattackername(playerData,sock)
-  console.log(attackerName)
   //After Playing Gatling card => Remove this card from hand
   getgatling.removeGatling(playerData,sock)
   io.emit("handUpdate",JSON.stringify(playerData))
@@ -562,7 +668,6 @@ app.get("/gatlingattack",function(req,res){
       player.hand.forEach(data=>{
         if(data.card=="missed"&&checkmissedcard=="false"){
           countgatling++
-          console.log(countgatling)
           //Emit to all victims for choosing use missed card or not
           io.to(player.socket).emit("missedOptionVT", attackerName)
           checkmissedcard="true"
@@ -658,7 +763,6 @@ if(msg=="No"){
       else{
         player.currentLife = player.currentLife -1
       }
-
       io.emit("updateactionlog",data)
       pausetime=getpauseandend.returnpausetime()
       getpauseandend.resettime()

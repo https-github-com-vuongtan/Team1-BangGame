@@ -66,7 +66,7 @@
                 }
                 
                 if(indians=="true"){
-                  Indians()
+                  Indians(socketid)
                 }
 
             }
