@@ -34,7 +34,7 @@ window.onload = function(e){
   updateRole()
   updateBang()
 
-
+  Indians()
   Duel()
   Duelopt()
   GatlingAttack()

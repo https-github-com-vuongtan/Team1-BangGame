@@ -6,6 +6,7 @@
           let beerstatus="false"
           let wellfargo="false"
           let duel="false"
+          let indians="false"
 
           let countliveuser=0
           $('#mainHand').empty()
@@ -30,6 +31,9 @@
                }
                if(hand[i].card=="duel"){
                 duel="true"
+               }
+               if(hand[i].card=="indians"){
+                indians="true"
                }
 
                if(hand[i].card=="Wells Fargo"){
@@ -60,7 +64,10 @@
               if(duel=="true"){
                 Duel(socketid)
                 }
-
+                
+                if(indians=="true"){
+                  Indians()
+                }
 
             }
             })      
