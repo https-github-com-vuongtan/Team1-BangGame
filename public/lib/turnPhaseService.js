@@ -18,6 +18,5 @@ function getinforphase(){
       $("#nameturn").append("Player: " +data.name)
       $("#phase").append("Phase: " +data.phase)
       $("#timeturn").append("Seconds: "+data.sec)
-  
      })
   }

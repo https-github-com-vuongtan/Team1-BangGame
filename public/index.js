@@ -20,6 +20,8 @@ window.onload = function(e){
   $.get('/socketid', function(res){
     socketid=res
   });
+
+  $('.modal').modal();
   getdescriptionofuser()
   getstatusgame()
   updatechatbox () 
@@ -31,8 +33,12 @@ window.onload = function(e){
   updateName()
   displayWelcomeScreen()
   displayHand()
+  displayBullets()
   updateRole()
   updateBang()
+  endGame()
+  displayCardsInPlay()
+  displayEliminations()
   //missedOption()
   // shotBang()
 }

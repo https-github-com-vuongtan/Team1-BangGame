@@ -1,6 +1,6 @@
 html, body {
-  height: 99vh;
-  width: 99vw;
+  height: 98vh;
+  width: 98vw;
   margin: auto;
   }
 
@@ -171,7 +171,7 @@ width:20px;
     grid-column-gap: 3px;
     grid-row-gap: 0px;
     grid-template-columns: 5fr 6fr 30fr;
-    grid-template-rows: 1fr 1fr 30fr;
+    grid-template-rows: 1fr 1fr 8fr;
     padding:3px;
     margin: auto;
     max-height: 100%;
@@ -182,7 +182,7 @@ width:20px;
     grid-column-gap: 3px;
     grid-row-gap: 0px;
     grid-template-columns: 30fr 6fr 5fr;
-    grid-template-rows: 1fr 1fr 30fr;
+    grid-template-rows: 1fr 1fr 8fr;
     text-align: right;
     padding:3px;
     margin: auto;
@@ -409,7 +409,7 @@ flex-direction: column-reverse;
 {
 grid-column-start: 1;
 grid-column-end: 4;
-font-size: 1.1em;
+
 }
 
 .playerName, #mainName
@@ -420,6 +420,8 @@ font-weight: bold;
 text-transform: uppercase;
 margin-left: 5px;
 margin-right: 5px;
+font-size: 1.1em;
+height:25px;
 }
 
 .leftGrid .bulletTray
