@@ -416,6 +416,19 @@ app.get('/actionLog', function(req, res){
     io.emit("updateactionlog",data)
     res.send("action log hit")
     });
+//Function to get currentlife
+app.get("/getcurrentlife",function(req,res){
+  let socket=req.query.socket
+  let currentlife
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+       currentlife=player.currentLife
+    }
+  })
+  console.log(currentlife)
+  res.send({life:currentlife})
+})
+
 
 //Function get pausetime
 app.get("/getpausetime",function(req,res){
@@ -450,6 +463,12 @@ app.get("/indianstrigger",function(req,res){
   playerData.forEach(player=>{
     let statusbang="false"
     let statusbeer="false"
+    let currentlife="true"
+    if(player.currentLife<1){
+      currentlife="false"
+    }
+if(currentlife=="true")
+{
     player.hand.forEach(data=>{
       if(data.card=="bang"){
         statusbang="true"
@@ -468,13 +487,11 @@ app.get("/indianstrigger",function(req,res){
 
 else{
   if(statusbeer=="true"&&player.currentLife==1){
-    console.log("Hi")
     player.currentLife = player.currentLife
     getbeer.removebeerGalting(playerData,player.socket)
     io.emit("handUpdate",JSON.stringify(playerData))
   }
   else{
-    console.log("YEAHHHHHHHH")
   player.currentLife = player.currentLife -1
   const data ={
     name: req.query.attackname,
@@ -483,6 +500,7 @@ else{
   io.emit("updateactionlog",data)
   }
 
+}
 }
   })
     if(countgatling==0){
@@ -657,13 +675,19 @@ app.get("/gatlingattack",function(req,res){
   pausetimeforgatling="false"
   let sock=req.query.socket
   let attackerName=getgatling.getattackername(playerData,sock)
-  //After Playing Gatling card => Remove this card from hand
-  getgatling.removeGatling(playerData,sock)
-  io.emit("handUpdate",JSON.stringify(playerData))
+
 
   playerData.forEach(player=>{
      if(player.socket!=sock){
+      let checklivestatus="true"
+      if(player.currentLife<1){
+        checklivestatus="false"
+      }
       let checkmissedcard="false"
+      if(checklivestatus=="true"){
+              //After Playing Gatling card => Remove this card from hand
+      getgatling.removeGatling(playerData,sock)
+      io.emit("handUpdate",JSON.stringify(playerData))
       //If victim has missed card=> They can choose use it or cancel
       player.hand.forEach(data=>{
         if(data.card=="missed"&&checkmissedcard=="false"){
@@ -703,6 +727,9 @@ app.get("/gatlingattack",function(req,res){
         res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
       }
     }
+    res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+
+  }
   })
   // If gatling is active and waiting response from victim, we will temporarily stop the time for waiting victims response
 if(pausetimeforgatling=="true"){
@@ -842,6 +869,14 @@ res.send ("Waiting response")
 app.get("/dueltrigger",function(req,res){
   let idvictim=req.query.targetId
    let nameattacker=req.query.name
+   let checklivestatus="true"
+   playerData.forEach(player => {
+    if(player.id==idvictim&&player.currentLife<1){
+      checklivestatus="false"
+    }
+   })
+if(checklivestatus=="true"){
+
    getduel.removeDuelCard(playerData,nameattacker)
    io.emit("handUpdate",JSON.stringify(playerData))
 // Check user have bang card or not
@@ -891,7 +926,8 @@ app.get("/dueltrigger",function(req,res){
 
      }
    })
-
+  }
+  res.send("Finished Duel")   
 })
 
 
