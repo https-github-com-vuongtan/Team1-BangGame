@@ -1,6 +1,6 @@
 function randompickthreecards(items,playerData,socket){
     let statuspick="Canpick"
-    if(items.length>3){
+    if(items.length>=3){
     item1 = items[Math.floor(Math.random() * items.length)];
     let index1 = items.indexOf(item1);
     items.splice(index1, 1);

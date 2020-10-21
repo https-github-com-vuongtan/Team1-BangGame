@@ -2,12 +2,10 @@ function removeGatling(playerData,sock){
     playerData.forEach(player=>{
         if(player.socket==sock){
             let status="true"  
-          attackerName=player.name
           player.hand.forEach(function(data,index,object){
             if(data.card=="Gatling"&&status=="true"){
                 status="false"  
               object.splice(index,1)
-              return
             }
           })
         }

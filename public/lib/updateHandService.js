@@ -7,6 +7,9 @@
           let wellfargo="false"
           let duel="false"
           let indians="false"
+          let generalstore="false"
+
+
 
           let countliveuser=0
           $('#mainHand').empty()
@@ -36,9 +39,14 @@
                 indians="true"
                }
 
+
                if(hand[i].card=="Wells Fargo"){
                 $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Wells" class="responsive ${hand[i].card}">`)  
                 wellfargo="true"
+               }
+               else if(hand[i].card=="general store"){
+                $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="general" class="responsive ${hand[i].card}">`)  
+                generalstore="true"
                }
                 else{
                   $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card}">`)  
@@ -68,7 +76,9 @@
                 if(indians=="true"){
                   Indians(socketid)
                 }
-
+                if(generalstore=="true"){
+                  general(socketid)
+                }
             }
             })      
           })

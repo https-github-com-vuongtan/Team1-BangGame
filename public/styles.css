@@ -3,7 +3,12 @@ html, body {
   width: 99vw;
   margin: auto;
   }
-
+  .modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    }
   /* welcome screen styles */
   .welcomeGrid
 {

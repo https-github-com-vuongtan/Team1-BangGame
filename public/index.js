@@ -34,7 +34,8 @@ window.onload = function(e){
   updateRole()
   updateBang()
 
-
+  GeneralOption()
+  general()
   IndianModal()
   Indians()
   Duel()

@@ -15,6 +15,7 @@ const getbeer = require("./Modules-ServerSide/BeerModule")
 const getwellfargo = require("./Modules-ServerSide/WellsFargoModule")
 const getduel = require("./Modules-ServerSide/DuelModule")
 const getindians = require("./Modules-ServerSide/IndiansModule")
+const getgeneral = require("./Modules-ServerSide/GeneralModule")
 
 
 let countgatling=0
@@ -38,6 +39,7 @@ let minutes=""
 let seconds=""
 let idround=1
 
+let listcards
 
 let statusphase=""
 let statuspause=""
@@ -48,32 +50,32 @@ let newPlayer = require("./json lists/playerDataList.json");
 const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
 const { Console } = require('console');
 let myvar2;
-let listplaycards=[{ "id":1,"playcard":"beer"},{
-  "id":2,"playcard":"beer"},{
-  "id":3,"playcard":"indians"},{
-  "id":4,"playcard":"Gatling"},{
+let listplaycards=[{ "id":1,"playcard":"general store"},{
+  "id":2,"playcard":"Gatling"},{
+  "id":3,"playcard":"Gatling"},{
+  "id":4,"playcard":"general store"},{
   "id":5,"playcard":"Wells Fargo"},{
-  "id":6,"playcard":"indians"},{
+  "id":6,"playcard":"general store"},{
   "id":7,"playcard":"Gatling"},{
   "id":8,"playcard":"Gatling"},{
   "id":9,"playcard":"Gatling"},{
-  "id":10,"playcard":"indians"},{
-  "id":11,"playcard":"beer"},{
+  "id":10,"playcard":"general store"},{
+  "id":11,"playcard":"general store"},{
   "id":12,"playcard":"Gatling"},{
   "id":13,"playcard":"Wells Fargo"},{
   "id":14,"playcard":"Gatling"},{
-  "id":15,"playcard":"indians"},{
-  "id":16,"playcard":"missed"},{
+  "id":15,"playcard":"Gatling"},{
+  "id":16,"playcard":"general store"},{
   "id":17,"playcard":"Gatling"},{
   "id":18,"playcard":"indians"},{
   "id":19,"playcard":"missed"},{
-  "id":20,"playcard":"beer"},{
+  "id":20,"playcard":"Gatling"},{
   "id":21,"playcard":"Gatling"},{
   "id":22,"playcard":"Wells Fargo"},
   {"id":23,"playcard":"missed"},
-  {"id":24,"playcard":"Gatling"},
+  {"id":24,"playcard":"general store"},
   {"id":25,"playcard":"Wells Fargo"},
-  {"id":26,"playcard":"indians"},
+  {"id":26,"playcard":"general store"},
   {"id":27,"playcard":"beer"},
   {"id":28,"playcard":"beer"},
 
@@ -436,6 +438,62 @@ app.get("/getpausetime",function(req,res){
   console.log(time)
   res.send({pause:time})
 })
+
+
+
+//Trigger General Store
+app.get("/generaltrigger",function(req,res){
+  let socket=req.query.socket
+  //Count live number
+  let livecount=0
+  playerData.forEach(player=>{
+    if(player.currentLife>0){
+      livecount++
+    }
+  })
+let countlistplayingcards=listplaycards.length
+if(countlistplayingcards>=livecount&&livecount>1){
+listcards= getgeneral.getplayingcards(listplaycards,livecount)
+getgeneral.removegeneralcard(playerData,socket)
+io.emit("handUpdate",JSON.stringify(playerData))
+io.to(socket).emit("GeneralModal",listcards)
+pausetime=0
+getpauseandend.setintervaltime(pausetime)
+statuspause="off"
+res.send("OK")
+}
+else{
+res.send("Do not have enough playing cards or All others players was died")
+}
+})
+//Continue General Store Process
+app.get("/continueprocessgeneral",function(req,res){
+  let position=req.query.position
+  let socket=req.query.socket
+  let namecard=req.query.namecard
+  let socketnext
+  if(listcards.length!=0){
+    listcards.splice(position,1)
+
+  getgeneral.pushcardtohand(playerData,socket,namecard)
+  io.emit("handUpdate",JSON.stringify(playerData))
+  if(listcards.length!=0){
+  socketnext= getgeneral.checknextuser(playerData,socket)
+ io.to(socketnext).emit("GeneralModal",listcards)
+  }
+  }
+if(listcards.length==0){
+  pausetime=getpauseandend.returnpausetime()
+  getpauseandend.resettime()
+  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+  statuspause="on"
+}
+
+
+  res.send("OK")
+})
+
+
 //Trigger wells fargo
 app.get("/wellsfargo",function(req,res){
   let socket=req.query.socket
@@ -675,7 +733,9 @@ app.get("/gatlingattack",function(req,res){
   pausetimeforgatling="false"
   let sock=req.query.socket
   let attackerName=getgatling.getattackername(playerData,sock)
-
+  //After Playing Gatling card => Remove this card from hand
+  getgatling.removeGatling(playerData,sock)
+  io.emit("handUpdate",JSON.stringify(playerData))
 
   playerData.forEach(player=>{
      if(player.socket!=sock){
@@ -685,9 +745,7 @@ app.get("/gatlingattack",function(req,res){
       }
       let checkmissedcard="false"
       if(checklivestatus=="true"){
-              //After Playing Gatling card => Remove this card from hand
-      getgatling.removeGatling(playerData,sock)
-      io.emit("handUpdate",JSON.stringify(playerData))
+ 
       //If victim has missed card=> They can choose use it or cancel
       player.hand.forEach(data=>{
         if(data.card=="missed"&&checkmissedcard=="false"){
