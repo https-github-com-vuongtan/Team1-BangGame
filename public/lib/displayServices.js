@@ -13,26 +13,10 @@ function displayEliminations() {
         updateEliminatedDisplay(playerData, player);
 
         if (player.eliminated == true) {
-          console.log("got to eliminated player " + player.name)
+          console.log("eliminated" + player.name)
 
-          /*
-          $('.modal').modal({
-            dismissible: true, // Modal can be dismissed by clicking outside of the modal
-            opacity: .5, // Opacity of modal background
-            inDuration: 300, // Transition in duration
-            outDuration: 200, // Transition out duration
-            startingTop: '4%', // Starting top style attribute
-            endingTop: '50%', // Ending top style attribute
-            ready: function(modal, trigger) { // Callback for Modal open. Modal and trigger parameters available.
-              alert("Ready");
-              console.log(modal, trigger);
-            },
-            complete: function() { alert('Closed'); }, // Callback for Modal close
-          }
-        );*/
-          $('#missedModal').modal('open')
+        //  $('#testModal').modal('open')
 
-          // $('.modal').modal();
         }
 
       }
@@ -130,7 +114,7 @@ function updateHandSizeDisplay(mydata, data) {
       let positionString = "";
       let handSize = player.hand["length"];
       //(update not applicable if position is this player's)
-      if (position != "a1") {
+      if (position != "a5") {
         if (handSize > 0) {
           divString += '<img src="assets/cardBack.png" class="responsive">';
           for (i = 1; i < handSize; i++) {
@@ -150,12 +134,13 @@ function updateHandSizeDisplay(mydata, data) {
 function updateEliminatedDisplay(mydata, data) {
   //display modal? ***** quit game or spectate? needs to be under separate individual message (after this)
   updateCardsInPlayDisplay(mydata, data);
+  
   mydata.forEach((player) => {
     let position = getPlayerPosition(player, data);
     if (position != "unavailable") {
       //if player is eliminated, cross out character card (but don't need to if main player(A5))
       if (player.eliminated) {
-        $(`#${position} .characterCard`).append('<img  src="assets/killed.png" class="sheriffStar responsive">');
+        $(`#${position} .characterCard`).append('<img  src="assets/killed.png" class="killedCard responsive">');
       }
       console.log(mydata);
     } else {
@@ -163,6 +148,7 @@ function updateEliminatedDisplay(mydata, data) {
     }
   });
 }
+
 
 //Update bullets in response to socket message
 function displayCardsInPlay() {
@@ -183,7 +169,7 @@ function updateCardsInPlayDisplay(mydata, data) {
     if (position != "unavailable") {
       let divString = "";
       //if player is eliminated, show role card only (but don't need to if main player(A5))
-      if (player.eliminated && (position != 'a5')) {
+      if (player.eliminated) {
         switch (player.role) {
           case "Sheriff":
             divString = '<img src="assets/cards/Sheriff.png" alt="" class="responsive cardOnly"></img>';
@@ -200,9 +186,11 @@ function updateCardsInPlayDisplay(mydata, data) {
           case "Outlaw":
             divString = '<img src="assets/cards/Outlaw.png" alt="" class="responsive cardOnly"></img>';
             outlawNumber++;
-            $(`#iOutlaw${outlawNumber}`).addClass("hidden");
-            
-
+            $(`#iOutlaw${outlawNumber}`).addClass("hidden");  
+        }
+        if (position == 'a5') {
+          divString = "";
+          $("#mainName").html(`${player.name} - eliminated`)
         }
       } else {
         //equip weapon
