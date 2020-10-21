@@ -1,5 +1,5 @@
 
-//Update bullets in response to socket message
+//Update cards in play in response to socket message
 function displayCardsInPlay() {
     socket.on("cardsInPlayUpdate", data => {
       const playerData = JSON.parse(data)
@@ -43,7 +43,7 @@ function displayCardsInPlay() {
           }
         } else {
           //equip weapon
-          divString += `<img src="assets/cards/${player.weapon}.png" alt="${player.weapon}" class="responsive">`;
+          divString += `<img id="#${position}WeaponCard" src="assets/cards/${player.weapon}.png" alt="${player.weapon}" class="responsive">`;
           //add other cards per player properties
           if (player.scope) {
             divString += `<img src="assets/cards/scope.png" alt="scope" class="responsive">`;

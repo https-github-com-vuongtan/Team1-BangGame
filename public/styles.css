@@ -468,12 +468,11 @@ max-height: 20vh;
 
 .sheriffStar
 {
-max-height: 90px;
-margin-top:10px;
-margin-right: 0px;
+margin-top:60%;
 grid-column: 1;
 grid-row: 1;
 z-index: 1;
+max-width:70%;
 max-height: 20vh;
 }
 

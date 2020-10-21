@@ -76,6 +76,7 @@ const eliminationLogic = (playerData, player, playerKiller, discardPile) => {
     }
   }
   player.eliminated = true;
+  player.distanceMod = -1;
   player.maxLife = 0;
   player.currentLife = 0;
   console.log(player.name + " eliminated.");
