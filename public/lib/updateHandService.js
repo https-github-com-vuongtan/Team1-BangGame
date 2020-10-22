@@ -19,7 +19,7 @@ function displayHand() {
         }
         //update (private) handsize
         updateHandSizeDisplay(mydata, data);
-        applytoIndexElement("mainHand", discardCardFromHand);
+        applytoIndexElement("mainHand", endOfTurnDiscard);
       }
     })
 //put func here

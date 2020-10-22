@@ -1,20 +1,17 @@
 
 
-//general format for adding discard into card click (not Jquery, don't use leading # for ID)
+//general format for getting index & applying function on card click (not Jquery, don't use leading # for ID)
 function applytoIndexElement(elementID, theFunction) {
   var h = document.getElementById(elementID);
   for (var i = 0, len = h.children.length; i < len; i++) {
     (function (index) {
       h.children[i].onclick = function () {
-        if ((phaseuser==nameplayer)&&(parseInt(phasenumber)==3)){
         theFunction(index);
-        }
       }
     })(i);
   }
 
 }
-
 
 
 $(document).ready(function () {
