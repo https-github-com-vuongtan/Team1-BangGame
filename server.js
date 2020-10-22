@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const getrandomcharactercards = require("./Modules-ServerSide/randomCharacterModule")
 const getrandomrolecards = require("./Modules-ServerSide/randomRoleModule")
 const getpauseandend = require("./Modules-ServerSide/PauseAndEndServerModule")
+const bang = require("./Modules-ServerSide/playBangModule")
 
 
 
@@ -39,25 +40,7 @@ let listedrolecards = require("./json lists/roleCardList.json")
 let newPlayer = require("./json lists/playerDataList.json")
 let myvar2;
 
-let player = {
-  name: "name",
-  socket: "empty",
-  id: "empty",
-  role: "role",
-  character: "character",
-  position: "position",
-  maxLife: "maxLife",
-  currentLife: "currentLife",
-  weapon: "weapon",
-  scope: false,
-  mustang: false,
-  barrel: false,
-  jail: false,
-  dynamite: false,
-  hand: [
-      {"id": 1, "name": 'empty', }
-  ],
-}
+
 //Interval for getting time
 let myVar = setInterval(checkcurrenttime, 100);
 //Interval for updating phase
@@ -358,35 +341,18 @@ app.get('/actionLog', function(req, res){
     res.send("action log hit")
     });
 
-    
+  /* ------------------------------------------ Bang/Miss----------------------------------------------------------------*/
 app.get('/shootBang', function(req,res){
   const targetId = req.query.targetId
   const attackerName = req.query.name
-  playerData.forEach(player => {
-    if(player.id==targetId){
-      player.hand.forEach(card=>{
-        console
-        if (card.some =="missed"){
-        io.to(player.socket).emit("missedOption",playerData, attackerName)
-        }
-        else{
-          player.currentLife = player.currentLife -1
-          const data ={
-            name: attackerName,
-            action: `shot ${player.name}`
-          }
-          io.emit("updateactionlog",data)
-          res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
-        }
-      })
-    
-      
-    }
-     
-    })
-  //  playerData.forEach(attacker =>{})
-  })
- 
+const data ={
+  targetId:targetId,
+  attackerName: attackerName
+}
+bang.playBang(data,playerData, io)
+})
+
+/* ---------------------------------------------------Bang/Miss End ------------------------------------------------------*/
 
 app.get('/newUser', function(data){
     const name = data.name
