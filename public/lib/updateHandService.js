@@ -79,6 +79,8 @@
                 if(generalstore=="true"){
                   general(socketid)
                 }
+                            //update (private) handsize
+    updateHandSizeDisplay(mydata, data)
             }
             })      
           })
