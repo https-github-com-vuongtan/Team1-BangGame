@@ -12,7 +12,6 @@ function GatlingAttack(socketid){
           let req={
             socket:socketid
         }
-        console.log(lifecurrent.life)
 
         if(socketphase==socketid&&phasenumber==2&&data.pause==0&&lifecurrent.life>0){
         $.get("/gatlingattack",req,data=>{

@@ -24,9 +24,15 @@ function removegeneralcard(playerData,socket){
 }
 function pushcardtohand(playerData,socket,namecard){
     playerData.forEach(player=>{
+        let element
         if(player.socket==socket){
-            let element={"id":player.hand[player.hand.length-1].id+1,"card":namecard}
+            if(player.hand.length>0){
+             element={"id":player.hand[player.hand.length-1].id+1,"card":namecard}
+            }else{
+                 element={"id":1,"card":namecard}
+            }
             player.hand.push(element)
+            
         }
       })
 }

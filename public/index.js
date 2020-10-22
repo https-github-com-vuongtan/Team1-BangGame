@@ -33,7 +33,7 @@ window.onload = function(e){
   displayHand()
   updateRole()
   updateBang()
-
+  //Vuong Tan
   GeneralOption()
   general()
   IndianModal()
@@ -45,5 +45,9 @@ window.onload = function(e){
   BeerHeal()
   beerOptionVT()
   missOptionVT()
+  //Katrina
+  endGame()
+  displayCardsInPlay()
+  displayEliminations()
   // shotBang()
 }

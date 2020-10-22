@@ -14,8 +14,15 @@ function randompickthreecards(items,playerData,socket){
     items.splice(index3, 1);
 
     playerData.forEach(player => {
+      let lastidcard
         if(player.socket==socket){
-            let lastidcard=player.hand[player.hand.length-1].id
+          if(player.hand.length>0){
+             lastidcard=player.hand[player.hand.length-1].id
+            }else{
+               lastidcard=0
+            }
+
+
             let nameofpushcard1=item1.playcard
             let nameofpushcard2=item2.playcard
             let nameofpushcard3=item3.playcard

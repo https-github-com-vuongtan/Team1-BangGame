@@ -16,6 +16,8 @@ const getwellfargo = require("./Modules-ServerSide/WellsFargoModule")
 const getduel = require("./Modules-ServerSide/DuelModule")
 const getindians = require("./Modules-ServerSide/IndiansModule")
 const getgeneral = require("./Modules-ServerSide/GeneralModule")
+//Katrina
+const elimination = require("./Modules-ServerSide/playerEliminationModule")
 
 
 let countgatling=0
@@ -29,6 +31,7 @@ let statusgame=""
 let socketofeachuser;
 let checksocketexist=false
 let playerData=[]
+let discardPile = []
 
 let currenttime=""
 let phasetime=""
@@ -51,26 +54,26 @@ const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
 const { Console } = require('console');
 let myvar2;
 let listplaycards=[{ "id":1,"playcard":"general store"},{
-  "id":2,"playcard":"Gatling"},{
+  "id":2,"playcard":"duel"},{
   "id":3,"playcard":"Gatling"},{
   "id":4,"playcard":"general store"},{
   "id":5,"playcard":"Wells Fargo"},{
   "id":6,"playcard":"general store"},{
-  "id":7,"playcard":"Gatling"},{
-  "id":8,"playcard":"Gatling"},{
+  "id":7,"playcard":"bang"},{
+  "id":8,"playcard":"duel"},{
   "id":9,"playcard":"Gatling"},{
   "id":10,"playcard":"general store"},{
   "id":11,"playcard":"general store"},{
-  "id":12,"playcard":"Gatling"},{
+  "id":12,"playcard":"duel"},{
   "id":13,"playcard":"Wells Fargo"},{
-  "id":14,"playcard":"Gatling"},{
+  "id":14,"playcard":"duel"},{
   "id":15,"playcard":"Gatling"},{
   "id":16,"playcard":"general store"},{
   "id":17,"playcard":"Gatling"},{
   "id":18,"playcard":"indians"},{
   "id":19,"playcard":"missed"},{
   "id":20,"playcard":"Gatling"},{
-  "id":21,"playcard":"Gatling"},{
+  "id":21,"playcard":"duel"},{
   "id":22,"playcard":"Wells Fargo"},
   {"id":23,"playcard":"missed"},
   {"id":24,"playcard":"general store"},
@@ -78,7 +81,23 @@ let listplaycards=[{ "id":1,"playcard":"general store"},{
   {"id":26,"playcard":"general store"},
   {"id":27,"playcard":"beer"},
   {"id":28,"playcard":"beer"},
-
+  {"id":29,"playcard":"duel"},{
+    "id":30,"playcard":"Wells Fargo"},{
+    "id":31,"playcard":"duel"},{
+    "id":32,"playcard":"Gatling"},{
+    "id":33,"playcard":"general store"},{
+    "id":34,"playcard":"Gatling"},{
+    "id":35,"playcard":"indians"},{
+    "id":36,"playcard":"missed"},{
+    "id":37,"playcard":"Gatling"},{
+    "id":38,"playcard":"Gatling"},{
+    "id":39,"playcard":"Wells Fargo"},
+    {"id":40,"playcard":"missed"},
+    {"id":41,"playcard":"general store"},
+    {"id":42,"playcard":"Wells Fargo"},
+    {"id":43,"playcard":"general store"},
+    {"id":44,"playcard":"beer"},
+    {"id":45,"playcard":"beer"},
 ]
   function getrandomplaycards(playerData,items){
   playerData.forEach(player=>{
@@ -124,6 +143,29 @@ let myVar1 = setInterval(updatephase, 100);
 
 //Run node as a web server for hosting static files (html)
 app.use(express.static(__dirname+"/public"))
+
+// Katrina //if no killer (eg, killed by dynamite), playerKiller is null
+function eliminatePlayer(deadPlayer, killerPlayer) {
+  elimination.eliminationLogic(playerData, deadPlayer, killerPlayer, discardPile);
+  let data = {
+    name: `${deadPlayer.role} ${deadPlayer.name} `,
+    action: 'been killed'
+  }
+  io.emit("updateactionlog", data);
+  io.emit("handUpdate", JSON.stringify(playerData));
+  io.emit("playerEliminated", JSON.stringify(playerData));
+  let winner = elimination.endGameCheck(playerData);
+  if (winner != "None") {
+    let endData = {
+      playerData: playerData,
+      winningRole: winner
+    }
+    //can add those with matching roles (include deputy for sheriff) to winner history DB *****
+    io.emit("endGame", endData);
+  }
+}
+
+
 
 function checkcurrenttime(){
   if(statuspause!="off"){
@@ -555,6 +597,10 @@ else{
     name: req.query.attackname,
     action: `shot ${player.name}`
   }
+  if (player.currentLife < 1) {
+    eliminatePlayer(player, null);
+  }
+
   io.emit("updateactionlog",data)
   }
 
@@ -594,6 +640,9 @@ playerData.forEach(player=>{
         action: `shot ${player.name}`
       }
     player.currentLife = player.currentLife -1
+    if (player.currentLife < 1) {
+      eliminatePlayer(player, null);
+    }
     io.emit("updateactionlog",data)
     }
   }
@@ -651,7 +700,15 @@ console.log(player.name +" use 1 beer card")
   }
 })
 }
-console.log(countresponsegatling)
+
+playerData.forEach(player=>{
+  if(player.socket==socket){
+    if (player.currentLife < 1) {
+      eliminatePlayer(player, null);
+    }
+  }
+})
+
 
 //Check enough response from victim to restart time
 if(countresponsegatling==countgatling){
@@ -711,6 +768,14 @@ console.log(player.name +" use 1 missed card")
 })
 
 }
+playerData.forEach(player=>{
+  if(player.socket==socket){
+    if (player.currentLife < 1) {
+      eliminatePlayer(player, null);
+    }
+  }
+})
+
 //Function to check enough response from victim to restart time
 if(countresponsegatling==countgatling){
   pausetime=getpauseandend.returnpausetime()
@@ -787,6 +852,10 @@ app.get("/gatlingattack",function(req,res){
     }
     res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
 
+      if (player.currentLife < 1) {
+        eliminatePlayer(player, null);
+      }
+    
   }
   })
   // If gatling is active and waiting response from victim, we will temporarily stop the time for waiting victims response
@@ -854,7 +923,6 @@ if(msg=="No"){
       console.log(pausetime)
       statuspause="on"
       console.log(player.name+"is now on " +player.currentLife)
-      res.send ("OK")
     }
   })
 }
@@ -905,7 +973,6 @@ if(checkbangcard=="false"){
       console.log(pausetime)
       statuspause="on"
       console.log(player.name+"is now on " +player.currentLife)
-      res.send ("OK")
     }
   })
 }
@@ -915,9 +982,16 @@ getduel.removeBangCard(playerData,socket)
 
 io.to(socketattacker).emit("DuelOption", playerduel)
 io.emit("handUpdate",JSON.stringify(playerData))
-res.send ("Waiting response")
 }
 }
+playerData.forEach(player=>{
+  if(player.socket==socket){
+    if (player.currentLife < 1) {
+      eliminatePlayer(player, null);
+    }
+  }
+})
+res.send ("OK")
 })
 
 
@@ -952,7 +1026,6 @@ if(checklivestatus=="true"){
     pausetime=0
     getpauseandend.setintervaltime(pausetime)
     statuspause="off"
-    res.send("Finished Duel")
   }
 //If do not have bang card=> Continue check beer card=> If do not have beer card, user will be automatically decresed their life
    else if(checkstatusbangcard=="false"){
@@ -974,14 +1047,14 @@ if(checklivestatus=="true"){
             }
             else{
               player.currentLife = player.currentLife -1
+              if (player.currentLife < 1) {
+                eliminatePlayer(player, null);
+              }
             }
 
       io.emit("updateactionlog",data)
       console.log(player.name+"is now on " +player.currentLife)
-      res.send("Finished Duel")   
     }
-
-
      }
    })
   }
