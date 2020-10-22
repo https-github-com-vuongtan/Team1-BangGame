@@ -191,10 +191,13 @@ function checkcurrenttime(){
     getrandomplaycards(playerData,listplaycards)
     console.log(playerData)
     io.emit("updateRole",JSON.stringify(playerData))
+    io.emit("bulletUpdate", JSON.stringify(playerData))
     io.emit("weaponUpdate",JSON.stringify(playerData))
     io.emit("updatePlayerName",JSON.stringify(playerData))
     io.emit("handUpdate",JSON.stringify(playerData))
     io.emit("bangUpdate",JSON.stringify(playerData))
+    io.emit("cardsInHandUpdate", JSON.stringify(playerData))
+
     statuscharactercard="Finished"
   }
 if(phasetime!=""){
@@ -616,7 +619,7 @@ else{
   if (player.currentLife < 1) {
     eliminatePlayer(player, null);
   }
-
+  io.emit("bulletUpdate", JSON.stringify(playerData))
   io.emit("updateactionlog",data)
   }
 
@@ -625,6 +628,7 @@ else{
   })
     if(countgatling==0){
     playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+    io.emit("bulletUpdate", JSON.stringify(playerData))
     }
 res.send("OK")
 })
@@ -659,6 +663,7 @@ playerData.forEach(player=>{
     if (player.currentLife < 1) {
       eliminatePlayer(player, null);
     }
+    io.emit("bulletUpdate", JSON.stringify(playerData))
     io.emit("updateactionlog",data)
     }
   }
@@ -677,6 +682,7 @@ if(countresponsegatling==countgatling){
   pausetime=getpauseandend.returnpausetime()
   getpauseandend.resettime()
   playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+  io.emit("bulletUpdate", JSON.stringify(playerData))
   statuspause="on"
   countgatling=0
   countresponsegatling=0
@@ -723,6 +729,7 @@ playerData.forEach(player=>{
       eliminatePlayer(player, null);
     }
   }
+  io.emit("bulletUpdate", JSON.stringify(playerData))
 })
 
 
@@ -790,6 +797,8 @@ playerData.forEach(player=>{
       eliminatePlayer(player, null);
     }
   }
+  io.emit("bulletUpdate", JSON.stringify(playerData))
+
 })
 
 //Function to check enough response from victim to restart time
@@ -880,6 +889,8 @@ if(pausetimeforgatling=="true"){
   getpauseandend.setintervaltime(pausetime)
   statuspause="off"
 }
+io.emit("bulletUpdate", JSON.stringify(playerData))
+
 })
 
 //Function for trigger beer action in phase 2 of user
@@ -890,7 +901,8 @@ app.get("/beertrigger",function(req,res){
   getbeer.removebeerGalting(playerData,sock)
   }
   io.emit("handUpdate",JSON.stringify(playerData))
-  
+  io.emit("bulletUpdate", JSON.stringify(playerData))
+
 })
 
 
@@ -1007,6 +1019,7 @@ playerData.forEach(player=>{
     }
   }
 })
+io.emit("bulletUpdate", JSON.stringify(playerData))
 res.send ("OK")
 })
 
@@ -1074,6 +1087,8 @@ if(checklivestatus=="true"){
      }
    })
   }
+  io.emit("bulletUpdate", JSON.stringify(playerData))
+
   res.send("Finished Duel")   
 })
 

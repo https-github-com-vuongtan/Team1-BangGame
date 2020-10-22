@@ -46,6 +46,7 @@ window.onload = function(e){
   beerOptionVT()
   missOptionVT()
   //Katrina
+  displayBullets()
   endGame()
   displayCardsInPlay()
   displayEliminations()
