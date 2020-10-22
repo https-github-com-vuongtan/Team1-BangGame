@@ -3,7 +3,6 @@ function getplayingcards(items,livecount){
     for( var i=0;i<livecount;i++){
         let item1 = items[Math.floor(Math.random() * items.length)];
         let index1 = items.indexOf(item1);
-        items.splice(index1, 1);
         listcards.push(item1)
     }
 return listcards

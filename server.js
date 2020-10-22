@@ -44,6 +44,9 @@ let idround=1
 
 let listcards
 
+
+
+let Sheriffrole="false"
 let statusphase=""
 let statuspause=""
 let pausetime=0
@@ -228,9 +231,15 @@ app.get("/endphase",function(req,res){
 //Function for updating phase
 function updatephase(){
 if(statusgame=='START GAME'&&phasestatus==""){
+  playerData.forEach(player=>{
+    if(player.role=="Sheriff"){
+      idround=player.id
+    }
+  })
+  Sheriffrole="true"
   phasestatus="Starting"
 }
-if(phasestatus=="Starting"){
+if(phasestatus=="Starting"&&Sheriffrole=="true"){
    statusphase={id:idround,phase:1,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
    phasetime=new Date (currenttime );
    phasetime.setSeconds (phasetime.getSeconds() + 15 );
@@ -267,10 +276,17 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==3){
   else{
     idround++
   }
+  if(playerData[idround-1].currentLife==0){
+    statusphase.phase=3
+    phasetime=getpauseandend.endphase(phasetime,currenttime)
+    phasestatus="Ongoing"
+  }
+  else{
   statusphase={id:idround,phase:1,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
   phasetime=new Date (currenttime );
   phasetime.setSeconds (phasetime.getSeconds() + 15 );
   io.emit("infophase",statusphase)  
+  }
   return;
 }
 }

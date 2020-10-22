@@ -3,15 +3,12 @@ function randompickthreecards(items,playerData,socket){
     if(items.length>=3){
     item1 = items[Math.floor(Math.random() * items.length)];
     let index1 = items.indexOf(item1);
-    items.splice(index1, 1);
 
     item2 = items[Math.floor(Math.random() * items.length)];
     let index2 = items.indexOf(item2);
-    items.splice(index2, 1);
 
     item3 = items[Math.floor(Math.random() * items.length)];
     let index3 = items.indexOf(item3);
-    items.splice(index3, 1);
 
     playerData.forEach(player => {
       let lastidcard
