@@ -2,15 +2,10 @@
 function discardPlayerCards(player) {
   let discarded = [];
   //discard cards in hand
-  console.log(`killed player hand length ${player.hand.length}`)
-  console.log(`killed player name ${player.name}`)
   dLength = player.hand.length;
 
   for (var i = 0; i < dLength; i++) {
-    console.log(i)
-
     let discardCard = player.hand.pop();
-    console.log(`discarded card to be pushed: ${discardCard.card}`)
     discarded.push({ "card": discardCard.card });
   }
   //discard cards in play
@@ -40,11 +35,6 @@ function discardPlayerCards(player) {
   player.barrel = false;
   player.jail = false;
   player.dynamite = false;
-  console.log(`Player name: ${player.name} `)
-  console.log(`Player hand: ${player.hand} `)
-  console.log(`Discard pile: ${discarded}`)
-
-
   return discarded;
 }
 

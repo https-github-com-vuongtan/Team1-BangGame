@@ -1,3 +1,22 @@
+
+
+//general format for adding discard into card click (not Jquery, don't use leading # for ID)
+function applytoIndexElement(elementID, theFunction) {
+  var h = document.getElementById(elementID);
+  for (var i = 0, len = h.children.length; i < len; i++) {
+    (function (index) {
+      h.children[i].onclick = function () {
+        if ((phaseuser==nameplayer)&&(parseInt(phasenumber)==3)){
+        theFunction(index);
+        }
+      }
+    })(i);
+  }
+
+}
+
+
+
 $(document).ready(function () {
   // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
   $('.modal').modal();
@@ -15,7 +34,7 @@ function displayEliminations() {
         if (player.eliminated == true) {
           console.log("eliminated" + player.name)
 
-        //  $('#testModal').modal('open')
+          //  $('#testModal').modal('open')
 
         }
 
@@ -97,10 +116,6 @@ function getPlayerPosition(opponentPlayer, thisPlayer) {
     default:
       position = "unavailable";
   }
-  console.log(opponentPlayer.name);
-  console.log(thisPlayer.name);
-  console.log(playerDiff);
-  console.log(position);
   return position;
 }
 
@@ -121,7 +136,7 @@ function updateHandSizeDisplay(mydata, data) {
             divString += '<img src="assets/cardOverlap.png"class="responsive">';
           }
         }
-        positionString = "#" + position + " .privateHand"; 
+        positionString = "#" + position + " .privateHand";
         $(positionString).html(divString);
       }
     }
@@ -134,7 +149,7 @@ function updateHandSizeDisplay(mydata, data) {
 function updateEliminatedDisplay(mydata, data) {
   //display modal? ***** quit game or spectate? needs to be under separate individual message (after this)
   updateCardsInPlayDisplay(mydata, data);
-  
+
   mydata.forEach((player) => {
     let position = getPlayerPosition(player, data);
     if (position != "unavailable") {

@@ -399,6 +399,22 @@ app.get('/shootBang', function (req, res) {
   //  playerData.forEach(attacker =>{})
 })
 
+app.get('/discardHandCard', function (req, res) {
+  let index = req.query.index;
+  let name = req.query.name;
+  let discardedCard = [];
+  playerData.forEach(player => {
+    if (player.name == name) {
+      discardedCard = player.hand.splice(index,1);
+      discardPile.push({ "card": discardedCard[0].card });
+
+    }
+
+  })
+  io.emit("handUpdate", JSON.stringify(playerData))
+  res.send(console.log(`${discardedCard[0].card} added to the discard pile`));
+})
+
 //if no killer (eg, killed by dynamite), playerKiller is null
 function eliminatePlayer(deadPlayer, killerPlayer) {
   elimination.eliminationLogic(playerData, deadPlayer, killerPlayer, discardPile);

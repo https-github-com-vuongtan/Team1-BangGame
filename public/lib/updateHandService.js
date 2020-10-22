@@ -7,6 +7,7 @@ function displayHand() {
         let hand = data.hand
         let divString = ""
         console.log(hand)
+        $("#mainHand").html("");
         for (var i = 0; i < hand.length; i++) {
           console.log(hand[i].card)
           divString += `<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card}">`;
@@ -16,9 +17,11 @@ function displayHand() {
             $(`#bangModal`).modal('open');
           });
         }
-            //update (private) handsize
-    updateHandSizeDisplay(mydata, data)
+        //update (private) handsize
+        updateHandSizeDisplay(mydata, data);
+        applytoIndexElement("mainHand", discardCardFromHand);
       }
     })
+//put func here
   })
 }
