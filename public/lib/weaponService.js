@@ -6,7 +6,7 @@ function updateWeapon(){
       if(data.socket==socketid){
         let weapon = data.weapon
          console.log(weapon)
-         $("#mainCharacterWeapon").attr('src',"assets/cards/"+data.weapon+".png")
+         $("#a5weapon").attr('src',"assets/cards/"+data.weapon+".png")
         // $("#mainCardsInPlay").append(`<img src="assets/cards/${data.weapon}.png" alt="weapon" class="responsive">`)
          displayWeapon(mydata,data)
       }

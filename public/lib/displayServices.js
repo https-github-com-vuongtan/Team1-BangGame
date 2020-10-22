@@ -1,6 +1,50 @@
-  
-//NOTE: You cannot use these functions from here.
-//(I have been tweaking these functions and moving them to index.js as I find a use for them).
+$(document).ready(function () {
+  // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+  $('.modal').modal();
+  displayEliminations();
+});
+
+function displayEliminations() {
+  socket.on("playerEliminated", data => {
+
+    const playerData = JSON.parse(data)
+    playerData.forEach((player) => {
+      if (player.socket == socketid) {
+        updateEliminatedDisplay(playerData, player);
+
+        if (player.eliminated == true) {
+          console.log("eliminated" + player.name)
+
+        //  $('#testModal').modal('open')
+
+        }
+
+      }
+    })
+  })
+}
+
+
+function endGame() {
+  socket.on("endGame", data => {
+    hideTurnButtonPanel();
+    switch (data.winningRole) {
+      case ("Sheriff"):
+        console.log("hit Sheriff endgame");
+        break;
+      case ("Outlaw"):
+        console.log("hit Outlaw endgame");
+        break;
+      case ("Renegade"):
+        console.log("hit renegade endgame");
+        break;
+
+    }
+  })
+}
+
+
+
 
 
 //hides the join screen and displays the gameboard
@@ -15,12 +59,20 @@ const displayWelcomeScreen = () => {
   $("#gameboard").addClass("hidden");
 }
 
+const showTurnButtonPanel = () => {
+  $("#turnButtonPanel").removeClass("hidden");
+}
+
+const hideTurnButtonPanel = () => {
+  $("#turnButtonPanel").addClass("hidden");
+}
+
 
 //used to determine player's relative position on the board (A5 to E5) - NOT distance, does not change with elimination.
 function getPlayerPosition(opponentPlayer, thisPlayer) {
   let playerDiff = opponentPlayer.id - thisPlayer.id;
   let position = "unavailable";
-  console.log(playerDiff);
+
 
   switch (playerDiff) {
     case 0:
@@ -45,8 +97,13 @@ function getPlayerPosition(opponentPlayer, thisPlayer) {
     default:
       position = "unavailable";
   }
+  console.log(opponentPlayer.name);
+  console.log(thisPlayer.name);
+  console.log(playerDiff);
+  console.log(position);
   return position;
 }
+
 
 //will update handsize for all players (private hands) - mydata = set of player data, data=this player
 function updateHandSizeDisplay(mydata, data) {
@@ -54,17 +111,18 @@ function updateHandSizeDisplay(mydata, data) {
     let position = getPlayerPosition(player, data);
     if (position != "unavailable") {
       let divString = "";
+      let positionString = "";
       let handSize = player.hand["length"];
       //(update not applicable if position is this player's)
-      if (position != "a1") {
-        if (handSize >0) {
+      if (position != "a5") {
+        if (handSize > 0) {
           divString += '<img src="assets/cardBack.png" class="responsive">';
           for (i = 1; i < handSize; i++) {
             divString += '<img src="assets/cardOverlap.png"class="responsive">';
           }
-          let positionString = "#" + position + " .privateHand";
-          $(positionString).html(divString);
         }
+        positionString = "#" + position + " .privateHand"; 
+        $(positionString).html(divString);
       }
     }
     else {
@@ -73,72 +131,23 @@ function updateHandSizeDisplay(mydata, data) {
   });
 }
 
-
-const getBulletString = (player) => {
-  let bulletString = "";
-  let i = 0;
-  while (i < player.currentLife) {
-    bulletString += '<img src="assets/bullet.png" alt="" class="responsive"></img>';
-    i++;
-  }
-  return bulletString;
-}
-
-//will update all player's bullet display
-function updateBulletDisplay(mydata, data) {
-  $("#mainBullets").html(getBulletString(data));
-  if (data.id == 1) {
-    $("#c5 .bulletTray").html(getBulletString(mydata[2]));
-    $("#b5 .bulletTray").html(getBulletString(mydata[1]));
-    $("#d5 .bulletTray").html(getBulletString(mydata)[3]);
-    $("#e5 .bulletTray").html(getBulletString(mydata)[4]);
-  }
-  else if (data.id == 2) {
-    $("#c5 .bulletTray").html(getBulletString(mydata[3]));
-    $("#b5 .bulletTray").html(getBulletString(mydata[2]));
-    $("#d5 .bulletTray").html(getBulletString(mydata[4]));
-    $("#e5 .bulletTray").html(getBulletString(mydata[0]));
-  }
-  else if (data.id == 3) {
-    $("#c5 .bulletTray").html(getBulletString(mydata[4]));
-    $("#b5 .bulletTray").html(getBulletString(mydata[3]));
-    $("#d5 .bulletTray").html(getBulletString(mydata[0]));
-    $("#e5 .bulletTray").html(getBulletString(mydata[1]));
-  }
-  else if (data.id == 4) {
-    $("#c5 .bulletTray").html(getBulletString(mydata[0]));
-    $("#b5 .bulletTray").html(getBulletString(mydata[4]));
-    $("#d5 .bulletTray").html(getBulletString(mydata[1]));
-    $("#e5 .bulletTray").html(getBulletString(mydata[2]));
-  }
-  else if (data.id == 5) {
-    $("#c5 .bulletTray").html(getBulletString(mydata[1]));
-    $("#b5 .bulletTray").html(getBulletString(mydata[0]));
-    $("#d5 .bulletTray").html(getBulletString(mydata[2]));
-    $("#e5 .bulletTray").html(getBulletString(mydata[3]));
-  }
-}
-
-//displays an opponents handsize on screen (payload needs handSize, opponentPlayerNum & thisPlayerNum) - probably won't use. Use above function instead?
-const displayHandSize = (payload) => {
-  let position = getPlayerPosition(payload.opponentPlayerId, payload.thisPlayerId);
-  if (position != "unavailable") {
-    let divString = "";
-    //(update not applicable if position is this player's)
-    if (position != "a1") {
-      if (payload.handSize > 0) {
-        divString += '<img src="assets/cardBack.png" class="responsive">';
-        for (i = 1; i < payload.handSize; i++) {
-          divString += '<img src="assets/cardOverlap.png"class="responsive">';
-        }
-        let jqString = '#' + position + ' .privateHand';
-        $(jqString).html(divString);
+function updateEliminatedDisplay(mydata, data) {
+  //display modal? ***** quit game or spectate? needs to be under separate individual message (after this)
+  updateCardsInPlayDisplay(mydata, data);
+  
+  mydata.forEach((player) => {
+    let position = getPlayerPosition(player, data);
+    if (position != "unavailable") {
+      //if player is eliminated, cross out character card (but don't need to if main player(A5))
+      if (player.eliminated) {
+        $(`#${position} .characterCard`).append('<img  src="assets/killed.png" class="killedCard responsive">');
       }
+      console.log(mydata);
+    } else {
+      alert("warning: position unable to be determined!");
     }
-    //res.send({ result: 200 });
-  }
-  else {
-    // res.send({ result: "position unable to be determined" });
-  }
+  });
 }
+
+
 

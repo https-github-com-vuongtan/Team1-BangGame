@@ -1,6 +1,6 @@
 html, body {
-  height: 99vh;
-  width: 99vw;
+  height: 98vh;
+  width: 98vw;
   margin: auto;
   }
 
@@ -152,6 +152,12 @@ width:20px;
   max-width: 100%;
 }
 
+.deckInstructions {
+  text-align: center;
+  color: yellow;
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+
 #gameboard
 {
     background-image: url('assets/darkerDesertscape.png');
@@ -171,7 +177,7 @@ width:20px;
     grid-column-gap: 3px;
     grid-row-gap: 0px;
     grid-template-columns: 5fr 6fr 30fr;
-    grid-template-rows: 1fr 1fr 30fr;
+    grid-template-rows: 1fr 1fr 8fr;
     padding:3px;
     margin: auto;
     max-height: 100%;
@@ -182,7 +188,7 @@ width:20px;
     grid-column-gap: 3px;
     grid-row-gap: 0px;
     grid-template-columns: 30fr 6fr 5fr;
-    grid-template-rows: 1fr 1fr 30fr;
+    grid-template-rows: 1fr 1fr 8fr;
     text-align: right;
     padding:3px;
     margin: auto;
@@ -326,16 +332,34 @@ direction: rtl;
   border-radius:5px;
   font-size:0.7em;
   font-weight: 500;
-  height:75px;
+  height:57px;
   padding:5px;
   margin-left: 5px;
   padding-left: 10px;
-  max-width:110px;
+  max-width:108px;
 }
 
-.actionLogPanel
+.turnButtonPanel
 {
+  padding:2px;
+  margin-top: 4px;
+  margin-left: 2px;
+  font-size:0.65em;
+  font-weight: 500;
+}
+
+.btn-turn {
   background-color: rgb(190, 177, 160);
+    color: rgb(0, 0, 0);
+  font-family:Verdana, Geneva, Tahoma, sans-serif;
+  height: 20px;
+  border-radius:5px;
+  padding:3px;
+  font-weight: bold;
+  }
+
+.actionLogPanel
+{background-color: rgb(190, 177, 160);
 text-align: center;
 column-span: 1;
 border-radius:5px;
@@ -372,6 +396,8 @@ margin: 2px;
 
 #messageWindow
 {
+direction: ltr;
+text-align: left;
 font-size:0.7em;
 padding: 2px;
 text-align: left;
@@ -389,7 +415,7 @@ flex-direction: column-reverse;
 {
 grid-column-start: 1;
 grid-column-end: 4;
-font-size: 1.1em;
+
 }
 
 .playerName, #mainName
@@ -400,6 +426,8 @@ font-weight: bold;
 text-transform: uppercase;
 margin-left: 5px;
 margin-right: 5px;
+font-size: 1.1em;
+height:25px;
 }
 
 .leftGrid .bulletTray
@@ -440,8 +468,18 @@ max-height: 20vh;
 
 .sheriffStar
 {
+margin-top:60%;
+grid-column: 1;
+grid-row: 1;
+z-index: 1;
+max-width:70%;
+max-height: 20vh;
+}
+
+.killedCard
+{
 max-height: 90px;
-margin-top:10px;
+margin-top:0px;
 margin-right: 0px;
 grid-column: 1;
 grid-row: 1;
@@ -457,7 +495,7 @@ grid-row-start: 2;
 grid-row-end: 4;
 }
 
-.cardsInPlay
+.leftGrid .cardsInPlay, .rightGrid .cardsInPlay
 {
 display: grid;
 grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
@@ -509,6 +547,8 @@ max-height: 20vh;
 {
 grid-row-start: 3;
 grid-row-end: 4;
+font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+
 }
 
 .privateHand img

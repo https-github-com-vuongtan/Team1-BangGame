@@ -32,12 +32,12 @@ function playBang(data, playerData, io){
         if (missedCount < 1){
           player.currentLife = player.currentLife -1
           missedCount = 0; 
-          const data ={
-            name: attackerName,
+          const data2 ={
+            name: data.attackerName,
             action: `shot ${player.name}`,
           }
-          io.emit("updateactionlog",data)
-          res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+          io.emit("updateactionlog",data2)
+          console.log(`${player.name} is now on ${player.currentLife} lives`)
         } else {
           missedCount = 0;
           const data ={
