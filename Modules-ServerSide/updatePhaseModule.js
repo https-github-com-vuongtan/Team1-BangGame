@@ -6,7 +6,7 @@ if(statusgame=='START GAME'&&phasestatus==""){
 if(phasestatus=="Starting"){
    statusphase={id:idround,phase:1,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
    phasetime=new Date (currenttime );
-   phasetime.setSeconds (phasetime.getSeconds() + 15 );
+   phasetime.setSeconds (phasetime.getSeconds() + 1 );
    io.emit("infophase",statusphase)  
    phasestatus="Ongoing"
   return;
@@ -14,7 +14,7 @@ if(phasestatus=="Starting"){
 if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
   statusphase={id:idround,phase:2,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
   phasetime=new Date (currenttime );
-  phasetime.setSeconds ( phasetime.getSeconds() + 60 );  
+  phasetime.setSeconds ( phasetime.getSeconds() + 1 );  
   io.emit("infophase",statusphase)  
   return;
 
@@ -22,7 +22,7 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
 if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==2){
   statusphase={id:idround,phase:3,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
    phasetime=new Date (currenttime );
-   phasetime.setSeconds (phasetime.getSeconds() + 20 );
+   phasetime.setSeconds (phasetime.getSeconds() + 1 );
    io.emit("infophase",statusphase)    
    return;
 
@@ -36,7 +36,7 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==3){
   }
   statusphase={id:idround,phase:1,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
   phasetime=new Date (currenttime );
-  phasetime.setSeconds (phasetime.getSeconds() + 15 );
+  phasetime.setSeconds (phasetime.getSeconds() + 1 );
   io.emit("infophase",statusphase)  
   return;
 }

@@ -21,12 +21,12 @@ $(document).ready(function () {
             action: action,
             socket: socketid
           }
-
-          $.get('/actionLog', data)
-          $.get('/newUser', data)
-        }
-        setTimeout(displayGameBoard(), 1000);
-        statusregis = responsedata
+          
+        $.get('/actionLog',data)
+        $.get('/newUser', data)
+      }
+      setTimeout(displayGameBoard(), 1000);
+        statusregis=responsedata
       })
       $('#joinName').val("")
     }

@@ -58,7 +58,7 @@
 
             <div class="topPane">
                 <div id="c5" class="leftGrid">
-                    <div class="playerName">Waiting...
+                    <div class="playerName">
                     </div>
                     <div class="bulletTray">
                     </div>
@@ -85,16 +85,15 @@
                 </div>
                 <div id="d5" class="rightGrid">
 
-                    <div class="playerName">Waiting...
+                    <div class="playerName">
                     </div>
 
                     <div class="cardsInPlay">
                         <img src="assets/cards/mustang.png" alt="description" class="responsive cardOnly" hidden>
-                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt="description"
-                            class="responsive cardOnly">
+                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt="description" class="responsive cardOnly">
                     </div>
                     <div class="characterCard">
-                        <img id="topright" alt="Black Jack description" class="responsive cardOnly">
+                        <img id="topright"  alt="Black Jack description" class="responsive cardOnly">
                     </div>
                     <div class="bulletTray">
                     </div>
@@ -112,7 +111,7 @@
 
             <div class="midPane">
                 <div id="b5" class="leftGrid">
-                    <div class="playerName">Waiting...
+                    <div class="playerName">
                     </div>
                     <div class="bulletTray">
                     </div>
@@ -155,7 +154,7 @@
                 </div>
                 <div id="e5" class="rightGrid">
 
-                    <div class="playerName">Waiting...
+                    <div class="playerName">
                     </div>
 
                     <div class="characterCard">
@@ -282,7 +281,7 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="index.js"></script>
-    <script src="lib/libraryLoader.js"></script>
+    <!-- <script src="lib/libraryLoader.js"></script> -->
     <div id="lib">
         <script src="/lib/weaponService.js"></script>
         <script src="/lib/displayServices.js"></script>
@@ -300,7 +299,20 @@
         <script src="lib/PauseAndEndModule.js"></script>
         <script src="lib/updateCardsInPlayService.js"></script>
         <script src="lib/updateBulletsService.js"></script>
-
+        <script src="lib/GatlingService.js"></script>
+        <script src="lib/missedModalServiceVT.js"></script>
+        <script src="lib/BeerService.js"></script>
+        <script src="lib/BeerModalService.js"></script>
+        <script src="lib/WellsFargoService.js"></script>
+        <script src="lib/DuelService.js"></script>
+        <script src="lib/DuelOption.js"></script>
+        <script src="lib/IndiansService.js"></script>
+        <script src="lib/IndiansModal.js"></script>
+        <script src="lib/GeneralStoreService.js"></script>
+        <script src="lib/GeneraModalService.js"></script>
+        <!--Katrina-->
+        <script src="lib/updateCardsInPlayService.js"></script>
+        <script src="lib/updateBulletsService.js"></script>
 
 
 
@@ -327,6 +339,82 @@
             <a href="#!" data-response="no" class="modal-close waves-effect waves-green btn-flat">The hit?</a>
         </div>
     </div>
+       
+        
+    </div>
+     <!--Missed Modal Structure -->
+
+<div id="id01" class="modal">
+  <form class="modal-content">
+    <div class="container">
+      <h1>Using Missed Card</h1>
+      <p>Are you sure you want to Using Missed Card?</p>
+    
+      <div class="clearfix">
+        <button type="button" id="Cancel" >Cancel</button>
+        <button type="button" id="Submit"  >Submit</button>
+      </div>
+    </div>
+  </form>
+</div>
+  <!--Beer Modal Structure -->
+
+<div id="id02" class="modal">
+  <form class="modal-content">
+    <div class="container">
+      <h1>Using Beer Card</h1>
+      <p>Are you sure you want to using Beer Card?</p>
+    
+      <div class="clearfix">
+        <button type="button" id="CancelBeer" >Cancel</button>
+        <button type="button" id="SubmitBeer"  >Submit</button>
+      </div>
+    </div>
+  </form>
+</div>
+  <!--Duel Modal Structure -->
+  <div id="id03" class="modal" >
+    <form class="modal-content">
+      <div class="container">
+        <h1>Using Bang Card For Duel</h1>
+        <p>Are you sure you want to using Bang Card?</p>
+      
+        <div class="clearfix">
+          <button type="button" id="CancelDuel" >Cancel</button>
+          <button type="button" id="SubmitDuel"  >Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!--Indians Modal Structure -->
+  <div id="id04" class="modal" >
+    <form class="modal-content">
+      <div class="container">
+        <h1>Using Bang Card For Indians</h1>
+        <p>Are you sure you want to using Bang Card?</p>
+      
+        <div class="clearfix">
+          <button type="button" id="CancelIndians" >Cancel</button>
+          <button type="button" id="SubmitIndians"  >Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+
+  <!--Store Modal Structure -->
+
+ <div id="id05" class="modal" >
+    <form class="modal-content">
+      <div class="container">
+        <p>Choose one card</p>
+              <div class="modal-content" id="clearfix5">
+              </div>
+      </div>
+    </form>
+  </div>
+
+
 
 </body>
 

@@ -11,9 +11,19 @@ const getrandomcharactercards = require("./Modules-ServerSide/randomCharacterMod
 const getrandomrolecards = require("./Modules-ServerSide/randomRoleModule")
 const getpauseandend = require("./Modules-ServerSide/PauseAndEndServerModule")
 const bang = require("./Modules-ServerSide/playBangModule")
+const getgatling = require("./Modules-ServerSide/GaltingModule")
+const getbeer = require("./Modules-ServerSide/BeerModule")
+const getwellfargo = require("./Modules-ServerSide/WellsFargoModule")
+const getduel = require("./Modules-ServerSide/DuelModule")
+const getindians = require("./Modules-ServerSide/IndiansModule")
+const getgeneral = require("./Modules-ServerSide/GeneralModule")
+//Katrina
 const elimination = require("./Modules-ServerSide/playerEliminationModule")
 
 
+let countgatling=0
+let countresponsegatling=0
+let pausetimeforgatling="false"
 
 
 let count = 0
@@ -21,8 +31,8 @@ let listdesuser = []
 let checkuserexist = false
 let statusgame = ""
 let socketofeachuser;
-let checksocketexist = false
-let playerData = []
+let checksocketexist=false
+let playerData=[]
 let discardPile = []
 
 let currenttime = ""
@@ -34,44 +44,132 @@ let minutes = ""
 let seconds = ""
 let idround = 1
 
+let listcards
 
 let statusphase = ""
 let statuspause = ""
 let pausetime = 0
 let listcharactercards = require("./json lists/CharacterCardsList.json")
 let listedrolecards = require("./json lists/roleCardList.json")
-let newPlayer = require("./json lists/playerDataList.json")
+let newPlayer = require("./json lists/playerDataList.json");
+const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
+const { Console } = require('console');
 let myvar2;
+let listplaycards=[{ "id":1,"playcard":"general store"},{
+  "id":2,"playcard":"duel"},{
+  "id":3,"playcard":"Gatling"},{
+  "id":4,"playcard":"general store"},{
+  "id":5,"playcard":"Wells Fargo"},{
+  "id":6,"playcard":"general store"},{
+  "id":7,"playcard":"bang"},{
+  "id":8,"playcard":"duel"},{
+  "id":9,"playcard":"Gatling"},{
+  "id":10,"playcard":"general store"},{
+  "id":11,"playcard":"general store"},{
+  "id":12,"playcard":"duel"},{
+  "id":13,"playcard":"Wells Fargo"},{
+  "id":14,"playcard":"duel"},{
+  "id":15,"playcard":"Gatling"},{
+  "id":16,"playcard":"general store"},{
+  "id":17,"playcard":"Gatling"},{
+  "id":18,"playcard":"indians"},{
+  "id":19,"playcard":"missed"},{
+  "id":20,"playcard":"Gatling"},{
+  "id":21,"playcard":"duel"},{
+  "id":22,"playcard":"Wells Fargo"},
+  {"id":23,"playcard":"missed"},
+  {"id":24,"playcard":"general store"},
+  {"id":25,"playcard":"Wells Fargo"},
+  {"id":26,"playcard":"general store"},
+  {"id":27,"playcard":"beer"},
+  {"id":28,"playcard":"beer"},
+  {"id":29,"playcard":"duel"},{
+    "id":30,"playcard":"Wells Fargo"},{
+    "id":31,"playcard":"duel"},{
+    "id":32,"playcard":"Gatling"},{
+    "id":33,"playcard":"general store"},{
+    "id":34,"playcard":"Gatling"},{
+    "id":35,"playcard":"indians"},{
+    "id":36,"playcard":"missed"},{
+    "id":37,"playcard":"Gatling"},{
+    "id":38,"playcard":"Gatling"},{
+    "id":39,"playcard":"Wells Fargo"},
+    {"id":40,"playcard":"missed"},
+    {"id":41,"playcard":"general store"},
+    {"id":42,"playcard":"Wells Fargo"},
+    {"id":43,"playcard":"general store"},
+    {"id":44,"playcard":"beer"},
+    {"id":45,"playcard":"beer"},
+]
+  function getrandomplaycards(playerData,items){
+  playerData.forEach(player=>{
+    let maxlife=player.maxLife
+    for(var i=0;i<maxlife;i++){
+      let item = items[Math.floor(Math.random() * items.length)];
+      let charactername=item["playcard"]
+      let element={"id":i+1,"card":charactername}
+      player.hand.push(element)
+      let index = items.indexOf(item);
+      items.splice(index, 1);
+    }
+  }) 
+  }
+
 
 
 //Interval for getting time
 let myVar = setInterval(checkcurrenttime, 100);
 //Interval for updating phase
 let myVar1 = setInterval(updatephase, 100);
-//Interval for pausing time
+//Interval for Gatling pause
 
 
 
 //Run node as a web server for hosting static files (html)
 app.use(express.static(__dirname + "/public"))
 
-function checkcurrenttime() {
-  if (statuspause != "off") {
-    currenttime = new Date()
+// Katrina //if no killer (eg, killed by dynamite), playerKiller is null
+function eliminatePlayer(deadPlayer, killerPlayer) {
+  elimination.eliminationLogic(playerData, deadPlayer, killerPlayer, discardPile);
+  let data = {
+    name: `${deadPlayer.role} ${deadPlayer.name} `,
+    action: 'been killed'
   }
-  if (statuspause == "on") {
-    phasetime.setSeconds(phasetime.getSeconds() + pausetime);
-    statuspause = ""
+  io.emit("updateactionlog", data);
+  io.emit("handUpdate", JSON.stringify(playerData));
+  io.emit("playerEliminated", JSON.stringify(playerData));
+  let winner = elimination.endGameCheck(playerData);
+  if (winner != "None") {
+    let endData = {
+      playerData: playerData,
+      winningRole: winner
+    }
+    //can add those with matching roles (include deputy for sheriff) to winner history DB *****
+    io.emit("endGame", endData);
   }
-  // Find the distance between now and the count down date
-  let distance = phasetime - currenttime;
-  minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-  seconds = Math.floor((distance % (1000 * 60)) / 1000);
-  //When starting game, we will start randomly give character card to each user
-  if (statusgame == 'START GAME' && statuscharactercard == "") {
+}
+
+
+
+function checkcurrenttime(){
+  if(statuspause!="off"){
+    currenttime=new Date()
+  }
+    if(statuspause=="on"){
+      phasetime.setSeconds (phasetime.getSeconds() + pausetime);
+      pausetime=0
+      statuspause=""
+    }
+      // Find the distance between now and the count down date
+    let distance = phasetime - currenttime;  
+     minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+     seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      //When starting game, we will start randomly give character card to each user
+  if(statusgame=='START GAME'&&statuscharactercard==""){
     getrandomcharactercards.getrandomcharactercards(listcharactercards, playerData)
     io.emit("randomgivecharacter", JSON.stringify(playerData))
     getrandomrolecards.getrandomRole(listedrolecards, playerData)
+    getrandomplaycards(playerData,listplaycards)
     console.log(playerData)
     io.emit("updateRole", JSON.stringify(playerData))
     io.emit("bulletUpdate", JSON.stringify(playerData))
@@ -91,16 +189,20 @@ function checkcurrenttime() {
 app.get("/pause", function (req, res) {
   let status = req.query.stat
   console.log(status)
-  if (status == "off") {
+  if(status=="off"&&countgatling==0){
     res.send("OK")
     pausetime = 0
     getpauseandend.setintervaltime(pausetime)
     statuspause = "off"
   }
-  else if (status == "on") {
+  else if(status=="on"&&countgatling==0){
     res.send("OK")
-    pausetime = getpauseandend.returnpausetime()
-    statuspause = "on"
+    pausetime= getpauseandend.returnpausetime()
+    getpauseandend.resettime()
+    statuspause="on"
+  }
+  else{
+    res.send("OK")
   }
 })
 app.get("/endphase", function (req, res) {
@@ -221,36 +323,32 @@ function checkvalidation(username, socketid, res) {
 }
 
 //Function to push user information to list
-function pushdatatolist(username, socketid) {
-  count++
-  let newPlayer = {
-    name: username,
-    socket: socketid,
-    id: count,
-    role: "role",
-    character: "character",
-    position: count,
-    maxLife: "maxLife",
-    currentLife: "currentLife",
-    weapon: "colt45",
-    range: 1,
-    distanceMod: 0,
-    scope: true,
-    mustang: true,
-    barrel: false,
-    jail: false,
-    dynamite: false,
-    eliminated: false,
-    hand: [
-      { "id": 1, "card": 'bang', },
-      { "id": 2, "card": 'bang', },
-      { "id": 3, "card": 'missed', },
-      { "id": 4, "card": 'missed', },
-    ],
-  }
-  playerData.push(newPlayer);
-  io.emit("descriptionuser", JSON.stringify(playerData))
-  io.emit("statusgame", "Wating for more " + (5 - playerData.length) + " People")
+function pushdatatolist(username,socketid){
+count++
+let newPlayer =  {
+  name: username,
+  socket: socketid,
+  id: count,
+  role: "role",
+  character: "character",
+  position: count,
+  maxLife: "maxLife",
+  currentLife: "currentLife",
+  weapon: "colt45",
+  range: 1,
+  distanceMod: 0,
+  scope: false,
+  mustang: false,
+  barrel: false,
+  jail: false,
+  dynamite: false,
+  eliminated: false,
+  hand: [
+  ],
+}
+playerData.push(newPlayer);
+io.emit("descriptionuser",JSON.stringify(playerData))
+io.emit("statusgame","Wating for more " +(5-playerData.length)+ " People") 
 }
 
 //Function to count the number players
@@ -295,11 +393,13 @@ function userdisconnection(socketidout) {
     }
     return;
   });
-  // Update the amount of waiting players
-  if (statusgame != "start game") {
-    io.emit("statusgame", "Wating for more " + (5 - playerData.length) + " People")
-  }
+    // Update the amount of waiting players
+    if(statusgame!="start game"){
+    io.emit("statusgame","Wating for more " +(5-playerData.length)+ " People") 
+    }  
 }
+
+
 app.get('/submitname', function (req, res) {
   const username = req.query.user
   const socketid = req.query.socket
@@ -346,8 +446,618 @@ app.get('/actionLog', function (req, res) {
   res.send("action log hit")
 });
 
+app.get('/actionLog', function(req, res){
+    const name = req.query.name
+    const action = req.query.action
+    const data={
+      name:name,
+      action:action
+    }
+    io.emit("updateactionlog",data)
+    res.send("action log hit")
+    });
+//Function to get currentlife
+app.get("/getcurrentlife",function(req,res){
+  let socket=req.query.socket
+  let currentlife
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+       currentlife=player.currentLife
+    }
+  })
+  console.log(currentlife)
+  res.send({life:currentlife})
+})
 
-  /* ------------------------------------------ Bang/Miss----------------------------------------------------------------*/
+
+//Function get pausetime
+app.get("/getpausetime",function(req,res){
+  let time=getpauseandend.returntime()
+  console.log(time)
+  res.send({pause:time})
+})
+
+
+
+//Trigger General Store
+app.get("/generaltrigger",function(req,res){
+  let socket=req.query.socket
+  //Count live number
+  let livecount=0
+  playerData.forEach(player=>{
+    if(player.currentLife>0){
+      livecount++
+    }
+  })
+let countlistplayingcards=listplaycards.length
+if(countlistplayingcards>=livecount&&livecount>1){
+listcards= getgeneral.getplayingcards(listplaycards,livecount)
+getgeneral.removegeneralcard(playerData,socket)
+io.emit("handUpdate",JSON.stringify(playerData))
+io.to(socket).emit("GeneralModal",listcards)
+pausetime=0
+getpauseandend.setintervaltime(pausetime)
+statuspause="off"
+res.send("OK")
+}
+else{
+res.send("Do not have enough playing cards or All others players was died")
+}
+})
+//Continue General Store Process
+app.get("/continueprocessgeneral",function(req,res){
+  let position=req.query.position
+  let socket=req.query.socket
+  let namecard=req.query.namecard
+  let socketnext
+  if(listcards.length!=0){
+    listcards.splice(position,1)
+
+  getgeneral.pushcardtohand(playerData,socket,namecard)
+  io.emit("handUpdate",JSON.stringify(playerData))
+  if(listcards.length!=0){
+  socketnext= getgeneral.checknextuser(playerData,socket)
+ io.to(socketnext).emit("GeneralModal",listcards)
+  }
+  }
+if(listcards.length==0){
+  pausetime=getpauseandend.returnpausetime()
+  getpauseandend.resettime()
+  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+  statuspause="on"
+}
+
+
+  res.send("OK")
+})
+
+
+//Trigger wells fargo
+app.get("/wellsfargo",function(req,res){
+  let socket=req.query.socket
+  let statuspick=getwellfargo.randompickthreecards(listplaycards,playerData,socket)
+  if(statuspick=="Canpick"){
+  getwellfargo.removeWells(playerData,socket)
+  }
+  io.emit("handUpdate",JSON.stringify(playerData))
+  res.send("OK")
+})
+
+//Trigger Indians
+app.get("/indianstrigger",function(req,res){
+  countgatling=0
+  countresponsegatling=0
+  let socket=req.query.socket
+  let attackername
+  getindians.removeIndians(playerData,socket)
+  io.emit("handUpdate",JSON.stringify(playerData))
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+      attackername=player.name
+    }
+  })
+  playerData.forEach(player=>{
+    let statusbang="false"
+    let statusbeer="false"
+    let currentlife="true"
+    if(player.currentLife<1){
+      currentlife="false"
+    }
+if(currentlife=="true")
+{
+    player.hand.forEach(data=>{
+      if(data.card=="bang"){
+        statusbang="true"
+      }
+      if(data.card=="beer"){
+        statusbeer="true"
+      }
+    })
+  if(statusbang=="true"){
+    countgatling++
+    pausetime=0
+    getpauseandend.setintervaltime(pausetime)
+    statuspause="off"
+    io.to(player.socket).emit("IndiansOption",attackername)
+  }
+
+else{
+  if(statusbeer=="true"&&player.currentLife==1){
+    player.currentLife = player.currentLife
+    getbeer.removebeerGalting(playerData,player.socket)
+    io.emit("handUpdate",JSON.stringify(playerData))
+  }
+  else{
+  player.currentLife = player.currentLife -1
+  const data ={
+    name: req.query.attackname,
+    action: `shot ${player.name}`
+  }
+  if (player.currentLife < 1) {
+    eliminatePlayer(player, null);
+  }
+
+  io.emit("updateactionlog",data)
+  }
+
+}
+}
+  })
+    if(countgatling==0){
+    playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+    }
+res.send("OK")
+})
+
+
+//Response Indians
+app.get("/responseIndians",function(req,res){
+  let msg=req.query.msg
+  let socket=req.query.socket
+  
+if(msg=="No"){
+countresponsegatling++
+playerData.forEach(player=>{
+  if(player.socket==socket){
+    let statusbeer="false"
+    player.hand.forEach(data=>{
+      if(data.card=="beer"){
+        statusbeer="true"
+      }
+    })
+    if(statusbeer=="true"&&player.currentLife==1){
+      console.log("OK")
+      getbeer.removebeerGalting(playerData,socket)
+      io.emit("handUpdate",JSON.stringify(playerData))
+    }
+    else{
+      const data ={
+        name: req.query.attackname,
+        action: `shot ${player.name}`
+      }
+    player.currentLife = player.currentLife -1
+    if (player.currentLife < 1) {
+      eliminatePlayer(player, null);
+    }
+    io.emit("updateactionlog",data)
+    }
+  }
+})
+}
+else{
+countresponsegatling++
+getduel.removeBangCard(playerData,socket)
+io.emit("handUpdate",JSON.stringify(playerData))
+}
+console.log(countresponsegatling)
+console.log(countgatling)
+
+
+if(countresponsegatling==countgatling){
+  pausetime=getpauseandend.returnpausetime()
+  getpauseandend.resettime()
+  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+  statuspause="on"
+  countgatling=0
+  countresponsegatling=0
+}
+
+
+res.send("OK")
+})
+
+
+//Function to manage victim repsonse using beer card when gatling attack
+app.get("/responsebeercard",function(req,res){
+  let msg=req.query.msg
+  let socket=req.query.socket
+  countresponsegatling++
+  if(msg=="No"){
+    playerData.forEach(player=>{
+      if(player.socket==socket){
+        player.currentLife = player.currentLife -1
+        const data ={
+          name: req.query.attackname,
+          action: `shot ${player.name}`
+        }
+        io.emit("updateactionlog",data)
+        res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+      }
+    })
+
+  }
+else{
+res.send("Finish")
+playerData.forEach(player=>{
+  if(player.socket==socket){
+    getbeer.removebeerGalting(playerData,socket)
+io.emit("handUpdate",JSON.stringify(playerData))
+console.log(player.name +" use 1 beer card")
+  }
+})
+}
+
+playerData.forEach(player=>{
+  if(player.socket==socket){
+    if (player.currentLife < 1) {
+      eliminatePlayer(player, null);
+    }
+  }
+})
+
+
+//Check enough response from victim to restart time
+if(countresponsegatling==countgatling){
+  pausetime=getpauseandend.returnpausetime()
+  getpauseandend.resettime()
+  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+  statuspause="on"
+  countgatling=0
+  countresponsegatling=0
+}
+})
+
+//Function to manage victim repsonse using missed card when gatling attack
+app.get("/responsemissedcard",function(req,res){
+let msg=req.query.msg
+let attackerName=req.query.attackname
+let socket=req.query.socket
+//When victim do not want use missed card=> server will check beer card
+if(msg=="No"){
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+      let statusbeercard="false"
+      //Check beer card and victim life=1
+      player.hand.forEach(data=>{
+        if(data.card=="beer" && player.currentLife==1){
+          io.to(player.socket).emit("beerOptionVT", attackerName)
+          statusbeercard="true"
+          return
+        }
+      })
+      // If victim do not have beer card or their life>1=> They will be decreased their life
+      if(statusbeercard=="false"){
+           countresponsegatling++     
+          player.currentLife = player.currentLife -1
+          const data ={
+            name: req.query.attackname,
+            action: `shot ${player.name}`
+          }
+          io.emit("updateactionlog",data)
+          console.log(player.name+"is now on " +player.currentLife)   
+      }
+      res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+    }
+  })
+}
+//If they choose use missed card=> They are not decreased their life but one missed card will be lost.
+else{
+countresponsegatling++
+res.send("Finish")
+playerData.forEach(player=>{
+  if(player.socket==socket){
+getgatling.removemissedinGalting(playerData,socket)
+io.emit("handUpdate",JSON.stringify(playerData))
+console.log(player.name+" With Current Life "+player.currentLife)
+console.log(player.name +" use 1 missed card")
+  }
+})
+
+}
+playerData.forEach(player=>{
+  if(player.socket==socket){
+    if (player.currentLife < 1) {
+      eliminatePlayer(player, null);
+    }
+  }
+})
+
+//Function to check enough response from victim to restart time
+if(countresponsegatling==countgatling){
+  pausetime=getpauseandend.returnpausetime()
+  getpauseandend.resettime()
+  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+  statuspause="on"
+  countgatling=0
+  countresponsegatling=0
+}
+
+})
+
+
+
+
+//This function happens when Galting card active
+app.get("/gatlingattack",function(req,res){
+  countgatling=0
+  countresponsegatling=0
+  pausetimeforgatling="false"
+  let sock=req.query.socket
+  let attackerName=getgatling.getattackername(playerData,sock)
+  //After Playing Gatling card => Remove this card from hand
+  getgatling.removeGatling(playerData,sock)
+  io.emit("handUpdate",JSON.stringify(playerData))
+
+  playerData.forEach(player=>{
+     if(player.socket!=sock){
+      let checklivestatus="true"
+      if(player.currentLife<1){
+        checklivestatus="false"
+      }
+      let checkmissedcard="false"
+      if(checklivestatus=="true"){
+ 
+      //If victim has missed card=> They can choose use it or cancel
+      player.hand.forEach(data=>{
+        if(data.card=="missed"&&checkmissedcard=="false"){
+          countgatling++
+          //Emit to all victims for choosing use missed card or not
+          io.to(player.socket).emit("missedOptionVT", attackerName)
+          checkmissedcard="true"
+          pausetimeforgatling="true"
+          res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+        }
+      })
+
+      //If victim do not have missed card=> server will check victim have beer cards or not?
+      if(checkmissedcard=="false"){
+              //Check beer card
+        let checkbeercard="false"
+        //If victim has beer cards and their life==1=> Server will ask them use beer card or not        
+        player.hand.forEach(data=>{
+        if(data.card=="beer"&&player.currentLife==1&&checkbeercard=="false"){
+          countgatling++
+          pausetimeforgatling="true"
+          checkbeercard="true"
+          io.to(player.socket).emit("beerOptionVT", attackerName)
+          return
+        }
+      })
+              //If victim do not have beer card=> They will be decreased their life
+              if(checkbeercard=="false"){
+                player.currentLife = player.currentLife -1
+                const data ={
+                  name: attackerName,
+                  action: `shot ${player.name}`
+                }
+                io.emit("updateactionlog",data)
+                console.log(player.name+" is now on " +player.currentLife)   
+              }
+        res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+      }
+    }
+    res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+
+      if (player.currentLife < 1) {
+        eliminatePlayer(player, null);
+      }
+    
+  }
+  })
+  // If gatling is active and waiting response from victim, we will temporarily stop the time for waiting victims response
+if(pausetimeforgatling=="true"){
+  pausetime=0
+  getpauseandend.setintervaltime(pausetime)
+  statuspause="off"
+}
+})
+
+//Function for trigger beer action in phase 2 of user
+app.get("/beertrigger",function(req,res){
+  let sock=req.query.socket
+  let statusheal=getbeer.BeerHealBlood(sock,playerData,res)
+  if(statusheal!="UnHealed"){
+  getbeer.removebeerGalting(playerData,sock)
+  }
+  io.emit("handUpdate",JSON.stringify(playerData))
+  
+})
+
+
+//Function in replying Duel action
+app.get("/responseduel",function(req,res){
+  let msg=req.query.msg
+  let attackerName=req.query.attackname
+  let socketattacker
+  let playerduel=""
+
+
+  //Find socketid of attacker
+  playerData.forEach(player=>{
+      if(player.name==attackerName){
+        socketattacker=player.socket
+      }
+  })
+
+  let socket=req.query.socket
+if(msg=="No"){
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+      let beercardstatus="false"
+      playerduel=player.name
+      const data ={
+        name: req.query.attackname,
+        action: `shot ${player.name}`
+      }
+      //Check beer card =>If having beer card and current life==1 => Automatically use beer card
+      player.hand.forEach(data=>{
+        if(data.card=="beer"){
+          beercardstatus="true"
+        }
+      })
+      if(beercardstatus=="true"&&player.currentLife==1){
+        player.currentLife=player.currentLife
+        getbeer.removebeerGalting(playerData,socket)
+        io.emit("handUpdate",JSON.stringify(playerData))
+      }
+      else{
+        player.currentLife = player.currentLife -1
+      }
+      io.emit("updateactionlog",data)
+      pausetime=getpauseandend.returnpausetime()
+      getpauseandend.resettime()
+      console.log(pausetime)
+      statuspause="on"
+      console.log(player.name+"is now on " +player.currentLife)
+    }
+  })
+}
+else{
+  let checkbangcard="false"
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+      playerduel=player.name
+      player.hand.forEach(data=>{
+        if(data.card=="bang"){
+          checkbangcard="true"
+        }
+      })
+    }
+  })
+ 
+
+//When user do not have bang card
+if(checkbangcard=="false"){
+  let beercardstatus="false"
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+      const data ={
+        name: req.query.attackname,
+        action: `shot ${player.name}`
+      }
+
+      //Check beer card =>If having beer card and current life==1 => Automatically use beer card
+      player.hand.forEach(data=>{
+        if(data.card=="beer"){
+          beercardstatus="true"
+        }
+      })
+      if(beercardstatus=="true"&&player.currentLife==1){
+        player.currentLife=player.currentLife
+        getbeer.removebeerGalting(playerData,socket)
+        io.emit("handUpdate",JSON.stringify(playerData))
+      }
+      else{
+        player.currentLife = player.currentLife -1
+      }
+
+
+
+      io.emit("updateactionlog",data)
+      pausetime=getpauseandend.returnpausetime()
+      getpauseandend.resettime()
+      console.log(pausetime)
+      statuspause="on"
+      console.log(player.name+"is now on " +player.currentLife)
+    }
+  })
+}
+//If user have bang card=> User will use bang card for duello
+else if(checkbangcard=="true"){
+getduel.removeBangCard(playerData,socket)
+
+io.to(socketattacker).emit("DuelOption", playerduel)
+io.emit("handUpdate",JSON.stringify(playerData))
+}
+}
+playerData.forEach(player=>{
+  if(player.socket==socket){
+    if (player.currentLife < 1) {
+      eliminatePlayer(player, null);
+    }
+  }
+})
+res.send ("OK")
+})
+
+
+
+
+//Function trigger DuelService
+app.get("/dueltrigger",function(req,res){
+  let idvictim=req.query.targetId
+   let nameattacker=req.query.name
+   let checklivestatus="true"
+   playerData.forEach(player => {
+    if(player.id==idvictim&&player.currentLife<1){
+      checklivestatus="false"
+    }
+   })
+if(checklivestatus=="true"){
+
+   getduel.removeDuelCard(playerData,nameattacker)
+   io.emit("handUpdate",JSON.stringify(playerData))
+// Check user have bang card or not
+   playerData.forEach(player => {
+     if(player.id==idvictim){
+       let checkstatusbangcard="false"
+      player.hand.forEach(data=>{
+        if(data.card=="bang"){
+          checkstatusbangcard="true"
+        }
+      })  
+      //If having bang card=> Starting Duello
+  if(checkstatusbangcard=="true"){
+    io.to(player.socket).emit("DuelOption", nameattacker)
+    pausetime=0
+    getpauseandend.setintervaltime(pausetime)
+    statuspause="off"
+  }
+//If do not have bang card=> Continue check beer card=> If do not have beer card, user will be automatically decresed their life
+   else if(checkstatusbangcard=="false"){
+     let beercardstatus="false"
+      const data ={
+        name: req.query.attackname,
+        action: `shot ${player.name}`
+      }
+            //Check beer card
+        player.hand.forEach(data=>{
+              if(data.card=="beer"){
+                beercardstatus="true"
+              }
+            })
+            if(beercardstatus=="true"&&player.currentLife==1){
+              player.currentLife=player.currentLife
+              getbeer.removebeerGalting(playerData,player.socket)
+              io.emit("handUpdate",JSON.stringify(playerData))
+            }
+            else{
+              player.currentLife = player.currentLife -1
+              if (player.currentLife < 1) {
+                eliminatePlayer(player, null);
+              }
+            }
+
+      io.emit("updateactionlog",data)
+      console.log(player.name+"is now on " +player.currentLife)
+    }
+     }
+   })
+  }
+  res.send("Finished Duel")   
+})
+
+/* ---------------------------------------------------Bang/Miss End ------------------------------------------------------*/
 app.get('/shootBang', function(req,res){
   const targetId = req.query.targetId
   const attackerName = req.query.name

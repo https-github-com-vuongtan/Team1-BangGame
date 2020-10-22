@@ -40,5 +40,21 @@ window.onload = function(e){
   displayCardsInPlay()
   displayEliminations()
   //missedOption()
+  //Vuong Tan
+  GeneralOption()
+  general()
+  IndianModal()
+  Indians()
+  Duel()
+  Duelopt()
+  GatlingAttack()
+  WellFar()
+  BeerHeal()
+  beerOptionVT()
+  missOptionVT()
+  //Katrina
+  endGame()
+  displayCardsInPlay()
+  displayEliminations()
   // shotBang()
 }

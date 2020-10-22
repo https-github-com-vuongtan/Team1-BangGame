@@ -1,15 +1,18 @@
+let typecard=""
+//Function update typecard
+function updatetypecard(type){
+typecard=type
+}
+
 //Update Weapon Card
 function updateBang(){
     socket.on("bangUpdate",data=>{
         console.log("bang modal hit")
       const mydata= JSON.parse(data)
      mydata.forEach((data) => {
-      if(data.socket==socketid){
-        
+      if(data.socket==socketid){      
          $("#a5bangModal .card-image").append(`<img data-target="${data.character}Modal" href="#${data.character}Modal"src="assets/cards/${data.character}.png" alt="${data.character}" class="responsive ${data.character}">`)
-         $("#a5bangModal .card-content").append(`${data.name}`)
-         
-        
+         $("#a5bangModal .card-content").append(`${data.name}`)            
          displayBang(mydata,data)
       }
       })
@@ -141,7 +144,18 @@ function updateBang(){
       targetId: $(this).data("target"),
       name: data.name
     }
+    if(typecard=="bang"){
     $.get('/shootBang', data)
+    }
+    else if(typecard=="duel")
+      {
+        console.log("Check again")
+        $.get('/dueltrigger', data,response=>{
+          console.log(response)
+        })
+        $(`#bangModal`).modal('close') ;
+      }
+    
   });
 
 
