@@ -405,34 +405,48 @@ app.get('/discardHandCard', function (req, res) {
   let discardedCard = [];
   playerData.forEach(player => {
     if (player.name == name) {
-      discardedCard = player.hand.splice(index,1);
+      discardedCard = player.hand.splice(index, 1);
       discardPile.push({ "card": discardedCard[0].card });
-
     }
-
   })
   io.emit("handUpdate", JSON.stringify(playerData))
   res.send(console.log(`${discardedCard[0].card} added to the discard pile`));
 })
 
+//checks hand size against current lives, ends turn if not over the limit.
+app.get('/checkHandSizeEndTurn', function (req, res) {
+  let name = req.query.name;
+  playerData.forEach(player => {
+    if (player.name == name) {
+      if (player.hand.length <= player.currentLife) {
+        //do the same as endphase method
+        phasetime = getpauseandend.endphase(phasetime, currenttime);
+        res.send(console.log(`${player.name} turn ended`));
+      } else {
+        res.send(console.log(`${player.name} must discard another card`));
+      }
+    }
+  })
+})
+
+
 //if no killer (eg, killed by dynamite), playerKiller is null
 function eliminatePlayer(deadPlayer, killerPlayer) {
-  elimination.eliminationLogic(playerData, deadPlayer, killerPlayer, discardPile);
-  let data = {
-    name: `${deadPlayer.role} ${deadPlayer.name} `,
-    action: 'been killed'
+  let outcome = elimination.eliminationLogic(playerData, deadPlayer, killerPlayer, discardPile);
+  for (i = 0; i < outcome.actionLogArray.length; i++) {
+    let actionData = outcome.actionLogArray[i];
+    io.emit("updateactionlog", actionData);
   }
-  io.emit("updateactionlog", data);
   io.emit("handUpdate", JSON.stringify(playerData));
   io.emit("playerEliminated", JSON.stringify(playerData));
-  let winner = elimination.endGameCheck(playerData);
-  if (winner != "None") {
+
+  if (outcome.winnerRole != "None") {
     let endData = {
-      playerData: playerData,
-      winningRole: winner
+      winningRole: outcome.winnerRole,
+      winnerArray: outcome.winnerArray
     }
     //can add those with matching roles (include deputy for sheriff) to winner history DB *****
-    io.emit("endGame", endData);
+    io.emit("endGame", JSON.stringify(endData));
   }
 }
 

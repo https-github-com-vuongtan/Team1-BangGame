@@ -143,13 +143,12 @@
                         <img id="discardPile" src="assets/discardPile.png" alt="scope" class="responsive">
 
                     </div>
-                    <div class="deckInstructions">
+                    <div id="deckInstructions">
                         <div id="instructions"></div>
                         <div id="turnDraw" class="hidden">Draw from deck</div>
                         <div id="jailDraw" class="hidden">Draw for Jail</div>
                         <div id="barrelDraw" class="hidden">Draw for Barrel</div>
                         <div id="endTurn" class="hidden">End Turn</div>
-
                     </div>
 
                 </div>
@@ -206,7 +205,7 @@
                 </div>
 
                 <div id="a5" class="midFore">
-                    <div>
+                    <div id="phaseDiv">
                         <div class="messagePanelforphase">
                             <div id="nameturn">
                             </div>
@@ -425,9 +424,7 @@
         <a href="#!" class="modal-close waves-effect waves-green btn-flat">Done</a>
     </div>
 </div>
-<div id="testModal" class="modal">
-    I am a test. You've been eliminated.
-</div>
+
 
 <!--Discard Modal Structure -->
 <div id="discardModal" class="modal bottom-sheet">
@@ -487,5 +484,11 @@
             <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
         </div>
     </div>
+</div>
+
+<div id="endGameModal" class="modal">
+    <div id="gameOverMessage"></div>
+    <div id="winPic"></div>
+    <div id="winMessage"></div>
 </div>
 </html>

@@ -29,7 +29,7 @@ function displayEliminations() {
         updateEliminatedDisplay(playerData, player);
 
         if (player.eliminated == true) {
-          console.log("eliminated" + player.name)
+          console.log("eliminated " + player.name)
 
           //  $('#testModal').modal('open')
 
@@ -40,22 +40,47 @@ function displayEliminations() {
   })
 }
 
-
 function endGame() {
   socket.on("endGame", data => {
+    const outcome = JSON.parse(data)
+    let winners = outcome.winnerArray;
     hideTurnButtonPanel();
-    switch (data.winningRole) {
+    let msgString = "";
+    let imgString = "";
+    $("#phaseDiv").addClass("hidden");
+    $("#deckInstructions").addClass("hidden");
+    if ((role == outcome.winningRole) || ((outcome.winningRole == "Sheriff") && (role == ("Deputy")))) {
+      $("#gameOverMessage").html("Congratulations!");
+    }
+    else {
+      $("#gameOverMessage").html("Game Over");
+    }
+
+    if (winners.length == 1) {
+      msgString = `${winners[0].role} ${winners[0].name} wins`;
+    } else if (winners.length > 1) {
+      msgString = `${winners[0].role} ${winners[0].name}`;
+      for (i = 1; i < winners.length; i++) {
+        msgString += ` and ${winners[i].role} ${winners[i].name}`;
+      }
+      msgString += ' win';
+    } else {
+      alert("Winner not determined");
+    }
+    switch (outcome.winningRole) {
       case ("Sheriff"):
-        console.log("hit Sheriff endgame");
+        imgString = '<img src="assets/invertedSheriff.png" class="responsive"><img src="assets/invertedDeputy.png" class="responsive">';
         break;
       case ("Outlaw"):
-        console.log("hit Outlaw endgame");
+        imgString = '<img src="assets/invertedOutlaw.png" class="responsive">';
         break;
       case ("Renegade"):
-        console.log("hit renegade endgame");
+        imgString = '<img src="assets/invertedRenegade.png" class="responsive">';
         break;
-
     }
+    $("#winPic").html(imgString);
+    $("#winMessage").html(msgString);
+    $('#endGameModal').modal('open');
   })
 }
 
@@ -161,5 +186,54 @@ function updateEliminatedDisplay(mydata, data) {
   });
 }
 
+//draw/play/endturn services
+$(document).ready(function () {
+  $("#turnDraw").click(function () {
+    if (phaseuser == nameplayer) {
+      $.get("/endphase", function () {
+        //attach card draw function for two cards *****
+        console.log("Cards drawn")
+      })
+    }
+  })
+})
+
+$(document).ready(function () {
+  $("#endTurn").click(function () {
+    if (phaseuser == nameplayer) {
+      $.get("/endphase", function () { setTimeout(() => {
+        console.log("2.Finished playing cards")
+        let data = {
+          name: nameplayer
+        }
+         //use API to check if hand size at or below limit (ends turn immediately if so)
+        $.get('/checkHandSizeEndTurn', data);
+        console.log(`3.log after checkhandsize`);},500);
+      });
+      console.log(`1. log after endphase function`);
+
+    }
+  })
+})
+
+/*
+let data = {
+  name: nameplayer
+}
+ //use API to check if hand size at or below limit (ends turn immediately if so)
+$.get('/checkHandSizeEndTurn', data);*/
+
+
+
+$(document).ready(function () {
+  $("#cardDeck").click(function () {
+    if ((phaseuser == nameplayer) && (parseInt(phasenumber) == 1)) {
+      $.get("/endphase", function () {
+        //attach card draw function for two cards *****
+        console.log("Cards drawn")
+      })
+    }
+  })
+})
 
 

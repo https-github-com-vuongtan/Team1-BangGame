@@ -69,7 +69,7 @@ margin-left: 15px;
   margin: 8px;
   display: grid;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
-
+  border-radius: 10px;
 }
 .welcomeJoinGame
 {
@@ -152,10 +152,12 @@ width:20px;
   max-width: 100%;
 }
 
-.deckInstructions {
-  text-align: center;
-  color: yellow;
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
+#deckInstructions {
+text-align: center;
+color: yellow;
+grid-row-start: 3;
+grid-row-end: 4;
+font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
 #gameboard
@@ -547,14 +549,6 @@ grid-template-columns: 1fr 1fr;
 max-height: 20vh;
 }
 
-.deckInstructions
-{
-grid-row-start: 3;
-grid-row-end: 4;
-font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-
-}
-
 .privateHand img
 {
 display: block;
@@ -633,42 +627,48 @@ grid-row-end:4;
 padding:3px;
 direction:rtl;
 }
-/* colours used for observing position areas on the layout
-.a5
+
+#endGameModal
 {
-background-color: rgb(108, 75, 108);
+  padding: 10px;
+  text-align: center;
+  vertical-align: center;
+  min-width: 60%;
+  min-height: 70%;
+  /*background-color: rgb(255, 250, 238);*/
+  background-color: rgb(255, 237, 212);
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: 2em;
+  border-radius: 15px;
 }
-#mainRoleCard
+
+#gameOverMessage
 {
-grid-column-start:5;
-grid-column-end:6;
-grid-row-start: 2;
-grid-row-end:4;
-padding:3px;
-direction:rtl;
+  margin: 5px;
+  font-weight: bold;
+  size: 1.1em;
 }
-/* colours used for observing position areas on the layout 
-#a5
+
+#endGameModal img 
 {
-background-color: rgb(108, 75, 108);
+  max-width: 50%;
+  border-radius: 15px;
+  padding: 5px;
 }
-#b5
+
+#winMessage
 {
-background-color: rgb(196, 128, 174);
+  color: darkred;
+  font-size: 1.1em;
+  margin: 5px;
 }
-#c5
-{
-background-color: rgb(141, 180, 231);
-}
-#d5
-{
-background-color: rgb(150, 148, 118);
-}
-#e5
-{
-background-color: rgb(252, 222, 191);
-}
-*/
+
+
+
+
 .hidden
 {
   display: none !important;

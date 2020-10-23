@@ -41,10 +41,22 @@ function discardPlayerCards(player) {
 
 // Called from eliminatePlayer. 
 //if no killer (eg, killed by dynamite), playerKiller is null
-const eliminationLogic = (playerData, player, playerKiller, discardPile) => {
+function eliminationLogic(playerData, player, playerKiller, discardPile) {
   let discardedCards = discardPlayerCards(player);
+  let actionLogData = []
+  actionLogData.push({ name: `${player.role} ${player.name} `, action: 'been killed' });
   //if killed by vulture Sam, transfer cards to vulture Sam's hand
   if (playerKiller != null) {
+    //if victim was outlaw, killer gets reward cards
+    if (player.role == "Outlaw") {
+      //draw three cards (needs draw function *****) and add to playerKiller's hand
+      actionLogData.push({ name: playerKiller.name, action: 'won Outlaw Reward' });
+    } else if (player.role == "Deputy") {
+      //if deputy killed by sheriff, sheriff discards all cards in hand and in play.
+      let sheriffCards = discardPlayerCards(playerKiller)
+      discardPile.push({ "card": sheriffCards[i].card });
+      actionLogData.push({ name: playerKiller.name, action: 'killed a deputy' });
+    }
     if (playerKiller.character == "Vulture Sam") {
       //add all victim cards to Vulture Sam's hand
       let index = playerKiller.hand.length + 1;
@@ -52,17 +64,19 @@ const eliminationLogic = (playerData, player, playerKiller, discardPile) => {
         playerKiller.hand.push({ "id": index, "card": discardedCards[i].card });
         index++;
       }
-
+      actionLogArray.push({ name: "Vulture Sam", action: 'gained cards' });
     } else {
+      //dead player's cards go to discard pile instead
       for (var i = 0; i < discardedCards.length; i++) {
-        discardPile.push({"card": discardedCards[i].card });
+        discardPile.push({ "card": discardedCards[i].card });
+
       }
     }
     console.log(playerKiller.name + " killed them");
 
   } else {
     for (var i = 0; i < discardedCards.length; i++) {
-      discardPile.push({"card": discardedCards[i].card });
+      discardPile.push({ "card": discardedCards[i].card });
     }
   }
   player.eliminated = true;
@@ -70,8 +84,15 @@ const eliminationLogic = (playerData, player, playerKiller, discardPile) => {
   player.maxLife = 0;
   player.currentLife = 0;
   console.log(player.name + " eliminated.");
-
+  let outcome = endGameCheck(playerData)
+  let results = {
+    winnerRole: outcome.winnerRole,
+    winnerArray: outcome.winners,
+    actionLogArray: actionLogData
+  }
+  return results;
 }
+
 
 //Checks for endgame conditions and returns winning role (or 'None')
 function endGameCheck(playerData) {
@@ -79,6 +100,8 @@ function endGameCheck(playerData) {
   let outlawAlive = false;
   let renegadeAlive = false;
   let deputyAlive = false;
+  let winRole = 'None';
+  let winArray =[];
 
   playerData.forEach((player) => {
     if (!player.eliminated) {
@@ -103,19 +126,28 @@ function endGameCheck(playerData) {
   if (!sheriffAlive) {
     if (!outlawAlive && !deputyAlive && renegadeAlive) {
       console.log("Renegade wins");
-      return 'Renegade';
+      winRole = 'Renegade';
     } else {
       console.log("Outlaws win");
-      return 'Outlaw';
+      winRole = 'Outlaw';
     }
   } else if (!outlawAlive && !renegadeAlive) {
     console.log("Sheriff and deputy win");
-    return 'Sheriff';
+    winRole = 'Sheriff';
   } else {
     console.log("Not at endgame: keep playing");
-    return 'None';
   }
-
+  
+  playerData.forEach((player) => {
+    if ((player.role == winRole) || ((winRole == "Sheriff") && (player.role == ("Deputy")))){
+      winArray.push({name:player.name, role:player.role});
+    }
+  })
+    let winnerData = {
+      winnerRole: winRole,
+      winners: winArray
+    }
+    return winnerData; 
 }
 
 module.exports = {
