@@ -9,8 +9,10 @@ function getinforphase() {
       switch (parseInt(phasenumber)) {
         case (1):
           $("#turnDraw").removeClass("hidden");
+          $('#cardDeck').css('background-color', 'yellow');
           break;
           case (2):
+            $('#cardDeck').css('background-color', '');
             $("#instructions").html("Click cards to play or")
             $("#turnDraw").addClass("hidden");
             $("#endTurn").removeClass("hidden");

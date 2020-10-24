@@ -645,6 +645,12 @@ direction:rtl;
   border-radius: 15px;
 }
 
+#cardDeck
+{
+  border-radius: 5px;
+  padding-bottom:1px;
+}
+
 #gameOverMessage
 {
   margin: 5px;
