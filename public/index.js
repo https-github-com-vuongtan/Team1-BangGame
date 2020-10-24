@@ -9,6 +9,7 @@ let character;
 let phasenumber
 let phaseuser
 let socketphase;
+let eliminated = false;
 
 let socket=io.connect('http://localhost:3000');
 

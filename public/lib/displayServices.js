@@ -29,6 +29,7 @@ function displayEliminations() {
         updateEliminatedDisplay(playerData, player);
 
         if (player.eliminated == true) {
+          eliminated = true;
           console.log("eliminated " + player.name)
 
           //  $('#testModal').modal('open')
@@ -175,7 +176,7 @@ function updateEliminatedDisplay(mydata, data) {
   mydata.forEach((player) => {
     let position = getPlayerPosition(player, data);
     if (position != "unavailable") {
-      //if player is eliminated, cross out character card (but don't need to if main player(A5))
+      //if player is eliminated, cross out character card
       if (player.eliminated) {
         $(`#${position} .characterCard`).append('<img  src="assets/killed.png" class="killedCard responsive">');
       }
@@ -201,27 +202,13 @@ $(document).ready(function () {
 $(document).ready(function () {
   $("#endTurn").click(function () {
     if (phaseuser == nameplayer) {
-      $.get("/endphase", function () { setTimeout(() => {
-        console.log("2.Finished playing cards")
-        let data = {
-          name: nameplayer
-        }
-         //use API to check if hand size at or below limit (ends turn immediately if so)
-        $.get('/checkHandSizeEndTurn', data);
-        console.log(`3.log after checkhandsize`);},500);
+      $.get("/endphase", function () {
+        console.log("Finished playing cards")
       });
-      console.log(`1. log after endphase function`);
 
     }
   })
 })
-
-/*
-let data = {
-  name: nameplayer
-}
- //use API to check if hand size at or below limit (ends turn immediately if so)
-$.get('/checkHandSizeEndTurn', data);*/
 
 
 

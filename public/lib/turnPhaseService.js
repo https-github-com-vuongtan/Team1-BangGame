@@ -5,11 +5,13 @@ function getinforphase() {
     phaseuser = data.name
     socketphase = data.socket
     phasenumber = data.phase
-    if (phaseuser == nameplayer) {
+    if (phaseuser == nameplayer && !eliminated) {
       switch (parseInt(phasenumber)) {
         case (1):
-          $("#turnDraw").removeClass("hidden");
           $('#cardDeck').css('background-color', 'yellow');
+          $("#endTurn").addClass("hidden");
+          $("#turnDraw").removeClass("hidden");
+          $("#instructions").html("")
           break;
           case (2):
             $('#cardDeck').css('background-color', '');
@@ -18,13 +20,19 @@ function getinforphase() {
             $("#endTurn").removeClass("hidden");
             break;
             case(3):
+            $('#cardDeck').css('background-color', '');
             $("#endTurn").addClass("hidden");
             $("#instructions").html("Click cards to discard")
+            $("#turnDraw").addClass("hidden");
             break;
-      }
+      }  
+      
     }
     else {
-      $("#instructions").html("")
+      $("#instructions").html("");
+      $('#cardDeck').css('background-color', '');
+      $("#endTurn").addClass("hidden");
+      $("#turnDraw").addClass("hidden");
     }
 
   })

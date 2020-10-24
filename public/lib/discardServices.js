@@ -17,7 +17,7 @@ function endOfTurnDiscard(i) {
    let data = {
       name: nameplayer
     }
-   //if hand now as low as life points, turn should end
-    $.get('/checkHandSizeEndTurn', data);
+   //if hand now as low as life points, turn should end 
+   $.get('/checkHandSizeEndTurn', data);
   }
 }

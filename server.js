@@ -153,29 +153,48 @@ function updatephase() {
     return;
 
   }
-  if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 2) {
-    statusphase = { id: idround, phase: 3, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
-    phasetime = new Date(currenttime);
-    phasetime.setSeconds(phasetime.getSeconds() + 20);
-    data = { name: statusphase.name, action: ` Started Phase ${statusphase.phase} ` }
-    io.emit("updateactionlog", data)
-    io.emit("infophase", statusphase)
-    return;
 
-  }
-  if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 3) {
-    if (idround == 5) {
-      idround = 1
+  if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 2) {
+    //if hand under limit go straight to next turn (skip phase 3)
+    if (playerData[idround - 1].hand.length <= playerData[idround - 1].currentLife) {
+      if (idround == 5) {
+        idround = 1
+      }
+      else {
+        idround++
+      }
+
+      statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket, discardNeeded: false }
+      phasetime = getpauseandend.endphase(phasetime, currenttime)
+      phasetime.setSeconds(phasetime.getSeconds() + 15);
+      io.emit("infophase", statusphase)
+      return;
+    } else {
+      //otherwise go to phase 3 as normal
+      statusphase = { id: idround, phase: 3, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
+      phasetime = new Date(currenttime);
+      phasetime.setSeconds(phasetime.getSeconds() + 20);
+      data = { name: statusphase.name, action: ` Started Phase ${statusphase.phase} ` }
+      io.emit("updateactionlog", data)
+      io.emit("infophase", statusphase)
+      return;
     }
-    else {
-      idround++
-    }
-    statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
-    phasetime = new Date(currenttime);
-    phasetime.setSeconds(phasetime.getSeconds() + 15);
-    io.emit("infophase", statusphase)
-    return;
   }
+
+    if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 3) {
+      if (idround == 5) {
+        idround = 1
+      }
+      else {
+        idround++
+      }
+      statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
+      phasetime = new Date(currenttime);
+      phasetime.setSeconds(phasetime.getSeconds() + 15);
+      io.emit("infophase", statusphase)
+      return;
+    }
+
 }
 
 //Function to update user id (position) after one user go out the game room
