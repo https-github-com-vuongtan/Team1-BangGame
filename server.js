@@ -50,58 +50,37 @@ let Sheriffrole="false"
 let statusphase=""
 let statuspause=""
 let pausetime=0
-let listcharactercards= require("./json lists/CharacterCardsList.json")
-let listedrolecards = require("./json lists/roleCardList.json")
+let listcharactercards= []
+let listedrolecards = []
 let newPlayer = require("./json lists/playerDataList.json");
 const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
 const { Console } = require('console');
 let myvar2;
-let listplaycards=[{ "id":1,"playcard":"general store"},{
-  "id":2,"playcard":"duel"},{
-  "id":3,"playcard":"Gatling"},{
-  "id":4,"playcard":"general store"},{
-  "id":5,"playcard":"Wells Fargo"},{
-  "id":6,"playcard":"general store"},{
-  "id":7,"playcard":"bang"},{
-  "id":8,"playcard":"duel"},{
-  "id":9,"playcard":"Gatling"},{
-  "id":10,"playcard":"general store"},{
-  "id":11,"playcard":"general store"},{
-  "id":12,"playcard":"duel"},{
-  "id":13,"playcard":"Wells Fargo"},{
-  "id":14,"playcard":"duel"},{
-  "id":15,"playcard":"Gatling"},{
-  "id":16,"playcard":"general store"},{
-  "id":17,"playcard":"Gatling"},{
-  "id":18,"playcard":"indians"},{
-  "id":19,"playcard":"missed"},{
-  "id":20,"playcard":"Gatling"},{
-  "id":21,"playcard":"duel"},{
-  "id":22,"playcard":"Wells Fargo"},
-  {"id":23,"playcard":"missed"},
-  {"id":24,"playcard":"general store"},
-  {"id":25,"playcard":"Wells Fargo"},
-  {"id":26,"playcard":"general store"},
-  {"id":27,"playcard":"beer"},
-  {"id":28,"playcard":"beer"},
-  {"id":29,"playcard":"duel"},{
-    "id":30,"playcard":"Wells Fargo"},{
-    "id":31,"playcard":"duel"},{
-    "id":32,"playcard":"Gatling"},{
-    "id":33,"playcard":"general store"},{
-    "id":34,"playcard":"Gatling"},{
-    "id":35,"playcard":"indians"},{
-    "id":36,"playcard":"missed"},{
-    "id":37,"playcard":"Gatling"},{
-    "id":38,"playcard":"Gatling"},{
-    "id":39,"playcard":"Wells Fargo"},
-    {"id":40,"playcard":"missed"},
-    {"id":41,"playcard":"general store"},
-    {"id":42,"playcard":"Wells Fargo"},
-    {"id":43,"playcard":"general store"},
-    {"id":44,"playcard":"beer"},
-    {"id":45,"playcard":"beer"},
-]
+let listplaycards=[]
+
+
+//Add db infor tolist playcards
+  function pushdbtolistplaycards(dbdata){
+    dbdata.forEach(function(data,index,object){
+      let element={"id":index,"playcard":data["PlayingCardName"]}
+      listplaycards.push(element)
+    })
+  }
+//Add db infor tolist role cards
+function pushdbtolistrole(dbdata){
+  dbdata.forEach(function(data,index,object){
+    let element={"id":index,"RoleCardName":data["RoleCardName"]}
+    listedrolecards.push(element)
+  })
+}
+//Add db infor tolist character cards
+function pushtolistcharacter(dbdata){
+  dbdata.forEach(function(data,index,object){
+    let element={"id":index,"charactername":data["charactername"],"maxLife":data["maxLife"]}
+    listcharactercards.push(element)
+  })
+}
+
   function getrandomplaycards(playerData,items){
   playerData.forEach(player=>{
     let maxlife=player.maxLife
@@ -1253,13 +1232,7 @@ io.on('connection', (socket) => {
            col = db.collection("CharacterCard");
            myobj = { CharacterCardID: 1, CharacterCardName :"ACE",CharacterCardDescription :"hbchj",CharacterCardImages:"101124"}
            await col.insertOne(myobj);
-  
-  
            console.log("Inserted");
-  
-  
-  
-  
       } catch (err) {
           console.log(err.stack);
       }
@@ -1269,6 +1242,29 @@ io.on('connection', (socket) => {
   }
   run().catch(console.dir);
   }
+  function readcharactercardfromdb(){
+    MongoClient.connect("mongodb+srv://eGTB4yl0HFJQ6lzD:eGTB4yl0HFJQ6lzD@project.wdfid.mongodb.net/Project?retryWrites=true&w=majority", function(err, db) {
+      if (err) throw err;
+      var dbo = db.db("project");
+      //Find all documents in the customers collection:
+      dbo.collection("PlayingCardDB").find({}).toArray(function(err, result) {
+        if (err) throw err;
+        pushdbtolistplaycards(result)
+      });
+      dbo.collection("CharacterCardDB").find({}).toArray(function(err, result) {
+        if (err) throw err;
+        pushtolistcharacter(result)
+      });
+      dbo.collection("RoleCardDB").find({}).toArray(function(err, result) {
+        if (err) throw err;
+        pushdbtolistrole(result)
+      });
+      db.close()
+
+
+    });
+  }
+
   function connection(){
     // Replace the following with your Atlas connection string                                                                                                                                        
   const url = "mongodb+srv://eGTB4yl0HFJQ6lzD:eGTB4yl0HFJQ6lzD@project.wdfid.mongodb.net/Project?retryWrites=true&w=majority";
@@ -1278,9 +1274,6 @@ io.on('connection', (socket) => {
       try {
           await client.connect();
           console.log("Connected correctly to server");
-           
-  
-  
       } catch (err) {
           console.log(err.stack);
       }
@@ -1292,7 +1285,7 @@ io.on('connection', (socket) => {
   run().catch(console.dir);
   }
 http.listen(3000, () => {
-  connection();
-  insertion(); //insertion now
-  console.log('listening on *:3000');
+  
+  readcharactercardfromdb()
+    console.log('listening on *:3000');
 });
