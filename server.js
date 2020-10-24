@@ -501,10 +501,8 @@ function initialiseGameData(){
  listdesuser = [];
  checkuserexist = false;
  statusgame = ""
- socketofeachuser;
+ socketofeachuser ="";
  checksocketexist = false;
- playerData = [];
- discardPile = [];
  currenttime = "";
  phasetime = "";
  phasestatus = "";
@@ -520,7 +518,7 @@ listedrolecards = require("./json lists/roleCardList.json");
 newPlayer = require("./json lists/playerDataList.json");
  setTimeout(()=>{
   playerData.splice(0, playerData.length);
-  playerData.splice(0, playerData.length);
+  discardPile.splice(0, playerData.length);
 }, 3000)
 }
 
