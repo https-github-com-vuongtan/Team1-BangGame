@@ -24,14 +24,15 @@ $(document).ready(function () {
 
           $.get('/actionLog', data)
           $.get('/newUser', data)
+          setTimeout(displayGameBoard(), 1000);
+
         }
-        setTimeout(displayGameBoard(), 1000);
         statusregis = responsedata
       })
       $('#joinName').val("")
     }
     else {
-      alert("Username is not null")
+      alert("Username cannot be null")
     }
   });
 
@@ -59,7 +60,7 @@ $(document).ready(function () {
             $.get('/actionLog', data)
             $.get('/newUser', data)
 
-            setTimeout(displayGameBoard(), 1000);
+            setTimeout(Board(), 1000);
           }
           statusregis = responsedata
         })

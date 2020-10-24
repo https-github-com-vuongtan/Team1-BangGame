@@ -497,7 +497,7 @@ function eliminatePlayer(deadPlayer, killerPlayer) {
 }
 
 function initialiseGameData(){
-   count = 0;
+ count = 0;
  listdesuser = [];
  checkuserexist = false;
  statusgame = ""

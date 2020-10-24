@@ -8,7 +8,7 @@ function getinforphase() {
     if (phaseuser == nameplayer && !eliminated) {
       switch (parseInt(phasenumber)) {
         case (1):
-          $('#cardDeck').css('background-color', 'yellow');
+          $('#cardDeck').css('background-color', 'rgb(255,247,95)');
           $("#endTurn").addClass("hidden");
           $("#turnDraw").removeClass("hidden");
           $("#instructions").html("")

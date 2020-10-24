@@ -63,16 +63,12 @@
                     <div class="bulletTray">
                     </div>
                     <div class="privateHand">
-                        <img src="assets/cardBack.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
                     </div>
                     <div class="characterCard">
                         <img id="topleft" alt="description" class="responsive cardOnly">
                     </div>
                     <div class="cardsInPlay">
-                        <img id="c5WeaponCard" src=" " alt="description" class="responsive cardOnly">
+                        <img id="c5WeaponCard" src="assets/cards/colt45.png" alt="description" class="responsive cardOnly">
                     </div>
                 </div>
                 <div class="topMiddleGrid">
@@ -90,19 +86,15 @@
 
                     <div class="cardsInPlay">
                         <img src="assets/cards/mustang.png" alt="description" class="responsive cardOnly" hidden>
-                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt="description"
+                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt=""
                             class="responsive cardOnly">
                     </div>
                     <div class="characterCard">
-                        <img id="topright" alt="Black Jack description" class="responsive cardOnly">
+                        <img id="topright"  class="responsive cardOnly">
                     </div>
                     <div class="bulletTray">
                     </div>
                     <div class="privateHand">
-                        <img src="assets/cardBack.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
                     </div>
 
 
@@ -117,13 +109,9 @@
                     <div class="bulletTray">
                     </div>
                     <div class="privateHand">
-                        <img src="assets/cardBack.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
                     </div>
                     <div class="characterCard">
-                        <img id="midleft" alt="description" class="responsive cardOnly">
+                        <img id="midleft"  class="responsive cardOnly">
                     </div>
                     <div class="cardsInPlay">
                         <!--.cardsInPlay-->
@@ -133,14 +121,12 @@
                         <img src="assets/cards/mustang.png" alt="" class="responsive" hidden>
                         <img src="assets/cards/jail.png" alt="" class="responsive" hidden>
                         <img src="assets/cards/dynamite.png" alt="" class="responsive" hidden>
-
-
                     </div>
                 </div>
                 <div class="midMidGrid">
                     <div class="deckGrid">
-                        <img id="cardDeck" src="assets/cardDeck.png" alt="scope" class="responsive">
-                        <img id="discardPile" src="assets/discardPile.png" alt="scope" class="responsive">
+                        <img id="cardDeck" src="assets/cardDeck.png" class="responsive">
+                        <img id="discardPile" src="assets/discardPile.png" class="responsive">
 
                     </div>
                     <div id="deckInstructions">
@@ -159,7 +145,7 @@
 
                     <div class="characterCard">
                         <!--.characterCard-->
-                        <img id="midright" alt="Black Jack description" class="responsive cardOnly">
+                        <img id="midright" class="responsive cardOnly">
                         <!-- <img  src="assets/SheriffStar.png" alt="Black Jack description" class="sheriffStar responsive"> -->
 
                     </div>
@@ -175,13 +161,6 @@
 
                     </div>
                     <div class="privateHand">
-                        <img src="assets/cardBack.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
-                        <img src="assets/cardOverlap.png" alt="" class="responsive">
                     </div>
                 </div>
             </div>
@@ -191,11 +170,11 @@
                         <b>Action Log</b>
                         <div ID="actionLogWindow"></div>
                         <div>
-                            <button class="btn-sand" id="LeaderboardBtn"
+                            <button data-target="leaderModal" class="btn-sand modal-trigger" id="LeaderboardBtn"
                                 style="height:28px; width: 100px; margin: 3px">Leaderboard</button>
                         </div>
                         <div>
-                            <button class="btn-sand" id="RulesBtn" style="height:28px; width: 100px">Rules</button>
+                            <button class="btn-sand modal-trigger" data-target="rulesModal" id="RulesBtn" style="height:28px; width: 100px">Rules</button>
                         </div>
 
                     </div>
@@ -427,23 +406,23 @@
 
 
 <!--Quit Modal Structure -->
-<div id="quitModal" class="modal modalSand">
-    <div class="modal-content">
-        <div>
-            Are you sure you want to leave the game?
-        </div>
-        <div class="modal-footer">
-            <button class="btn-orange" id="confirmQuitBtn" style="margin-left: 10px">Confirm</button>
-            <button class="btn-orange" id="cancelQuitBtn" style="margin-left: 10px">Cancel</button>
-        </div>
+<div id="quitModal" class="modal sandModal">
+    <div id="quitText">
+        Are you sure you want to leave the game?
+    </div>
+    <div class="modFooter">
+        <button class="btn-orange" id="confirmQuitBtn" style="margin-left: 10px">Confirm</button>
+        <button class="btn-orange" id="cancelQuitBtn" style="margin-left: 10px">Cancel</button>
     </div>
 </div>
 
-<div id="endGameModal" class="modal">
+<div id="endGameModal" class="modal bgSky">
     <div id="gameOverMessage"></div>
     <div id="winPic"></div>
     <div id="winMessage"></div>
-    <button class="btn-orange" id="playAgainBtn" style="margin-left: 10px">Play Again?</button>
+    <div class="modFooter">
+        <button class="btn-orange" id="playAgainBtn" style="margin-left: 10px">Play Again?</button>
+    </div>
 
 </div>
 
