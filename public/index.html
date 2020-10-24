@@ -426,62 +426,15 @@
 </div>
 
 
-<!--Discard Modal Structure -->
-<div id="discardModal" class="modal bottom-sheet">
+<!--Quit Modal Structure -->
+<div id="quitModal" class="modal modalSand">
     <div class="modal-content">
-        <h4>Too many cards - choose cards to discard</h4>
-        <div class="row">
-            <!-- Player 1 -->
-            <div class="col s1 m1 l1 offset-l1 offset-s1 offset-m1">
-                <div class="card c5">
-                    <div class="card-image">
-                        <a data-target="" class="btn-floating halfway-fab waves-effect waves-light red"><i
-                                class="material-icons">add</i></a>
-                    </div>
-                    <div class="card-content"></div>
-                </div>
-            </div>
-
-            <div class="col s1 m1 l1">
-                <div class="card b5">
-                    <div class="card-image">
-                        <a class="btn-floating halfway-fab waves-effect waves-light red"><i
-                                class="material-icons">add</i></a>
-                    </div>
-                    <div class="card-content"></div>
-                </div>
-            </div>
-
-            <div class="col s1 m1 l1">
-                <div class="card a5">
-                    <div class="card-image"></div>
-                    <div class="card-content"></div>
-                </div>
-            </div>
-
-            <div class="col s1 m1 l1">
-                <div class="card d5">
-                    <div class="card-image">
-                        <a class="btn-floating halfway-fab waves-effect waves-light red"><i
-                                class="material-icons">add</i></a>
-                    </div>
-                    <div class="card-content"></div>
-                </div>
-            </div>
-
-            <div class="col s1 m1 l1">
-                <div class="card e5">
-                    <div class="card-image">
-                        <a class="btn-floating halfway-fab waves-effect waves-light red"><i
-                                class="material-icons">add</i></a>
-                    </div>
-                    <div class="card-content"></div>
-                </div>
-            </div>
-
+        <div>
+            Are you sure you want to leave the game?
         </div>
         <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+            <button class="btn-orange" id="confirmQuitBtn" style="margin-left: 10px">Confirm</button>
+            <button class="btn-orange" id="cancelQuitBtn" style="margin-left: 10px">Cancel</button>
         </div>
     </div>
 </div>
@@ -490,5 +443,8 @@
     <div id="gameOverMessage"></div>
     <div id="winPic"></div>
     <div id="winMessage"></div>
+    <button class="btn-orange" id="playAgainBtn" style="margin-left: 10px">Play Again?</button>
+
 </div>
+
 </html>

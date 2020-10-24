@@ -20,6 +20,34 @@ $(document).ready(function () {
   displayEliminations();
 });
 
+$(document).ready(function () {
+  $('#quitBtn').click(function () {
+    $('#quitModal').modal('open');
+  });
+});
+
+$(document).ready(function () {
+  $('#playAgainBtn').click(function () {
+    socket.disconnect();
+    window.location.reload();
+  });
+});
+
+
+$(document).ready(function () {
+  $('#confirmQuitBtn').click(function () {
+    socket.disconnect();
+    window.location.reload();
+  });
+});
+  
+$(document).ready(function () {
+  $('#cancelQuitBtn').click(function () {
+    $('#quitModal').modal('close');
+  });
+});
+  
+  
 function displayEliminations() {
   socket.on("playerEliminated", data => {
 

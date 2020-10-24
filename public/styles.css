@@ -645,6 +645,25 @@ direction:rtl;
   border-radius: 15px;
 }
 
+.modalSand
+{
+  padding: 10px;
+  text-align: center;
+  vertical-align: center;
+  background-color: rgb(255, 237, 212);
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: 2em;
+  border-radius: 15px;
+}
+
+#quitModal
+{
+  min-height: 40%;
+}
+
 #cardDeck
 {
   border-radius: 5px;
