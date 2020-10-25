@@ -69,7 +69,7 @@ margin-left: 15px;
   margin: 8px;
   display: grid;
   grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
-
+  border-radius: 10px;
 }
 .welcomeJoinGame
 {
@@ -152,10 +152,12 @@ width:20px;
   max-width: 100%;
 }
 
-.deckInstructions {
-  text-align: center;
-  color: yellow;
-  font-family:Verdana, Geneva, Tahoma, sans-serif;
+#deckInstructions {
+text-align: center;
+color: rgb(255, 247, 95);
+grid-row-start: 3;
+grid-row-end: 4;
+font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
 #gameboard
@@ -547,14 +549,6 @@ grid-template-columns: 1fr 1fr;
 max-height: 20vh;
 }
 
-.deckInstructions
-{
-grid-row-start: 3;
-grid-row-end: 4;
-font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-
-}
-
 .privateHand img
 {
 display: block;
@@ -633,42 +627,116 @@ grid-row-end:4;
 padding:3px;
 direction:rtl;
 }
-/* colours used for observing position areas on the layout
-.a5
+
+#quitModal
 {
-background-color: rgb(108, 75, 108);
+  padding: 40px;
+  text-align: center;
+  vertical-align: center;
+  max-height: 40%;
+  max-width: 30%;
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: 700;
+  font-style: italic;
+  border-radius: 15px;
+  background-color: rgb(251, 248, 229);
 }
-#mainRoleCard
+
+#quitText
 {
-grid-column-start:5;
-grid-column-end:6;
-grid-row-start: 2;
-grid-row-end:4;
-padding:3px;
-direction:rtl;
+  font-size:1.5em;
 }
-/* colours used for observing position areas on the layout 
-#a5
+.modFooter
 {
-background-color: rgb(108, 75, 108);
+  max-height:100%;
+  margin-bottom: 10px;
+  margin-top: 20px;
+  vertical-align: bottom;
 }
-#b5
+
+#gameOverMessage, #winPic, #winMessage
 {
-background-color: rgb(196, 128, 174);
+  font-size: 2em;
 }
-#c5
+.modalSand
 {
-background-color: rgb(141, 180, 231);
+  padding: 10px;
+  text-align: center;
+  vertical-align: center;
+  background-color: rgb(251, 248, 229);
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: 500;
+  font-style: italic;
+  border-radius: 15px;
 }
-#d5
+
+.bgSky
 {
-background-color: rgb(150, 148, 118);
+  padding: 10px;
+  text-align: center;
+  vertical-align: center;
+  background-color: rgb(210, 241, 255);
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: 500;
+  font-style: italic;
+  border-radius: 15px;
 }
-#e5
+
+
+
+#cardDeck
 {
-background-color: rgb(252, 222, 191);
+  border-radius: 5px;
+  padding-bottom:1px;
 }
-*/
+
+#gameOverMessage
+{
+  color: rgb(203, 20, 20);
+  margin: 5px;
+  font-weight: bold;
+  size: 2em;
+}
+
+#endGameModal
+{
+  padding: 20px;
+  text-align: center;
+  vertical-align: center;
+  min-width: 60%;
+  max-height: 80%;
+  background-color: rgb(251, 248, 229);
+/*  background-color: rgb(255, 237, 212);*/
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: 500;
+  font-style: italic;
+  border-radius: 15px;
+}
+
+
+#endGameModal img 
+{
+  max-width: 50%;
+  max-height:70%;
+  border-radius: 15px;
+  padding: 5px;
+  background-color: rgb(210, 241, 255);
+
+}
+
+#winMessage
+{
+  font-size: 1.8em;
+  margin: 5px;
+}
+
+
+
+
 .hidden
 {
   display: none !important;

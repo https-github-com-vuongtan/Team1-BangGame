@@ -184,6 +184,10 @@ function checkcurrenttime(){
 
     statuscharactercard="Finished"
   }
+  if(phasetime!=""){
+    let data={min:minutes,sec:seconds,name:statusphase.name,phase:statusphase.phase}
+    io.emit("timeupdate",data)
+  }
 }
 app.get("/pause", function (req, res) {
   let status = req.query.stat
@@ -252,19 +256,37 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==2){
    return;
 
   }
-  if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 2) {
-    statusphase = { id: idround, phase: 3, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
-    phasetime = new Date(currenttime);
-    phasetime.setSeconds(phasetime.getSeconds() + 20);
-    data = { name: statusphase.name, action: ` Started Phase ${statusphase.phase} ` }
-    io.emit("updateactionlog", data)
-    io.emit("infophase", statusphase)
-    return;
 
+  if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 2) {
+    //if hand under limit go straight to next turn (skip phase 3)
+    if (playerData[idround - 1].hand.length <= playerData[idround - 1].currentLife) {
+      if (idround == 5) {
+        idround = 1
+      }
+      else {
+        idround++
+      }
+
+      statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket, discardNeeded: false }
+      phasetime = getpauseandend.endphase(phasetime, currenttime)
+      phasetime.setSeconds(phasetime.getSeconds() + 15);
+      io.emit("infophase", statusphase)
+      return;
+    } else {
+      //otherwise go to phase 3 as normal
+      statusphase = { id: idround, phase: 3, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
+      phasetime = new Date(currenttime);
+      phasetime.setSeconds(phasetime.getSeconds() + 20);
+      data = { name: statusphase.name, action: ` Started Phase ${statusphase.phase} ` }
+      io.emit("updateactionlog", data)
+      io.emit("infophase", statusphase)
+      return;
+    }
   }
-  if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==3){
-    if(idround==5){
-      idround=1
+
+  if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 3) {
+    if (idround == 5) {
+      idround = 1
     }
     else{
       idround++
@@ -282,8 +304,8 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==2){
     }
     return;
   }
-  }
 
+}
 
 //Function to update user id (position) after one user go out the game room
 function order_user(deleteid) {
@@ -346,32 +368,36 @@ function checkvalidation(username, socketid, res) {
 }
 
 //Function to push user information to list
-function pushdatatolist(username,socketid){
-count++
-let newPlayer =  {
-  name: username,
-  socket: socketid,
-  id: count,
-  role: "role",
-  character: "character",
-  position: count,
-  maxLife: "maxLife",
-  currentLife: 0,
-  weapon: "colt45",
-  range: 1,
-  distanceMod: 0,
-  scope: false,
-  mustang: false,
-  barrel: false,
-  jail: false,
-  dynamite: false,
-  eliminated: false,
-  hand: [
-  ],
-}
-playerData.push(newPlayer);
-io.emit("descriptionuser",JSON.stringify(playerData))
-io.emit("statusgame","Wating for more " +(5-playerData.length)+ " People") 
+function pushdatatolist(username, socketid) {
+  count++
+  let newPlayer = {
+    name: username,
+    socket: socketid,
+    id: count,
+    role: "role",
+    character: "character",
+    position: count,
+    maxLife: "maxLife",
+    currentLife: "currentLife",
+    weapon: "colt45",
+    range: 1,
+    distanceMod: 0,
+    scope: true,
+    mustang: true,
+    barrel: false,
+    jail: false,
+    dynamite: false,
+    eliminated: false,
+    hand: [
+      { "id": 1, "card": 'bang', },
+      { "id": 2, "card": 'bang', },
+      { "id": 3, "card": 'missed', },
+      { "id": 4, "card": 'missed', },
+    ],
+  }
+  playerData.push(newPlayer);
+  io.emit("descriptionuser", JSON.stringify(playerData))
+  io.emit("statusgame", "Wating for " + (5 - playerData.length) + "")
 }
 
 //Function to count the number players
@@ -384,8 +410,12 @@ function checknumberofplayer() {
   }
   //If do not have enough player => Return the amount of waiting players.
   else {
-    statusgame = "Wating for more " + (5 - playerData.length) + " People"
-    io.emit("statusgame", statusgame)
+    if ((5 - playerData.length) == 1) {
+      statusgame = "Wating for 1 more person"
+    } else {
+      statusgame = "Wating for " + (5 - playerData.length) + " more people"
+      io.emit("statusgame", statusgame)
+    }
   }
 }
 function checkuserdisconnect(socketid) {
@@ -404,22 +434,29 @@ function checkuserdisconnect(socketid) {
 function userdisconnection(socketidout) {
   playerData.forEach((user) => {
     if (user.socket == socketidout) {
-      console.log(socketidout)
-      let lengtharrayuser = playerData.length
-      let deleteid = user.id
-      playerData.splice((user.id - 1), 1)
-      count--
-      if (lengtharrayuser > 0) {
-        order_user(parseInt(deleteid))
+      if (statuscharactercard = "Finished") {
+        user.currentLife = 0;
+        io.emit("bulletUpdate", JSON.stringify(playerData))
+        eliminatePlayer(user, null);
+      }
+      else {
+        console.log(socketidout)
+        let lengtharrayuser = playerData.length
+        let deleteid = user.id
+        playerData.splice((user.id - 1), 1)
+        count--
+        if (lengtharrayuser > 0) {
+          order_user(parseInt(deleteid))
+        }
       }
       io.emit("descriptionuser", JSON.stringify(playerData))
     }
     return;
   });
-    // Update the amount of waiting players
-    if(statusgame!="start game"){
-    io.emit("statusgame","Wating for more " +(5-playerData.length)+ " People") 
-    }  
+  // Update the amount of waiting players
+  if (statusgame != "start game") {
+    io.emit("statusgame", "Wating for " + (5 - playerData.length) + " more")
+  }
 }
 
 
@@ -435,12 +472,12 @@ app.get('/submitname', function (req, res) {
 });
 
 app.get('/desuser', function (req, res) {
-  res.send("Wating for more " + (5 - playerData.length) + " People")
+  res.send("Wating for " + (5 - playerData.length) + " more")
   io.emit("descriptionuser", JSON.stringify(playerData))
 });
 
 app.get('/status', function (req, res) {
-  io.emit("statusgame", "Wating for more " + (5 - playerData.length) + " People")
+  io.emit("statusgame", "Wating for " + (5 - playerData.length) + " more")
 });
 app.get('/socketid', function (req, res) {
   res.send(socketofeachuser)
@@ -1023,7 +1060,98 @@ io.emit("bulletUpdate", JSON.stringify(playerData))
 res.send ("OK")
 })
 
+app.get('/discardHandCard', function (req, res) {
+  let index = req.query.index;
+  let name = req.query.name;
+  let discardedCard = [];
+  playerData.forEach(player => {
+    if (player.name == name) {
+      discardedCard = player.hand.splice(index, 1);
+      discardPile.push({ "card": discardedCard[0].card });
+    }
+  })
+  io.emit("handUpdate", JSON.stringify(playerData))
+  res.send(console.log(`${discardedCard[0].card} added to the discard pile`));
+})
 
+//checks hand size against current lives, ends turn if not over the limit.
+app.get('/checkHandSizeEndTurn', function (req, res) {
+  let name = req.query.name;
+  playerData.forEach(player => {
+    if (player.name == name) {
+      if (player.hand.length <= player.currentLife) {
+        //do the same as endphase method
+        phasetime = getpauseandend.endphase(phasetime, currenttime);
+        res.send(console.log(`${player.name} turn ended`));
+      } else {
+        res.send(console.log(`${player.name} must discard another card`));
+      }
+    }
+  })
+})
+
+
+//if no killer (eg, killed by dynamite), playerKiller is null
+function eliminatePlayer(deadPlayer, killerPlayer) {
+  let outcome = elimination.eliminationLogic(playerData, deadPlayer, killerPlayer, discardPile);
+  for (i = 0; i < outcome.actionLogArray.length; i++) {
+    let actionData = outcome.actionLogArray[i];
+    io.emit("updateactionlog", actionData);
+  }
+  io.emit("handUpdate", JSON.stringify(playerData));
+  io.emit("playerEliminated", JSON.stringify(playerData));
+
+  if (outcome.winnerRole != "None") {
+
+    let endData = {
+      winningRole: outcome.winnerRole,
+      winnerArray: outcome.winnerArray
+    }
+    //can add those with matching roles (include deputy for sheriff) to winner history DB *****
+    io.emit("endGame", JSON.stringify(endData));
+    statusgame = 'gameover';
+    //clear playerdata for newgame
+    initialiseGameData();
+    //once all players have disconnected, clear playerdata for new game
+    /* *****
+    let allEliminated = true;
+    playerData.forEach((user) => {
+      if (user.eliminated != true) {
+        allEliminated = false;
+      }
+    });
+    if (allEliminated) {
+    statusgame = "";
+    playerData.splice(0, playerData.length);
+    }*/
+  } 
+}
+
+function initialiseGameData(){
+ count = 0;
+ listdesuser = [];
+ checkuserexist = false;
+ statusgame = ""
+ socketofeachuser ="";
+ checksocketexist = false;
+ currenttime = "";
+ phasetime = "";
+ phasestatus = "";
+ statuscharactercard = "";
+ minutes = "";
+ seconds = "";
+ idround = 1;
+ statusphase = "";
+ statuspause = "";
+ pausetime = 0;
+ listcharactercards = require("./json lists/CharacterCardsList.json");
+listedrolecards = require("./json lists/roleCardList.json");
+newPlayer = require("./json lists/playerDataList.json");
+ setTimeout(()=>{
+  playerData.splice(0, playerData.length);
+  discardPile.splice(0, playerData.length);
+}, 3000)
+}
 
 
 //Function trigger DuelService
