@@ -16,22 +16,34 @@ function displayHand() {
             console.log(`Card Hit`)
             $(`#bangModal`).modal('open');
           });
-          $(`.saloon`).click(function () {
+          /*
+          (`.saloon`).click(function () {
             console.log(`Saloon Hit`)
             applytoIndexElement("mainHand", saloon);
           });
-          $(`.panic`).click(function () {
+        /*  $(`.panic`).click(function () {
+            /*let pData = {
+              element: "mainHand",
+              iFunction: panic,
+              gameData: mydata
+            }*/ /*
             console.log(`Panic Hit`)
+           // applytoIndexElement(pData);
             applytoIndexElement("mainHand", panic);
-          });
-          
+
+          });*/
+
+
         }
-        
-        //update (private) handsize
-        updateHandSizeDisplay(mydata, data);
-        applytoIndexElement("mainHand", endOfTurnDiscard);
+          //update (private) handsize
+          updateHandSizeDisplay(mydata, data);
+          applytoIndexElement("mainHand", endOfTurnDiscard);
+
       }
+
+
+
     })
-//put func here
+    //put func here
   })
 }

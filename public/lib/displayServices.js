@@ -1,38 +1,77 @@
 //card services
-function saloon(i) {
+function saloon(index) {
   if ((phaseuser == nameplayer) && (parseInt(phasenumber) == 2)) {
    let data = {
+     index: index,
       name: nameplayer
     }
+    console.log('salData '+ data.index)
+
    $.get('/playSaloon', data);
-   discardCardFromHand(i);
+   discardCardFromHand(data);
   }
 }
 
-function panic(i) {
+function panic(index) {
+  let data = {
+    name: nameplayer,
+    index: index,
+   // gameData: panData.gameData
+  }
   if ((phaseuser == nameplayer) && (parseInt(phasenumber) == 2)) {
-   let data = {
-      name: nameplayer
-    }
+  //  #panicPlayers
+    //#panicPrivateHand
+   // #panicCardsInPlay
+
+    $(`#panicPlayerSelectModal`).modal('open');
+
     console.log("Panic is played, but the function does not exist")
     $.get('/playPanic', data);
-
    //if hand now as low as life points, turn should end 
   // $.get('/checkHandSizeEndTurn', data);
-  discardCardFromHand(i);
-
+  discardCardFromHand(data);
   }
 }
 
 //general format for getting index & applying function on card click (not Jquery, don't use leading # for ID)
 function applytoIndexElement(elementID, theFunction) {
+  
   var h = document.getElementById(elementID);
   for (var i = 0, len = h.children.length; i < len; i++) {
-    (function (index) {
+    (function (funcData) {
       h.children[i].onclick = function () {
-        theFunction(index);
+        console.log(i);
+        console.log(theFunction);
+        //mydata.index = i;
+        //funcData.index = i;
+        console.log('an indexed function ' + i)
+        theFunction(funcData);
       }
     })(i);
+  }
+
+}
+
+//general format for getting index & applying function on card click (not Jquery, don't use leading # for ID)
+function applytoIndexElementData(data, theFunction) {
+  let elementID = data.element;
+/*
+  let mydata = {
+  gameData: data.gameData,
+  index: 0
+  }*/
+  
+  var h = document.getElementById(elementID);
+  for (var i = 0, len = h.children.length; i < len; i++) {
+    (function (funcData) {
+      h.children[i].onclick = function () {
+        console.log(i);
+        console.log(theFunction);
+        //mydata.index = i;
+        console.log('an indexed function ' + funcData.index)
+        theFunction(funcData);
+      }
+    })({index: i, gameData: data.gameData});
   }
 
 }
