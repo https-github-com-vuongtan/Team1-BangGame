@@ -58,7 +58,7 @@
 
             <div class="topPane">
                 <div id="c5" class="leftGrid">
-                    <div class="playerName">
+                    <div class="playerName">Waiting...
                     </div>
                     <div class="bulletTray">
                     </div>
@@ -85,15 +85,16 @@
                 </div>
                 <div id="d5" class="rightGrid">
 
-                    <div class="playerName">
+                    <div class="playerName">Waiting...
                     </div>
 
                     <div class="cardsInPlay">
                         <img src="assets/cards/mustang.png" alt="description" class="responsive cardOnly" hidden>
-                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt="description" class="responsive cardOnly">
+                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt="description"
+                            class="responsive cardOnly">
                     </div>
                     <div class="characterCard">
-                        <img id="topright"  alt="Black Jack description" class="responsive cardOnly">
+                        <img id="topright" alt="Black Jack description" class="responsive cardOnly">
                     </div>
                     <div class="bulletTray">
                     </div>
@@ -111,7 +112,7 @@
 
             <div class="midPane">
                 <div id="b5" class="leftGrid">
-                    <div class="playerName">
+                    <div class="playerName">Waiting...
                     </div>
                     <div class="bulletTray">
                     </div>
@@ -143,18 +144,18 @@
 
                     </div>
                     <div class="deckInstructions">
-                        <div><a id=`turnDraw` href="#testModal">Draw Card</a></div>
-                        <a id=`jailDraw` class="hidden" href="#testModal">Draw for Jail</a>
-                        <a id=`barrelDraw` class="hidden" href="#testModal">Draw for Barrel</a>
-                        <div><a id=`endTurn` href="#discardModal">End Turn</a></div>
-
+                        <div id="instructions"></div>
+                        <div id="turnDraw" class="hidden">Draw from deck</div>
+                        <div id="jailDraw" class="hidden">Draw for Jail</div>
+                        <div id="barrelDraw" class="hidden">Draw for Barrel</div>
+                        <div id="endTurn" class="hidden">End Turn</div>
 
                     </div>
 
                 </div>
                 <div id="e5" class="rightGrid">
 
-                    <div class="playerName">
+                    <div class="playerName">Waiting...
                     </div>
 
                     <div class="characterCard">
@@ -283,7 +284,7 @@
     <script src="index.js"></script>
     <!-- <script src="lib/libraryLoader.js"></script> -->
     <div id="lib">
-        <script src="/lib/weaponService.js"></script>
+        <script src="/lib/weaponService.js"></script> 
         <script src="/lib/displayServices.js"></script>
         <script src="lib/characterCardService.js"></script>
         <script src="lib/actionLogService.js"></script>
@@ -413,8 +414,27 @@
       </div>
     </form>
   </div>
-
-
+    <!--Hit  Modal Structure -->
+    <div id="missedModal" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4 class="modalHeader">You've been shot at!</h4>
+            <div class="row">
+                <div class="col s1 m1 l1 offset-l1 offset-s1 offset-m1">
+                    <div class="card" id="missedModalCard">
+                        <div class="card-image">
+                            <img src="assets/cards/missed.png">
+                            <a data-response="yes" class="btn-floating halfway-fab waves-effect waves-light red"><i
+                                    class="material-icons">add</i></a>
+                        </div>
+                        <div class="card-content">Play your missed card?</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" data-response="no" class="modal-close waves-effect waves-green btn-flat">The hit?</a>
+        </div>
+    </div>
 
 </body>
 

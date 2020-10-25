@@ -46,10 +46,13 @@ let idround = 1
 
 let listcards
 
-let statusphase = ""
-let statuspause = ""
-let pausetime = 0
-let listcharactercards = require("./json lists/CharacterCardsList.json")
+
+
+let Sheriffrole="false"
+let statusphase=""
+let statuspause=""
+let pausetime=0
+let listcharactercards= require("./json lists/CharacterCardsList.json")
 let listedrolecards = require("./json lists/roleCardList.json")
 let newPlayer = require("./json lists/playerDataList.json");
 const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
@@ -171,19 +174,15 @@ function checkcurrenttime(){
     getrandomrolecards.getrandomRole(listedrolecards, playerData)
     getrandomplaycards(playerData,listplaycards)
     console.log(playerData)
-    io.emit("updateRole", JSON.stringify(playerData))
+    io.emit("updateRole",JSON.stringify(playerData))
     io.emit("bulletUpdate", JSON.stringify(playerData))
-    io.emit("weaponUpdate", JSON.stringify(playerData))
-    io.emit("updatePlayerName", JSON.stringify(playerData))
-    io.emit("handUpdate", JSON.stringify(playerData))
-    io.emit("bangUpdate", JSON.stringify(playerData))
+    io.emit("weaponUpdate",JSON.stringify(playerData))
+    io.emit("updatePlayerName",JSON.stringify(playerData))
+    io.emit("handUpdate",JSON.stringify(playerData))
+    io.emit("bangUpdate",JSON.stringify(playerData))
     io.emit("cardsInHandUpdate", JSON.stringify(playerData))
 
-    statuscharactercard = "Finished"
-  }
-  if (phasetime != "") {
-    let data = { min: minutes, sec: seconds, name: statusphase.name, phase: statusphase.phase }
-    io.emit("timeupdate", data)
+    statuscharactercard="Finished"
   }
 }
 app.get("/pause", function (req, res) {
@@ -213,28 +212,44 @@ app.get("/endphase", function (req, res) {
 
 
 //Function for updating phase
-function updatephase() {
-  if (statusgame == 'START GAME' && phasestatus == "") {
-    phasestatus = "Starting"
-  }
-  if (phasestatus == "Starting") {
-    statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
-    phasetime = new Date(currenttime);
-    phasetime.setSeconds(phasetime.getSeconds() + 15);
-    data = { name: statusphase.name, action: ` Started Phase ${statusphase.phase} ` }
-    io.emit("updateactionlog", data)
-    io.emit("infophase", statusphase)
-    phasestatus = "Ongoing"
-    return;
-  }
-  if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 1) {
-    statusphase = { id: idround, phase: 2, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
-    phasetime = new Date(currenttime);
-    phasetime.setSeconds(phasetime.getSeconds() + 60);
-    data = { name: statusphase.name, action: ` Started Phase ${statusphase.phase} ` }
-    io.emit("updateactionlog", data)
-    io.emit("infophase", statusphase)
-    return;
+function updatephase(){
+if(statusgame=='START GAME'&&phasestatus==""){
+  playerData.forEach(player=>{
+    if(player.role=="Sheriff"){
+      idround=player.id
+    }
+  })
+  Sheriffrole="true"
+  phasestatus="Starting"
+}
+if(phasestatus=="Starting"&&Sheriffrole=="true"){
+   statusphase={id:idround,phase:1,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
+   phasetime=new Date (currenttime );
+   phasetime.setSeconds (phasetime.getSeconds() + 15 );
+   data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
+   io.emit("updateactionlog",data)
+   io.emit("infophase",statusphase)  
+   phasestatus="Ongoing"
+  return;
+}
+if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
+  statusphase={id:idround,phase:2,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
+  phasetime=new Date (currenttime );
+  phasetime.setSeconds ( phasetime.getSeconds() + 60 );  
+  data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
+  io.emit("updateactionlog",data)
+  io.emit("infophase",statusphase)  
+  return;
+
+}
+if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==2){
+  statusphase={id:idround,phase:3,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
+   phasetime=new Date (currenttime );
+   phasetime.setSeconds (phasetime.getSeconds() + 20 );
+   data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
+   io.emit("updateactionlog",data)
+   io.emit("infophase",statusphase)    
+   return;
 
   }
   if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 2) {
@@ -247,20 +262,28 @@ function updatephase() {
     return;
 
   }
-  if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 3) {
-    if (idround == 5) {
-      idround = 1
+  if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==3){
+    if(idround==5){
+      idround=1
     }
-    else {
+    else{
       idround++
     }
-    statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
-    phasetime = new Date(currenttime);
-    phasetime.setSeconds(phasetime.getSeconds() + 15);
-    io.emit("infophase", statusphase)
+    if(playerData[idround-1].currentLife==0){
+      statusphase.phase=3
+      phasetime=getpauseandend.endphase(phasetime,currenttime)
+      phasestatus="Ongoing"
+    }
+    else{
+    statusphase={id:idround,phase:1,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
+    phasetime=new Date (currenttime );
+    phasetime.setSeconds (phasetime.getSeconds() + 15 );
+    io.emit("infophase",statusphase)  
+    }
     return;
   }
-}
+  }
+
 
 //Function to update user id (position) after one user go out the game room
 function order_user(deleteid) {
@@ -333,7 +356,7 @@ let newPlayer =  {
   character: "character",
   position: count,
   maxLife: "maxLife",
-  currentLife: "currentLife",
+  currentLife: 0,
   weapon: "colt45",
   range: 1,
   distanceMod: 0,
@@ -596,7 +619,7 @@ else{
   if (player.currentLife < 1) {
     eliminatePlayer(player, null);
   }
-
+  io.emit("bulletUpdate", JSON.stringify(playerData))
   io.emit("updateactionlog",data)
   }
 
@@ -605,6 +628,7 @@ else{
   })
     if(countgatling==0){
     playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+    io.emit("bulletUpdate", JSON.stringify(playerData))
     }
 res.send("OK")
 })
@@ -639,6 +663,7 @@ playerData.forEach(player=>{
     if (player.currentLife < 1) {
       eliminatePlayer(player, null);
     }
+    io.emit("bulletUpdate", JSON.stringify(playerData))
     io.emit("updateactionlog",data)
     }
   }
@@ -657,6 +682,7 @@ if(countresponsegatling==countgatling){
   pausetime=getpauseandend.returnpausetime()
   getpauseandend.resettime()
   playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+  io.emit("bulletUpdate", JSON.stringify(playerData))
   statuspause="on"
   countgatling=0
   countresponsegatling=0
@@ -703,6 +729,7 @@ playerData.forEach(player=>{
       eliminatePlayer(player, null);
     }
   }
+  io.emit("bulletUpdate", JSON.stringify(playerData))
 })
 
 
@@ -770,6 +797,8 @@ playerData.forEach(player=>{
       eliminatePlayer(player, null);
     }
   }
+  io.emit("bulletUpdate", JSON.stringify(playerData))
+
 })
 
 //Function to check enough response from victim to restart time
@@ -860,6 +889,8 @@ if(pausetimeforgatling=="true"){
   getpauseandend.setintervaltime(pausetime)
   statuspause="off"
 }
+io.emit("bulletUpdate", JSON.stringify(playerData))
+
 })
 
 //Function for trigger beer action in phase 2 of user
@@ -870,7 +901,8 @@ app.get("/beertrigger",function(req,res){
   getbeer.removebeerGalting(playerData,sock)
   }
   io.emit("handUpdate",JSON.stringify(playerData))
-  
+  io.emit("bulletUpdate", JSON.stringify(playerData))
+
 })
 
 
@@ -987,6 +1019,7 @@ playerData.forEach(player=>{
     }
   }
 })
+io.emit("bulletUpdate", JSON.stringify(playerData))
 res.send ("OK")
 })
 
@@ -1054,6 +1087,8 @@ if(checklivestatus=="true"){
      }
    })
   }
+  io.emit("bulletUpdate", JSON.stringify(playerData))
+
   res.send("Finished Duel")   
 })
 
