@@ -16,7 +16,17 @@ function displayHand() {
             console.log(`Card Hit`)
             $(`#bangModal`).modal('open');
           });
+          $(`.saloon`).click(function () {
+            console.log(`Saloon Hit`)
+            applytoIndexElement("mainHand", saloon);
+          });
+          $(`.panic`).click(function () {
+            console.log(`Panic Hit`)
+            applytoIndexElement("mainHand", panic);
+          });
+          
         }
+        
         //update (private) handsize
         updateHandSizeDisplay(mydata, data);
         applytoIndexElement("mainHand", endOfTurnDiscard);

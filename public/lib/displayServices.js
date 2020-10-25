@@ -1,4 +1,28 @@
+//card services
+function saloon(i) {
+  if ((phaseuser == nameplayer) && (parseInt(phasenumber) == 2)) {
+   let data = {
+      name: nameplayer
+    }
+   $.get('/playSaloon', data);
+   discardCardFromHand(i);
+  }
+}
 
+function panic(i) {
+  if ((phaseuser == nameplayer) && (parseInt(phasenumber) == 2)) {
+   let data = {
+      name: nameplayer
+    }
+    console.log("Panic is played, but the function does not exist")
+    $.get('/playPanic', data);
+
+   //if hand now as low as life points, turn should end 
+  // $.get('/checkHandSizeEndTurn', data);
+  discardCardFromHand(i);
+
+  }
+}
 
 //general format for getting index & applying function on card click (not Jquery, don't use leading # for ID)
 function applytoIndexElement(elementID, theFunction) {

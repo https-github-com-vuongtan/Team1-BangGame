@@ -12,9 +12,6 @@ const getrandomrolecards = require("./Modules-ServerSide/randomRoleModule")
 const getpauseandend = require("./Modules-ServerSide/PauseAndEndServerModule")
 const elimination = require("./Modules-ServerSide/playerEliminationModule")
 
-
-
-
 let count = 0
 let listdesuser = []
 let checkuserexist = false
@@ -281,8 +278,11 @@ function pushdatatolist(username, socketid) {
     hand: [
       { "id": 1, "card": 'bang', },
       { "id": 2, "card": 'bang', },
-      { "id": 3, "card": 'missed', },
+      { "id": 3, "card": 'saloon', },
+      { "id": 4, "card": 'saloon', },
+      { "id": 4, "card": 'panic', },
       { "id": 4, "card": 'missed', },
+
     ],
   }
   playerData.push(newPlayer);
@@ -394,6 +394,36 @@ app.get('/actionLog', function (req, res) {
   res.send("action log hit")
 });
 
+app.get('/playSaloon', function (req, res) {
+  const data = {
+    name: req.query.name,
+    action: `played saloon`
+  }
+  io.emit("updateactionlog", data);
+
+  playerData.forEach(player => {
+
+    if (player.currentLife < player.maxLife && !player.eliminated) {
+      player.currentLife++;
+      const data = {
+        name: player.name,
+        action: `gained a life point`
+      }
+      io.emit("updateactionlog", data)
+    }
+  })
+io.emit("bulletUpdate", JSON.stringify(playerData));
+res.send("saloon played");
+})
+
+app.get('/playPanic', function (req, res) { 
+  const data = {
+    name: req.query.name,
+    action: `played panic`
+  }
+  io.emit("updateactionlog", data);
+  res.send("panic played");
+})
 
 app.get('/shootBang', function (req, res) {
   const targetId = req.query.targetId
@@ -493,33 +523,33 @@ function eliminatePlayer(deadPlayer, killerPlayer) {
     statusgame = "";
     playerData.splice(0, playerData.length);
     }*/
-  } 
+  }
 }
 
-function initialiseGameData(){
- count = 0;
- listdesuser = [];
- checkuserexist = false;
- statusgame = ""
- socketofeachuser ="";
- checksocketexist = false;
- currenttime = "";
- phasetime = "";
- phasestatus = "";
- statuscharactercard = "";
- minutes = "";
- seconds = "";
- idround = 1;
- statusphase = "";
- statuspause = "";
- pausetime = 0;
- listcharactercards = require("./json lists/CharacterCardsList.json");
-listedrolecards = require("./json lists/roleCardList.json");
-newPlayer = require("./json lists/playerDataList.json");
- setTimeout(()=>{
-  playerData.splice(0, playerData.length);
-  discardPile.splice(0, playerData.length);
-}, 3000)
+function initialiseGameData() {
+  count = 0;
+  listdesuser = [];
+  checkuserexist = false;
+  statusgame = ""
+  socketofeachuser = "";
+  checksocketexist = false;
+  currenttime = "";
+  phasetime = "";
+  phasestatus = "";
+  statuscharactercard = "";
+  minutes = "";
+  seconds = "";
+  idround = 1;
+  statusphase = "";
+  statuspause = "";
+  pausetime = 0;
+  listcharactercards = require("./json lists/CharacterCardsList.json");
+  listedrolecards = require("./json lists/roleCardList.json");
+  newPlayer = require("./json lists/playerDataList.json");
+  setTimeout(() => {
+    playerData.splice(0, playerData.length);
+    discardPile.splice(0, playerData.length);
+  }, 3000)
 }
 
 app.get('/newUser', function (data) {
