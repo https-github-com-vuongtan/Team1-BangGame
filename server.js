@@ -412,11 +412,11 @@ app.get('/playSaloon', function (req, res) {
       io.emit("updateactionlog", data)
     }
   })
-io.emit("bulletUpdate", JSON.stringify(playerData));
-res.send("saloon played");
+  io.emit("bulletUpdate", JSON.stringify(playerData));
+  res.send("saloon played");
 })
 
-app.get('/playPanic', function (req, res) { 
+app.get('/playPanic', function (req, res) {
   const data = {
     name: req.query.name,
     action: `played panic`
@@ -467,6 +467,10 @@ app.get('/discardHandCard', function (req, res) {
     if (player.name == name) {
       discardedCard = player.hand.splice(index, 1);
       discardPile.push({ "card": discardedCard[0].card });
+
+      for (i = 0; i < player.hand.length; i++) {
+        player.hand[i].id = i + 1;
+      }
     }
   })
   io.emit("handUpdate", JSON.stringify(playerData))

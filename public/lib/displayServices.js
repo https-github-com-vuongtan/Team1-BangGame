@@ -1,22 +1,39 @@
 //card services
-function saloon(index) {
+
+//general format for getting index & applying function on card click (not Jquery, don't use leading # for ID)
+/*
+function saloon(data) {
+  var h = document.getElementById("mainHand");
+  for (var i = 0, len = h.children.length; i < len; i++) {
+    (function (index) {
+      h.children[i].onclick = function () {
+        console.log(i);
+        //mydata.index = i;
+        //funcData.index = i;
+        console.log('an indexed function ' + i);
+        applySaloon(index);
+      }
+    })(i);
+  }
+
+}
+*/
+function saloon(sData) {
   if ((phaseuser == nameplayer) && (parseInt(phasenumber) == 2)) {
    let data = {
-     index: index,
+     index: sData.index,
       name: nameplayer
     }
-    console.log('salData '+ data.index)
-
    $.get('/playSaloon', data);
    discardCardFromHand(data);
   }
 }
 
-function panic(index) {
+function panic(pData) {
   let data = {
+    index: pData.index,
     name: nameplayer,
-    index: index,
-   // gameData: panData.gameData
+    gameData: pData.gameData
   }
   if ((phaseuser == nameplayer) && (parseInt(phasenumber) == 2)) {
   //  #panicPlayers
