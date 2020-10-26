@@ -14,6 +14,7 @@ function BangAttack(socketid){
         }
 
         if(socketphase==socketid&&phasenumber==2&&data.pause==0&&lifecurrent.life>0){
+          updatetypecard("bang")
             $(`#bangModal`).modal('open')
         }
         })
