@@ -1,5 +1,15 @@
 //card services
-
+//Update bullets in response to socket message
+function nameUpdate() {
+  socket.on("nameUpdate", data => {
+    const playerData = JSON.parse(data)
+    playerData.forEach((player) => {
+      if (player.socket == socketid) {
+        updateBulletDisplay(playerData, player)
+      }
+    })
+  })
+}
 
 function saloon(sData) {
   if ((phaseuser == nameplayer) && (parseInt(phasenumber) == 2)) {
@@ -13,11 +23,9 @@ function saloon(sData) {
 }
 
 function panic(pData) {
-
-  let gameData = pData.gameData;
-
+ let gameData = pData.gameData;
   if ((phaseuser == nameplayer) && (parseInt(phasenumber) == 2)) {
-
+    
     //start with default distance values (custom modification for panic)
     let reachDistance = 1;
     let b5distance = 1;
@@ -186,8 +194,6 @@ function panic(pData) {
         discardCardFromHand(hData);
         $(`#panicCardSelectModal`).modal('close');
         $(`#panicPlayerSelectModal`).modal('close');
-
-        console.log($(this).data("paniccard"));
       });
     });
   }
@@ -201,11 +207,6 @@ function applytoIndexElement(elementID, theFunction) {
   for (var i = 0, len = h.children.length; i < len; i++) {
     (function (funcData) {
       h.children[i].onclick = function () {
-        console.log(i);
-        console.log(theFunction);
-        //mydata.index = i;
-        //funcData.index = i;
-        console.log('an indexed function ' + i)
         theFunction(funcData);
       }
     })(i);
@@ -323,6 +324,7 @@ function endGame() {
     }
     $("#winPic").html(imgString);
     $("#winMessage").html(msgString);
+    $('#endGameModal').modal({dismissible: false});
     $('#endGameModal').modal('open');
   })
 }

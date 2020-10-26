@@ -297,10 +297,15 @@ padding:0px;
 max-width:15%;
 }
 
+:root {
+  --imgMaxWidth: 15%;
+}
+
 #mainHand img
 {
 /*will be dynamically adjusted for very large hands*/
-max-width:15%;
+/*max-width:15%;*/
+max-width: var(--imgMaxWidth);
 }
 
 

@@ -6,6 +6,9 @@ function displayHand() {
       if (data.socket == socketid) {
         let hand = data.hand
         let divString = ""
+        //reduce max-width for extra-large hands
+        let maxWidth = Math.floor(100/hand.length);
+        document.documentElement.style.setProperty('--imgMaxWidth', `${maxWidth}%`);
         console.log(hand)
         $("#mainHand").html("");
         for (var i = 0; i < hand.length; i++) {

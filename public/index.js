@@ -40,6 +40,7 @@ window.onload = function(e){
   endGame()
   displayCardsInPlay()
   displayEliminations()
+  updateInitialName()
   //missedOption()
   // shotBang()
 }

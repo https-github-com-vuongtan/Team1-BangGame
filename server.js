@@ -282,6 +282,12 @@ function pushdatatolist(username, socketid) {
       { "id": 4, "card": 'saloon', },
       { "id": 4, "card": 'panic', },
       { "id": 4, "card": 'missed', },
+      { "id": 4, "card": 'panic', },
+      { "id": 4, "card": 'panic', },
+      { "id": 4, "card": 'panic', },
+      { "id": 4, "card": 'panic', },
+      { "id": 4, "card": 'panic', },
+      { "id": 4, "card": 'missed', },
 
     ],
   }
@@ -355,7 +361,7 @@ app.get('/submitname', function (req, res) {
   res.send(message)
   if (message == "Successful") {
     pushdatatolist(username, socketid)
-    io.emit("updatePlayerName", JSON.stringify(playerData))
+    io.emit("updateInitialPlayerName", JSON.stringify(playerData))
 
   }
   checknumberofplayer()
@@ -491,7 +497,9 @@ app.get('/playPanic', function (req, res) {
     console.log("panic error: no card selection found")
   }
 
-  io.emit("handUpdate", JSON.stringify(playerData))
+  io.emit("handUpdate", JSON.stringify(playerData));
+  io.emit("cardsInPlayUpdate", JSON.stringify(playerData));
+
   const data = {
     name: req.query.name,
     action: `played panic on ${playerData[targetIndex].name}`
