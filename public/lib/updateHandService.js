@@ -41,15 +41,15 @@
 
 
                if(hand[i].card=="Wells Fargo"){
-                $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Wells" class="responsive ${hand[i].card}">`)  
+                $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Wells" class="responsive ${hand[i].card}" data-handpos="${i}">`)  
                 wellfargo="true"
                }
                else if(hand[i].card=="general store"){
-                $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="general" class="responsive ${hand[i].card}">`)  
+                $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="general" class="responsive ${hand[i].card}" data-handpos="${i}">`)  
                 generalstore="true"
                }
                 else{
-                  $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card}">`)  
+                  $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card}" data-handpos="${i}">`)  
                 }
 
 
@@ -79,8 +79,28 @@
                 if(generalstore=="true"){
                   general(socketid)
                 }
-                            //update (private) handsize
-    updateHandSizeDisplay(mydata, data)
+                $(`.saloon`).click(function () {
+                  console.log(`Saloon Hit`)
+                  let sData = {
+                    index: parseInt($(this).data("handpos")),
+                    gameData: mydata
+                  }
+                  console.log(sData.index)
+                  saloon(sData);
+                });
+        
+                $(`.panic`).click(function () {
+                    let pData = {
+                    index: parseInt($(this).data("handpos")),
+                    gameData: mydata
+                  }
+                    console.log(`Panic Hit`)
+                    panic(pData);
+                  });  
+                
+                applytoIndexElement("mainHand", endOfTurnDiscard);
+                  //update (private) handsize
+                  updateHandSizeDisplay(mydata, data);
             }
             })      
           })
