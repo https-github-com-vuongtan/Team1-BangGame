@@ -8,6 +8,7 @@
           let duel="false"
           let indians="false"
           let generalstore="false"
+          let bang = "false"
 
 
 
@@ -38,6 +39,9 @@
                if(hand[i].card=="indians"){
                 indians="true"
                }
+               if(hand[i].card=="bang"){
+                bang="true"
+               }
 
 
                if(hand[i].card=="Wells Fargo"){
@@ -53,13 +57,11 @@
                 }
 
 
-                $(`.bang`).click(function() {
-                  console.log(`Card Hit`)
-                  updatetypecard("bang")
-                  $(`#bangModal`).modal('open') ;
-                  });
                   }
 
+                  if(bang=="true"){
+                    BangAttack(socketid)
+                    }
               if(galtingstatus=="true"){
               GatlingAttack(socketid)
               }

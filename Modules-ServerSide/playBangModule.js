@@ -1,3 +1,29 @@
+function checkDistance(data,playerData, io){
+  console.log("distance check started")
+var attackerRange = ""
+var targetDistance = parseInt(data.distance)
+  playerData.forEach(attacker=>{
+    if (attacker.name == data.attackerName){
+      attackerRange = attacker.range
+      console.log(attackerRange)
+      if (data.scope == true){
+        attackerRange= attackerRange + 1
+      }
+    }
+  })
+  playerData.forEach(target=>{
+    if (target.id==data.targetId){
+      console.log(target.distanceMod)
+      targetDistance = targetDistance + target.distanceMod
+      console.log(targetDistance)
+    }
+  })
+if (attackerRange >= targetDistance){
+  console.log("distance check complete")
+  playBang(data, playerData, io)
+}
+}
+
 function playBang(data, playerData, io){
 
     var missedCount = 0
@@ -31,7 +57,8 @@ function playBang(data, playerData, io){
   
         if (missedCount < 1){
           player.currentLife = player.currentLife -1
-          missedCount = 0; 
+          missedCount = 0;
+          io.emit("bulletUpdate", JSON.stringify(playerData)) 
           const data2 ={
             name: data.attackerName,
             action: `shot ${player.name}`,
@@ -51,8 +78,10 @@ function playBang(data, playerData, io){
        }
       
     })
+    io.emit("bulletUpdate", JSON.stringify(playerData))
   }
 
   module.exports={
       playBang,
+      checkDistance
   }

@@ -1224,11 +1224,14 @@ if(checklivestatus=="true"){
 app.get('/shootBang', function(req,res){
   const targetId = req.query.targetId
   const attackerName = req.query.name
+  const distance = req.query.distance
 const data ={
   targetId:targetId,
-  attackerName: attackerName
+  attackerName: attackerName,
+  distance: distance
 }
-bang.playBang(data,playerData, io)
+console.log(data)
+bang.checkDistance(data,playerData, io)
 res.send("200")
 })
 
