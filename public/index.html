@@ -68,7 +68,7 @@
                         <img id="topleft" alt="" class="responsive cardOnly">
                     </div>
                     <div class="cardsInPlay">
-                        <img id="c5WeaponCard" src="assets/cards/colt45.png" alt="" class="responsive cardOnly">
+                        <img id="c5WeaponCard" src="assets/cards/colt45.png" alt="colt45" class="responsive cardOnly hoverCard">
                     </div>
                 </div>
                 <div class="topMiddleGrid">
@@ -85,9 +85,8 @@
                     </div>
 
                     <div class="cardsInPlay">
-                        <img src="assets/cards/mustang.png" alt="description" class="responsive cardOnly" hidden>
-                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt=""
-                            class="responsive cardOnly">
+                        <img src="assets/cards/mustang.png" alt="mustang" class="responsive cardOnly hoverCard" hidden>
+                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt="colt45" class="responsive cardOnly hoverCard">
                     </div>
                     <div class="characterCard">
                         <img id="topright"  class="responsive cardOnly">
@@ -115,20 +114,20 @@
                     </div>
                     <div class="cardsInPlay">
                         <!--.cardsInPlay-->
-                        <img src="assets/cards/scope.png" alt="scope" class="responsive" hidden>
-                        <img id="b5WeaponCard" src="assets/cards/colt45.png" alt="" class="responsive">
-                        <img src="assets/cards/barrel.png" alt="" class="responsive" hidden>
-                        <img src="assets/cards/mustang.png" alt="" class="responsive" hidden>
-                        <img src="assets/cards/jail.png" alt="" class="responsive" hidden>
-                        <img src="assets/cards/dynamite.png" alt="" class="responsive" hidden>
+                        <img src="assets/cards/scope.png" alt="scope" class="responsive hoverCard" hidden>
+                        <img id="b5WeaponCard" src="assets/cards/colt45.png" alt="colt45" class="responsive hoverCard">
+                        <img src="assets/cards/barrel.png" alt="barrel" class="responsive hoverCard" hidden>
+                        <img src="assets/cards/mustang.png" alt="mustang" class="responsive hoverCard" hidden>
+                        <img src="assets/cards/jail.png" alt="Jail" class="responsive hoverCard" hidden>
+                        <img src="assets/cards/dynamite.png" alt="dynamite" class="responsive hoverCard" hidden>
                     </div>
                 </div>
-                <div class="midMidGrid">
+                <div class="midMidGrid underlay">
                     <div class="deckGrid">
                         <img id="cardDeck" src="assets/cardDeck.png" class="responsive">
                         <img id="discardPile" src="assets/discardPile.png" class="responsive">
-
                     </div>
+                    <div id="cardDescription" class="overlay hidden" style="background-color: black; text-align:center">some test text here</div>
                     <div id="deckInstructions">
                         <div id="instructions"></div>
                         <div id="turnDraw" class="hidden">Draw from deck</div>
@@ -138,6 +137,7 @@
                     </div>
 
                 </div>
+
                 <div id="e5" class="rightGrid">
 
                     <div class="playerName">Waiting...
@@ -151,9 +151,9 @@
                     </div>
                     <div class="cardsInPlay">
                         <!--.cardsInPlay-->
-                        <img src="assets/cards/Jail.png" alt="scope" class="responsive" hidden>
-                        <img id="e5WeaponCard" src="assets/cards/colt45.png" alt="scope" class="responsive">
-                        <img src="assets/cards/dynamite.png" alt="scope" class="responsive" hidden>
+                        <img src="assets/cards/Jail.png" alt="Jail" class="responsive hoverCard" hidden>
+                        <img id="e5WeaponCard" src="assets/cards/colt45.png" alt="colt45" " class="responsive hoverCard">
+                        <img src="assets/cards/dynamite.png" alt="scope" class="responsive hoverCard" hidden>
 
 
                     </div>
@@ -202,7 +202,7 @@
                         <img id="maincharacterimage" alt="" class="responsive cardOnly">
                     </div>
                     <div id="mainCardsInPlay" class="cardsInPlay">
-                        <img id="mainCharacterWeapon" src="assets/cards/colt45.png" alt="weapon" class="responsive">
+                        <img id="mainCharacterWeapon" src="assets/cards/colt45.png" alt="weapon" class="responsive hoverCard">
 
                     </div>
 
@@ -495,6 +495,9 @@
         <button class="btn-orange" id="playAgainBtn" style="margin-left: 10px">Play Again?</button>
     </div>
 
+</div>
+<div id="descriptionModal" class="modal bgSky">
+    <div id="descriptionText">some text</div>
 </div>
 
 </html>

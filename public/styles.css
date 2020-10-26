@@ -495,6 +495,12 @@ z-index: 1;
 max-height: 20vh;
 }
 
+
+.underlay
+{
+z-index: 1;
+}
+
 .sheriffStar
 {
 margin-top:60%;
@@ -514,6 +520,24 @@ grid-column: 1;
 grid-row: 1;
 z-index: 1;
 max-height: 20vh;
+}
+
+.overlay
+{
+z-index: 1;
+color: rgb(216, 216, 247);
+position: absolute;
+  top: 380px;
+  margin-left: -40px;
+  padding:15px;
+text-align: center;
+  min-height: 60px;
+  width: 200px;
+  border-radius:15px;
+  opacity: 0.7;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: 0.8em;
+  vertical-align: middle;
 }
 
 .leftGrid .cardsInPlay

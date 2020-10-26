@@ -7,13 +7,13 @@ function displayHand() {
         let hand = data.hand
         let divString = ""
         //reduce max-width for extra-large hands
-        let maxWidth = Math.floor(100/hand.length);
+        let maxWidth = Math.floor(100 / hand.length);
         document.documentElement.style.setProperty('--imgMaxWidth', `${maxWidth}%`);
         console.log(hand)
         $("#mainHand").html("");
         for (var i = 0; i < hand.length; i++) {
           console.log(hand[i].card)
-          $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card}" data-handpos="${i}">`);
+          $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card} hoverCard" data-handpos="${i}">`);
           $("#mainHand").append(divString);
           $(`.bang`).click(function () {
             console.log(`Card Hit`)
@@ -31,17 +31,30 @@ function displayHand() {
         });
 
         $(`.panic`).click(function () {
-            let pData = {
+          let pData = {
             index: parseInt($(this).data("handpos")),
             gameData: mydata
           }
-            console.log(`Panic Hit`)
-            panic(pData);
-          });  
-        
+          console.log(`Panic Hit`)
+          panic(pData);
+        });
+
         applytoIndexElement("mainHand", endOfTurnDiscard);
-          //update (private) handsize
-          updateHandSizeDisplay(mydata, data);
+        //update (private) handsize
+        updateHandSizeDisplay(mydata, data);
+        $(".hoverCard").hover(function () {
+          altVal = $(this).attr("alt");
+          let altData = {
+            altVal: altVal
+          }
+          let descText = descriptionFinder(altData);
+          console.log(descText);
+          $("#cardDescription").html(descText)
+          $("#cardDescription").removeClass("hidden")
+        }, function () {
+          $("#cardDescription").addClass("hidden");
+          $("#cardDescription").html("");
+        });
       }
 
     })

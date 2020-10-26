@@ -23,9 +23,9 @@ function saloon(sData) {
 }
 
 function panic(pData) {
- let gameData = pData.gameData;
+  let gameData = pData.gameData;
   if ((phaseuser == nameplayer) && (parseInt(phasenumber) == 2)) {
-    
+
     //start with default distance values (custom modification for panic)
     let reachDistance = 1;
     let b5distance = 1;
@@ -324,7 +324,7 @@ function endGame() {
     }
     $("#winPic").html(imgString);
     $("#winMessage").html(msgString);
-    $('#endGameModal').modal({dismissible: false});
+    $('#endGameModal').modal({ dismissible: false });
     $('#endGameModal').modal('open');
   })
 }
@@ -462,3 +462,76 @@ $(document).ready(function () {
 })
 
 
+function descriptionFinder(data) {
+  let altValue = data.altVal; 
+  console.log(altVal);
+  var desc = "no description available"
+  switch (altValue) {
+      case ("bang"): desc = "Shoots a (reachable) player to take a life point"; 
+      break;
+      case ("beer"): desc = "Restores a life point"; 
+      break;
+      case ("missed"): desc = "Cancels the effect of a bang card"; break;
+      case ("Gatling"): desc = "Shoots bang to all other players, regardless of distance"; 
+      break;
+      case ("colt45"): desc = "default weapon: shoots at a distance of 1 "; 
+      break;
+      case ("scope"): desc = "See other players at a distance decreased by 1 "; 
+      break;
+      case ("mustang"): desc = "Others view you at distance +1";
+      break;
+      case ("remington"): desc = "Shoots a distance of 3"; 
+      break;
+      case ("rev carabine"): desc = "Shoots a distance of 4"; 
+      break;
+      case ("schofield"): desc = "Shoots a distance of 2"; 
+      break;
+      case ("winchester"): desc = "Shoots a distance of 5"; 
+      break;
+      case ("volcanic"): desc = "Allows unlimited bang plays"; 
+      break;
+      case ("saloon"): desc = "All players gain a life point"; 
+      break;
+      case ("Wells Fargo"): desc = "Draw three cards"; 
+      break;
+      case ("cat balou"): desc = "Force any one player to discard a card"; 
+      break;
+      case ("stagecoach"): desc = "Draw two cards"; 
+      break;
+      case ("duel"): desc = "Target player discards a card, then you, etc; first without a bang to discard loses a life point"; 
+      break;
+      case ("general store"): desc = "Reveal as many cards as players; each player draws one"; 
+      break;
+      case ("indians"): desc = "All other players discard a bang or lose a life point"; 
+      break;
+      case ("panic"): desc = "Draw a card from a player at distance 1"; 
+      break;
+      case ("barrel"): desc = "Draw on a bang; hearts and you're missed!"; 
+      break;
+      case ("dynamite"): desc = "Draw on turn: for spades 2 to 9, lose 3 life points; else passes to the left-hand player"; 
+      break;
+      case ("Jail"): desc = "Draw on turn then discard: for hearts play on; otherwise, skip turn. "; 
+      break;
+      case ("Suzy Lafayette"): desc = "When her hand becomes empty, she draws a card"; 
+      break;
+      case ("Vulture Sam"): desc = "When a player is eliminated he takes all their cards"; 
+      break;
+      case ("Willy The Kid"): desc = "He can play any number of bangs"; 
+      break;
+      case ("Rose Doolan"): desc = "She sees all players at a distance decreased by one"; 
+      break;
+      case ("Paul Regret"): desc = "All players see him at a distance increased by one"; 
+      break;
+      case ("Sheriff"): desc = "Kill the Outlaws and Renegade"; 
+      break;
+      case ("Outlaw"): desc = "Kill the Sheriff"; 
+      break;
+      case ("Renegade"): desc = "Be the last one in play"; 
+      break;
+      case ("Deputy"): desc = "Protect the Sheriff; kill the Outlaws and Renegade"; 
+      break;
+      case ("weapon"): desc = "Current weapon"; 
+      break;
+  }
+  return desc;
+}
