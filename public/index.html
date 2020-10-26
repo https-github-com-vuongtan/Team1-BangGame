@@ -309,10 +309,61 @@
 
 </body>
 <!--Panic (select player) Modal Structure -->
-<div id="panicSelectPlayerModal" class="modal bottom-sheet">
-    <div class="modal-content">
+<div id="panicPlayerSelectModal" class="modal bottom-sheet">
+    <div class="modal-content" style="text-align: center;"> 
         <h4>Panic! Take card from which player?</h4>
-        <div id="panicPlayers">
+        <div id="panicPlayers" class="restrictImage">
+            <div class="row choiceCard" style="text-align: center; margin:auto">
+                <!-- Player 1 -->
+                <div class="col s1 m1 l1 offset-l1 offset-s1 offset-m1">
+                    <div class="card" id="c5panicPlayerModal">
+                        <div class="card-image">
+                            <a data-target="" class="btn-floating halfway-fab waves-effect waves-light red"><i
+                                    class="material-icons">add</i></a>
+                        </div>
+                        <div class="card-content"></div>
+                    </div>
+                </div>
+    
+                <div class="col s1 m1 l1">
+                    <div class="card" id="b5panicPlayerModal">
+                        <div class="card-image">
+                            <a class="btn-floating halfway-fab waves-effect waves-light red"><i
+                                    class="material-icons">add</i></a>
+                        </div>
+                        <div class="card-content"></div>
+                    </div>
+                </div>
+    
+                <div class="col s1 m1 l1">
+                    <div class="card" id="a5panicPlayerModal">
+                        <div class="card-image"></div>
+                        <div class="card-content"></div>
+                    </div>
+                </div>
+     
+                <div class="col s1 m1 l1">
+                    <div class="card" id="e5panicPlayerModal">
+                        <div class="card-image">
+                            <a class="btn-floating halfway-fab waves-effect waves-light red"><i
+                                    class="material-icons">add</i></a>
+                        </div>
+                        <div class="card-content"></div>
+                    </div>
+                </div>
+
+                <div class="col s1 m1 l1">
+                    <div class="card" id="d5panicPlayerModal">
+                        <div class="card-image">
+                            <a class="btn-floating halfway-fab waves-effect waves-light red"><i
+                                    class="material-icons">add</i></a>
+                        </div>
+                        <div class="card-content"></div>
+                    </div>
+                </div>
+
+    
+            </div>
         </div>
         <div class="modal-footer">
         </div>
@@ -320,15 +371,13 @@
 </div>
 
 <!--Panic (select card) Modal Structure -->
-<div id="panicSelectPlayerModal" class="modal">
-    <div class="modal-content">
+<div id="panicCardSelectModal" class="modal restrictImage">
+    <div class="modal-content text-align:center">
         <h4>Select one card to take</h4>
         <div id="panicCardsInPlay"></div>
         </div>
         <div id="panicPrivateHand">
-            <img src="assets/CardBackVertical.png">
         </div>
-        Random private hand card
     </div>
 </div>
 

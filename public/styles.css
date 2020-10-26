@@ -345,6 +345,24 @@ direction: rtl;
   max-width:108px;
 }
 
+#panicCardSelectModal
+{
+  padding: 20px;
+  text-align: center;
+  vertical-align: center;
+  min-width: 60%;
+  max-height: 80%;
+  /*background-color: rgb(251, 248, 229);*/
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: 500;
+  font-style: italic;
+  border-radius: 15px;}
+
+.restrictImage img
+{
+  max-height:150px;
+}
 .turnButtonPanel
 {
   padding:2px;

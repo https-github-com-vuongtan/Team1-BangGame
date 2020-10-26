@@ -355,6 +355,8 @@ app.get('/submitname', function (req, res) {
   res.send(message)
   if (message == "Successful") {
     pushdatatolist(username, socketid)
+    io.emit("updatePlayerName", JSON.stringify(playerData))
+
   }
   checknumberofplayer()
 });
@@ -417,9 +419,82 @@ app.get('/playSaloon', function (req, res) {
 })
 
 app.get('/playPanic', function (req, res) {
+  let panicPlayerName = req.query.name;
+  let targetIndex = req.query.targetPlayerIndex;
+  let targetCard = req.query.targetCard;
+  let card = "none";
+  let cardIndex;
+  switch (targetCard) {
+    //if mystery "in hand" card chosen, pick a random card and remove from target
+
+    case ("mystery"):
+      cardIndex = Math.floor(Math.random() * (playerData[targetIndex].hand.length))
+      let cardHand = playerData[targetIndex].hand.splice(cardIndex, 1);
+      card = cardHand[0].card;
+      //fix target hand indexing post card removal
+      for (i = 0; i < playerData[targetIndex].hand.length; i++) {
+        playerData[targetIndex].hand[i].id = i + 1;
+      }
+      break;
+    //if an "in play" card, set target value to false and make it the card to be added to panic player
+    case ("scope"):
+      playerData[targetIndex].scope = false
+      card = "scope";
+      break;
+    case ("mustang"):
+      playerData[targetIndex].mustang = false
+      card = "mustang";
+      break;
+    case ("barrel"):
+      playerData[targetIndex].barrel = false
+      card = "barrel";
+      break;
+    case ("jail"):
+      playerData[targetIndex].jail = false
+      card = "jail";
+      break;
+    case ("dynamite"):
+      playerData[targetIndex].dynamite = false
+      card = "dynamite";
+      break;
+    case ("remington"):
+      playerData[targetIndex].weapon = "colt45"
+      card = "remington";
+      break;
+    case ("rev carabine"):
+      playerData[targetIndex].weapon = "colt45"
+      card = "rev carabine";
+      break;
+    case ("schofield"):
+      playerData[targetIndex].weapon = "colt45"
+      card = "schofield";
+      break;
+    case ("volcanic"):
+      playerData[targetIndex].weapon = "colt45"
+      card = "volcanic";
+      break;
+    case ("winchester"):
+      playerData[targetIndex].weapon = "colt45"
+      card = "winchester";
+      break;
+    default:
+      console.log("card not found");
+  }
+  if (card != "none") {
+    playerData.forEach(player => {
+      //add the card to panic player's hand
+      if (player.name == panicPlayerName) {
+        player.hand.push({ id: (player.hand.length + 1), card: card })
+      }
+    })
+  } else {
+    console.log("panic error: no card selection found")
+  }
+
+  io.emit("handUpdate", JSON.stringify(playerData))
   const data = {
     name: req.query.name,
-    action: `played panic`
+    action: `played panic on ${playerData[targetIndex].name}`
   }
   io.emit("updateactionlog", data);
   res.send("panic played");
@@ -515,18 +590,6 @@ function eliminatePlayer(deadPlayer, killerPlayer) {
     statusgame = 'gameover';
     //clear playerdata for newgame
     initialiseGameData();
-    //once all players have disconnected, clear playerdata for new game
-    /* *****
-    let allEliminated = true;
-    playerData.forEach((user) => {
-      if (user.eliminated != true) {
-        allEliminated = false;
-      }
-    });
-    if (allEliminated) {
-    statusgame = "";
-    playerData.splice(0, playerData.length);
-    }*/
   }
 }
 

@@ -20,7 +20,7 @@ function displayHand() {
 
         $(`.saloon`).click(function () {
           console.log(`Saloon Hit`)
-          sData = {
+          let sData = {
             index: parseInt($(this).data("handpos")),
             gameData: mydata
           }
