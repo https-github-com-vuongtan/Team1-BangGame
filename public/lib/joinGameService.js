@@ -2,7 +2,6 @@
 //Join Game button
 $(document).ready(function(){
   $('.modal').modal();
-  
     $("#joinGameBtn").click(function(){
       let username=$('#joinName').val()
       let action= 'joined the game'

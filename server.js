@@ -20,6 +20,7 @@ const getgeneral = require("./Modules-ServerSide/GeneralModule")
 const elimination = require("./Modules-ServerSide/playerEliminationModule")
 
 
+
 let countgatling=0
 let countresponsegatling=0
 let pausetimeforgatling="false"
@@ -420,6 +421,12 @@ app.get('/submitname', function (req, res) {
   const username = req.query.user
   const socketid = req.query.socket
   message = checkvalidation(username, socketid, res)
+  //Testing phase for adding player
+  testingvalidation1(socketid)
+  //testingvalidataion2(socketid,res)
+
+
+
   res.send(message)
   if (message == "Successful") {
     pushdatatolist(username, socketid)
@@ -427,7 +434,15 @@ app.get('/submitname', function (req, res) {
 
   }
   checknumberofplayer()
+  //Testing phase for counting number
 });
+
+
+
+
+
+
+
 
 app.get('/desuser', function(req, res){
   res.send("Wating for more " +(5-playerData.length)+ " People")
@@ -784,6 +799,8 @@ app.get("/wellsfargo",function(req,res){
   }
   io.emit("handUpdate",JSON.stringify(playerData))
   res.send("OK")
+  //Testing phase WellFargo
+  testingWellFargo(playerData,socket)
 })
 
 //Trigger Indians
@@ -912,8 +929,6 @@ if(countresponsegatling==countgatling){
   countgatling=0
   countresponsegatling=0
 }
-
-
 res.send("OK")
 })
 
@@ -1128,6 +1143,10 @@ app.get("/beertrigger",function(req,res){
   }
   io.emit("handUpdate",JSON.stringify(playerData))
   io.emit("bulletUpdate", JSON.stringify(playerData))
+
+  //Testing for beer
+  testingbeer(sock)
+
 
 })
 
@@ -1536,3 +1555,56 @@ http.listen(3000, () => {
   readcharactercardfromdb()
     console.log('listening on *:3000');
 });
+
+//-----------------------Testing phase--------------------------//
+function testingvalidation1(socketid){
+  if(socketid==null){
+      error=("Error in Testing validation 1")
+      throw error
+  }
+  else{
+      console.log("Passed Testing validation 1")
+  }
+  }
+  
+  function testingvalidataion2(socketid,res){
+   let usernametest=null
+   let messagetest
+   messagetest=checkvalidation(usernametest,socketid,res)
+   if(messagetest!="Error"){
+      error=("Error in Testing validation 2")
+      throw error
+  }
+  else{
+      console.log("Passed  Testing validation 2")
+  }
+  }
+
+  function testingWellFargo(playerData,socket){
+    let listcard=[{"id":1,"playingcard":"bang"},
+    {"id":1,"playingcard":"bang"}
+      ]
+      let statuspicktest
+     statuspicktest=getwellfargo.randompickthreecards(listcard,playerData,socket)
+    if(statuspicktest!="Cannotpick"){
+      error=("Error in Testing Well Fargo")
+      throw error
+  }
+  else{
+      console.log("Passed  Testing Well Fargo")
+  }
+  }
+  function testingbeer(sockettest){
+    playerData.forEach(data=>{
+      if(data.socket==sockettest){
+        if(data.currentLife>data.maxLife){
+          error=("Error in Testing Beer Function")
+          throw error
+      }
+      else{
+          console.log("Passed  Testing Beer Function")
+      }
+        
+      }
+    })
+  }
