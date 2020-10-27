@@ -1,11 +1,11 @@
-function scopeAdd(data, playerData,io){
+function barrelAdd(data, playerData,io){
     playerData.forEach(player=>{
       if (player.socket == data.socket){
-        player.scope = true
+        player.barrel = true
         console.log(player)
     let handSize = player.hand.length
         for( let i= 0; i < handSize; i++){
-          if (player.hand[i].card == "scope"){
+          if (player.hand[i].card == "barrel"){
             console.log(player.hand[i].card)
             player.hand.splice(i,1)
             io.emit("handUpdate",JSON.stringify(playerData))
@@ -15,7 +15,7 @@ function scopeAdd(data, playerData,io){
     
         const data2 ={
           name: player.name,
-          action: ` played the Scope card!`,
+          action: ` played the Barrel card!`,
         }
         io.emit("updateactionlog",data2)
         io.emit("handUpdate",JSON.stringify(playerData))
@@ -25,5 +25,5 @@ function scopeAdd(data, playerData,io){
     }
 
     module.exports={
-        scopeAdd,
+        barrelAdd,
     }

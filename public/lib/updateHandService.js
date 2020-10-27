@@ -11,6 +11,7 @@
           let bang = "false"
           let weapon = "false"
           let scope = "false"
+          let barrel = "false"
           let stageCoach = "false"
 
 
@@ -47,6 +48,9 @@
                }
                if(hand[i].card=="scope"){
                 scope ="true"
+               }
+               if(hand[i].card=="barrel"){
+                barrel ="true"
                }
                if(hand[i].card=="stagecoach"){
                 stageCoach ="true"
@@ -96,6 +100,9 @@
               if(scope =="true"){
                 scopeAdd(socketid)
               }
+              if(barrel =="true"){
+                barrelAdd(socketid)
+              }
               if(stageCoach=="true"){
                 stageCoachClick(socketid)
               }
@@ -137,7 +144,7 @@
                     panic(pData);
                   });  
                 
-                applytoIndexElement("mainHand", endOfTurnDiscard);
+                // applytoIndexElement("mainHand", endOfTurnDiscard);
                   //update (private) handsize
                   updateHandSizeDisplay(mydata, data);
             }

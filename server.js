@@ -18,6 +18,8 @@ const getduel = require("./Modules-ServerSide/DuelModule")
 const getindians = require("./Modules-ServerSide/IndiansModule")
 const getgeneral = require("./Modules-ServerSide/GeneralModule")
 const weapon = require("./Modules-ServerSide/weaponChange")
+const scope = require("./Modules-ServerSide/ScopeModule")
+const barrel = require("./Modules-ServerSide/barrelModule")
 //Katrina
 const elimination = require("./Modules-ServerSide/playerEliminationModule")
 
@@ -366,7 +368,7 @@ function pushdatatolist(username, socketid) {
     dynamite: false,
     eliminated: false,
     bangPlayed: false,
-    hand: [{ id: 2, card: 'stagecoach' }, ],
+    hand: [{ id: 7, card: 'scope' }, ],
   }
   playerData.push(newPlayer);
   io.emit("descriptionuser", JSON.stringify(playerData))
@@ -1504,6 +1506,28 @@ app.get("/stagecoach",function(req,res){
 })
 
 /*------------------------------------------------------stageCoach End-------------------------------------------------*/
+
+/* ---------------------------------------------------- scope Start ---------------------------------------------------*/
+app.get("/addSope",function(req,res){
+  const data ={
+    socket: req.query.socket
+   }
+scope.scopeAdd(data,playerData,io)
+res.send("200")
+})
+
+/*------------------------------------------------------scope End-------------------------------------------------*/
+
+app.get("/addBarrel",function(req,res){
+  const data ={
+    socket: req.query.socket
+   }
+barrel.barrelAdd(data,playerData,io)
+res.send("200")
+})
+
+/*------------------------------------------------------scope End-------------------------------------------------*/
+
 io.on('connection', (socket) => {
   socketofeachuser = socket.id
   socket.on('disconnect', (reason) => {

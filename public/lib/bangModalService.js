@@ -127,12 +127,12 @@ function updateBang(){
 
  // d5
 
- $("#d5bangModal .card-image").append(`<img "src="assets/cards/${mydata[2].character}.png" alt="${mydata[2].character}" class="responsive ${mydata[2].character}">`)
+ $("#d5bangModal .card-image").append(`<img src="assets/cards/${mydata[2].character}.png" alt="${mydata[2].character}" class="responsive ${mydata[2].character}">`)
  $("#d5bangModal .card-content").append(`${mydata[2].name}`)
  $("#d5bangModal .btn-floating").attr('data-target',`${mydata[2].id}`)
 
  // e5
- $("#e5bangModal .card-image").append(`<img "src="assets/cards/${mydata[3].character}.png" alt="${mydata[3].character}" class="responsive ${mydata[3].character}">`)
+ $("#e5bangModal .card-image").append(`<img src="assets/cards/${mydata[3].character}.png" alt="${mydata[3].character}" class="responsive ${mydata[3].character}">`)
  $("#e5bangModal .card-content").append(`${mydata[3].name}`)
  $("#e5bangModal .btn-floating").attr('data-target',`${mydata[3].id}`)
 

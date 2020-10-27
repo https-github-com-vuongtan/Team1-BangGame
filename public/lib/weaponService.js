@@ -76,3 +76,57 @@ function updateWeapon(){
  
     })
 }
+
+function scopeAdd(socketid){
+  $('.scope').click(function(){
+    data1 ={
+      socket: socketid,
+    }
+      let pausetime;
+      let data2
+      let lifecurrent
+      let req={
+          socket:socketid
+      }
+      $.get("/getcurrentlife",req,data2=>{
+        lifecurrent=data2
+      })
+      $.get("/getpausetime",data=>{
+          let req={
+              socket:socketid
+          }
+          console.log(lifecurrent.life)
+          if(socketphase==socketid&&phasenumber==2&&data.pause==0&&lifecurrent.life>0){ 
+          $.get("/addSope",data1)
+      }
+      })
+
+  })
+}
+
+function barrelAdd(socketid){
+  $('.barrel').click(function(){
+    data1 ={
+      socket: socketid,
+    }
+      let pausetime;
+      let data2
+      let lifecurrent
+      let req={
+          socket:socketid
+      }
+      $.get("/getcurrentlife",req,data2=>{
+        lifecurrent=data2
+      })
+      $.get("/getpausetime",data=>{
+          let req={
+              socket:socketid
+          }
+          console.log(lifecurrent.life)
+          if(socketphase==socketid&&phasenumber==2&&data.pause==0&&lifecurrent.life>0){ 
+          $.get("/addBarrel",data1)
+      }
+      })
+
+  })
+}

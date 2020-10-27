@@ -1,14 +1,19 @@
 function checkDistance(data,playerData, io){
   console.log("distance check started")
-var attackerRange = ""
+var attackerRange = 0
 var targetDistance = parseInt(data.distance)
   playerData.forEach(attacker=>{
     if (attacker.name == data.attackerName){
-      attackerRange = attacker.range
-      console.log(attackerRange)
-      if (data.scope == true){
-        attackerRange= attackerRange + 1
+      attackerRange = parseInt(attacker.range)
+      console.log(`Attacker Range is ${attackerRange} before scope`)
+       if (attacker.scope == true){
+        attackerRange + 1
       }
+      console.log(`Attacker Range is ${attackerRange} after scope`)
+      if (attacker.character = "Rose Doolan"){
+        attackerRange + 1
+      }
+      console.log(`Attacker Range is ${attackerRange} after Rose Doolan check`)
     }
   })
   playerData.forEach(target=>{
@@ -20,11 +25,43 @@ var targetDistance = parseInt(data.distance)
       console.log(targetDistance)
     }
   })
+  console.log(`Attacker range ${attackerRange} vs Target Distance ${targetDistance}`)
 if (attackerRange >= targetDistance){
   console.log("distance check complete")
-  playBang(data, playerData, io)
+  //playBang(data, playerData, io)
+  checkBarrel(data,playerData,io)
 }
 }
+
+function checkBarrel(data, playerData, io){
+  barrelCheck = false;
+ playerData.forEach(target =>{
+   if (target.id == data.targetId){
+   if (target.barrel == true && barrelCheck == false){
+    let item = Math.floor(Math.random() * 4);
+    barrelCheck = true
+    if (item == 1){
+      const data3 ={
+        name: target.name,
+        action: ` drew a Heart and hid behind their Barrel!`,
+      }
+      io.emit("updateactionlog",data3)
+    }else{
+      const data2 ={
+        name: target.name,
+        action: ` failed to hide behind their Barrel!`,
+      }
+      io.emit("updateactionlog",data2)
+      playBang(data,playerData, io)
+        } 
+    console.log(`check Barrel reutrned ${item}`)
+    }else{
+    playBang(data,playerData, io)
+      }
+    }
+ })
+}
+
 
 function playBang(data, playerData, io){
 
