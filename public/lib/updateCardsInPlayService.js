@@ -21,19 +21,19 @@ function updateCardsInPlayDisplay(mydata, data) {
       if (player.eliminated) {
         switch (player.role) {
           case "Sheriff":
-            divString = '<img src="assets/cards/Sheriff.png" alt="" class="responsive cardOnly"></img>';
+            divString = '<img src="assets/cards/Sheriff.png" alt="Sheriff" class="responsive cardOnly hoverCard"></img>';
             $("#iSheriff").addClass("hidden");
             break;
           case "Deputy":
-            divString = '<img src="assets/cards/Deputy.png" alt="" class="responsive cardOnly"></img>';
+            divString = '<img src="assets/cards/Deputy.png" alt="Deputy" class="responsive cardOnly hoverCard"></img>';
             $("#iDeputy").addClass("hidden");
             break;
           case "Renegade":
-            divString = '<img src="assets/cards/Renegade.png" alt="" class="responsive cardOnly"></img>';
+            divString = '<img src="assets/cards/Renegade.png" alt="Renegade" class="responsive cardOnly hoverCard"></img>';
             $("#iRenegade").addClass("hidden");
             break;
           case "Outlaw":
-            divString = '<img src="assets/cards/Outlaw.png" alt="" class="responsive cardOnly"></img>';
+            divString = '<img src="assets/cards/Outlaw.png" alt="Outlaw" class="responsive cardOnly hoverCard"></img>';
             outlawNumber++;
             $(`#iOutlaw${outlawNumber}`).addClass("hidden");
         }
@@ -69,7 +69,8 @@ function updateCardsInPlayDisplay(mydata, data) {
     }
 
   });
-  $(".card").hover(function () {
+  
+  $(".hoverCard").hover(function () {
     altVal = $(this).attr("alt");
     let altData = {
       altVal: altVal

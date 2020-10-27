@@ -34,8 +34,10 @@ let idround = 1
 let statusphase = ""
 let statuspause = ""
 let pausetime = 0
-let listcharactercards = require("./json lists/CharacterCardsList.json")
-let listedrolecards = require("./json lists/roleCardList.json")
+let holdlistcharactercards = require("./json lists/CharacterCardsList.json") // $$$$$
+let listcharactercards = [...holdlistcharactercards];// $$$$$
+let holdlistedrolecards = require("./json lists/roleCardList.json") //$$$$$
+let listedrolecards = [...holdlistedrolecards];//$$$$$
 let newPlayer = require("./json lists/playerDataList.json")
 let myvar2;
 
@@ -179,17 +181,23 @@ function updatephase() {
   }
 
   if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 3) {
-    if (idround == 5) {
-      idround = 1
+    let data = {
+      limitPlayer: playerData[idround - 1],
+      discardPile: discardPile
     }
-    else {
-      idround++
-    }
-    statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
-    phasetime = new Date(currenttime);
-    phasetime.setSeconds(phasetime.getSeconds() + 15);
-    io.emit("infophase", statusphase)
-    return;
+    elimination.forceUnderHandLimit(data);
+    io.emit("handUpdate", JSON.stringify(playerData));
+if (idround == 5) {
+  idround = 1
+}
+else {
+  idround++
+}
+statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
+phasetime = new Date(currenttime);
+phasetime.setSeconds(phasetime.getSeconds() + 15);
+io.emit("infophase", statusphase)
+return;
   }
 
 }
@@ -266,7 +274,7 @@ function pushdatatolist(username, socketid) {
     position: count,
     maxLife: "maxLife",
     currentLife: "currentLife",
-    weapon: "colt45",
+    weapon: "winchester",
     range: 1,
     distanceMod: 0,
     scope: true,
@@ -597,7 +605,9 @@ function eliminatePlayer(deadPlayer, killerPlayer) {
     io.emit("endGame", JSON.stringify(endData));
     statusgame = 'gameover';
     //clear playerdata for newgame
+    console.log(listcharactercards); // ***** 
     initialiseGameData();
+    console.log(listcharactercards); // ***** 
   }
 }
 
@@ -618,8 +628,8 @@ function initialiseGameData() {
   statusphase = "";
   statuspause = "";
   pausetime = 0;
-  listcharactercards = require("./json lists/CharacterCardsList.json");
-  listedrolecards = require("./json lists/roleCardList.json");
+  listcharactercards = [...holdlistcharactercards];// $$$$$
+  listedrolecards = [...holdlistedrolecards];//$$$$$
   newPlayer = require("./json lists/playerDataList.json");
   setTimeout(() => {
     playerData.splice(0, playerData.length);
