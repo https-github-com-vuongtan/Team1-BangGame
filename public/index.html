@@ -65,18 +65,18 @@
                     <div class="privateHand">
                     </div>
                     <div class="characterCard">
-                        <img id="topleft" alt="description" class="responsive cardOnly">
+                        <img id="topleft" alt="" class="responsive cardOnly hoverCard">
                     </div>
                     <div class="cardsInPlay">
-                        <img id="c5WeaponCard" src="assets/cards/colt45.png" alt="description" class="responsive cardOnly">
+                        <img id="c5WeaponCard" src="assets/cards/colt45.png" alt="colt45" class="responsive cardOnly hoverCard">
                     </div>
                 </div>
                 <div class="topMiddleGrid">
                     <div class="undercoverRoles">
-                        <img id="iOutlaw1" src="assets/invertedOutlaw.png" alt="" class="responsive">
-                        <img id="iOutlaw2" src="assets/invertedOutlaw.png" alt="" class="responsive">
-                        <img id="iRenegade" src="assets/invertedRenegade.png" alt="" class="responsive">
-                        <img id="iDeputy" src="assets/invertedDeputy.png" alt="" class="responsive">
+                        <img id="iOutlaw1" src="assets/invertedOutlaw.png" alt="OutlawLeft" class="responsive hoverCard">
+                        <img id="iOutlaw2" src="assets/invertedOutlaw.png" alt="OutlawLeft" class="responsive hoverCard">
+                        <img id="iRenegade" src="assets/invertedRenegade.png" alt="RenegadeLeft" class="responsive hoverCard">
+                        <img id="iDeputy" src="assets/invertedDeputy.png" alt="DeputyLeft" class="responsive hoverCard">
                     </div>
                 </div>
                 <div id="d5" class="rightGrid">
@@ -85,12 +85,11 @@
                     </div>
 
                     <div class="cardsInPlay">
-                        <img src="assets/cards/mustang.png" alt="description" class="responsive cardOnly" hidden>
-                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt=""
-                            class="responsive cardOnly">
+                        <img src="assets/cards/mustang.png" alt="mustang" class="responsive cardOnly hoverCard" hidden>
+                        <img id="d5WeaponCard" src="assets/cards/colt45.png" alt="colt45" class="responsive cardOnly hoverCard">
                     </div>
                     <div class="characterCard">
-                        <img id="topright"  class="responsive cardOnly">
+                        <img id="topright"  class="responsive cardOnly hoverCard">
                     </div>
                     <div class="bulletTray">
                     </div>
@@ -111,24 +110,24 @@
                     <div class="privateHand">
                     </div>
                     <div class="characterCard">
-                        <img id="midleft"  class="responsive cardOnly">
+                        <img id="midleft"  class="responsive cardOnly hoverCard">
                     </div>
                     <div class="cardsInPlay">
                         <!--.cardsInPlay-->
-                        <img src="assets/cards/scope.png" alt="scope" class="responsive" hidden>
-                        <img id="b5WeaponCard" src="assets/cards/colt45.png" alt="" class="responsive">
-                        <img src="assets/cards/barrel.png" alt="" class="responsive" hidden>
-                        <img src="assets/cards/mustang.png" alt="" class="responsive" hidden>
-                        <img src="assets/cards/jail.png" alt="" class="responsive" hidden>
-                        <img src="assets/cards/dynamite.png" alt="" class="responsive" hidden>
+                        <img src="assets/cards/scope.png" alt="scope" class="responsive hoverCard" hidden>
+                        <img id="b5WeaponCard" src="assets/cards/colt45.png" alt="colt45" class="responsive hoverCard">
+                        <img src="assets/cards/barrel.png" alt="barrel" class="responsive hoverCard" hidden>
+                        <img src="assets/cards/mustang.png" alt="mustang" class="responsive hoverCard" hidden>
+                        <img src="assets/cards/jail.png" alt="Jail" class="responsive hoverCard" hidden>
+                        <img src="assets/cards/dynamite.png" alt="dynamite" class="responsive hoverCard" hidden>
                     </div>
                 </div>
-                <div class="midMidGrid">
+                <div class="midMidGrid underlay">
                     <div class="deckGrid">
                         <img id="cardDeck" src="assets/cardDeck.png" class="responsive">
                         <img id="discardPile" src="assets/discardPile.png" class="responsive">
-
                     </div>
+                    <div id="cardDescription" class="overlay hidden"></div>
                     <div id="deckInstructions">
                         <div id="instructions"></div>
                         <div id="turnDraw" class="hidden">Draw from deck</div>
@@ -138,6 +137,7 @@
                     </div>
 
                 </div>
+
                 <div id="e5" class="rightGrid">
 
                     <div class="playerName">Waiting...
@@ -145,15 +145,13 @@
 
                     <div class="characterCard">
                         <!--.characterCard-->
-                        <img id="midright" class="responsive cardOnly">
-                        <!-- <img  src="assets/SheriffStar.png" alt="Black Jack description" class="sheriffStar responsive"> -->
-
+                        <img id="midright" class="responsive cardOnly hoverCard">
                     </div>
                     <div class="cardsInPlay">
                         <!--.cardsInPlay-->
-                        <img src="assets/cards/Jail.png" alt="scope" class="responsive" hidden>
-                        <img id="e5WeaponCard" src="assets/cards/colt45.png" alt="scope" class="responsive">
-                        <img src="assets/cards/dynamite.png" alt="scope" class="responsive" hidden>
+                        <img src="assets/cards/Jail.png" alt="Jail" class="responsive hoverCard" hidden>
+                        <img id="e5WeaponCard" src="assets/cards/colt45.png" alt="colt45" " class="responsive hoverCard">
+                        <img src="assets/cards/dynamite.png" alt="scope" class="responsive hoverCard" hidden>
 
 
                     </div>
@@ -199,10 +197,10 @@
                         </div>
                     </div>
                     <div id="mainCharacterCard" class="characterCard">
-                        <img id="maincharacterimage" alt="" class="responsive cardOnly">
+                        <img id="maincharacterimage" alt="" class="responsive cardOnly hoverCard">
                     </div>
                     <div id="mainCardsInPlay" class="cardsInPlay">
-                        <img id="a5weapon" src="assets/cards/colt45.png" alt="weapon" class="responsive">
+                        <img id="mainCharacterWeapon" src="assets/cards/colt45.png" alt="weapon" class="responsive hoverCard">
 
                     </div>
 
@@ -253,8 +251,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
 
-
-
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
     <!-- Include all compiled plugins (below), or include individual files as needed -->
 
 
@@ -291,10 +288,7 @@
         <script src="lib/GeneraModalService.js"></script>
         <!--Katrina-->
         <script src="lib/updateCardsInPlayService.js"></script>
-        <script src="lib/updateBulletsService.js"></script>
         <script src="lib/discardServices.js"></script>
-
-
         <script src="lib/bangService.js"></script>
         <script src="lib/stageCoachService.js"></script>
 
@@ -496,7 +490,6 @@
 
 </body>
 
-
 <!--Bang Modal Structure -->
 <div id="bangModal" class="modal bottom-sheet">
     <div class="modal-content">
@@ -531,9 +524,9 @@
             </div>
 
             <div class="col s1 m1 l1">
-                <div class="card" id="d5bangModal">
+                <div class="card" id="e5bangModal">
                     <div class="card-image">
-                        <a class="btn-floating halfway-fab waves-effect waves-light red"data-distance="2"><i
+                        <a class="btn-floating halfway-fab waves-effect waves-light red"data-distance="1"><i
                                 class="material-icons">add</i></a>
                     </div>
                     <div class="card-content"></div>
@@ -541,9 +534,9 @@
             </div>
 
             <div class="col s1 m1 l1">
-                <div class="card" id="e5bangModal">
+                <div class="card" id="d5bangModal">
                     <div class="card-image">
-                        <a class="btn-floating halfway-fab waves-effect waves-light red"data-distance="1"><i
+                        <a class="btn-floating halfway-fab waves-effect waves-light red"data-distance="2"><i
                                 class="material-icons">add</i></a>
                     </div>
                     <div class="card-content"></div>
@@ -556,7 +549,6 @@
         </div>
     </div>
 </div>
-
 <!--Rules  Modal Structure -->
 <div id="rulesModal" class="modal modal-fixed-footer">
     <div class="modal-content">

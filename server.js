@@ -18,6 +18,7 @@ const getduel = require("./Modules-ServerSide/DuelModule")
 const getindians = require("./Modules-ServerSide/IndiansModule")
 const getgeneral = require("./Modules-ServerSide/GeneralModule")
 const weapon = require("./Modules-ServerSide/weaponChange")
+const scope = require("./Modules-ServerSide/ScopeModule")
 //Katrina
 const elimination = require("./Modules-ServerSide/playerEliminationModule")
 
@@ -54,9 +55,11 @@ let Sheriffrole="false"
 let statusphase=""
 let statuspause=""
 let pausetime=0
-let listcharactercards= []
-let listedrolecards = []
-let newPlayer = require("./json lists/playerDataList.json");
+let holdlistcharactercards = require("./json lists/CharacterCardsList.json") // $$$$$
+let listcharactercards = [...holdlistcharactercards];// $$$$$
+let holdlistedrolecards = require("./json lists/roleCardList.json") //$$$$$
+let listedrolecards = [...holdlistedrolecards];//$$$$$
+let newPlayer = require("./json lists/playerDataList.json")
 const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
 const { Console } = require('console');
 let myvar2;
@@ -262,6 +265,12 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
   }
 
   if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 3) {
+    let data = {
+            limitPlayer: playerData[idround - 1],
+            discardPile: discardPile
+           }
+          elimination.forceUnderHandLimit(data);
+          io.emit("handUpdate", JSON.stringify(playerData));
     if (idround == 5) {
       idround = 1
     }
@@ -371,6 +380,7 @@ function pushdatatolist(username, socketid) {
   playerData.push(newPlayer);
   io.emit("descriptionuser", JSON.stringify(playerData))
   io.emit("statusgame", "Wating for " + (5 - playerData.length) + "")
+  //io.emit("updateInitialPlayerName", JSON.stringify(playerData))
 }
 
 //Function to count the number players
@@ -444,8 +454,6 @@ app.get('/submitname', function (req, res) {
   res.send(message)
   if (message == "Successful") {
     pushdatatolist(username, socketid)
-    //io.emit("updatePlayerName", JSON.stringify(playerData))
-
   }
   checknumberofplayer()
   //Testing phase for counting number
@@ -671,8 +679,8 @@ function initialiseGameData() {
   statusphase = "";
   statuspause = "";
   pausetime = 0;
-  listcharactercards = require("./json lists/CharacterCardsList.json");
-  listedrolecards = require("./json lists/roleCardList.json");
+  listcharactercards = [...holdlistcharactercards];// $$$$$
+  listedrolecards = [...holdlistedrolecards];//$$$$$
   newPlayer = require("./json lists/playerDataList.json");
   setTimeout(() => {
     playerData.splice(0, playerData.length);
@@ -1686,6 +1694,10 @@ http.listen(3000, () => {
     readcharactercardfromdb()
     console.log('listening on *:3000');
 });
+
+app.get('/newUser', function (data) {
+  const name = data.name
+  const socketid = data.socket })
 
 //-----------------------Testing phase--------------------------//
 function testingvalidation1(socketid){

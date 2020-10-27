@@ -1,0 +1,39 @@
+diff --git a/public/lib/joinGameService.js b/public/lib/joinGameService.js
+index 885d4f4..4b97457 100644
+--- a/public/lib/joinGameService.js
++++ b/public/lib/joinGameService.js
+@@ -2,16 +2,15 @@
+ //Join Game button
+ $(document).ready(function () {
+   $('.modal').modal();
+-
+-  $("#joinGameBtn").click(function () {
+-    let username = $('#joinName').val()
+-    let action = 'joined the game'
+-    if (username != "") {
+-      const user = {
+-        user: username,
+-        socket: socketid,
+-      }
+-      $.get('/submitname', user, function (responsedata) {
++    $("#joinGameBtn").click(function(){
++      let username=$('#joinName').val()
++      let action= 'joined the game'
++      if(username!=""){
++      const user={
++        user:username,
++        socket:socketid,
++        }
++      $.get('/submitname',user, function (responsedata) {
+         alert(responsedata)
+         if (responsedata == "Successful") {
+           nameplayer = user.user
+@@ -60,7 +59,7 @@ $(document).ready(function () {
+             $.get('/actionLog', data)
+             $.get('/newUser', data)
+ 
+-            setTimeout(Board(), 1000);
++            setTimeout(displayGameBoard(), 1000);
+           }
+           statusregis = responsedata
+         })

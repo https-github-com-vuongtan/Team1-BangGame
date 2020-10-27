@@ -297,10 +297,15 @@ padding:0px;
 max-width:15%;
 }
 
+:root {
+  --imgMaxWidth: 15%;
+}
+
 #mainHand img
 {
 /*will be dynamically adjusted for very large hands*/
-max-width:15%;
+/*max-width:15%;*/
+max-width: var(--imgMaxWidth);
 }
 
 
@@ -345,6 +350,24 @@ direction: rtl;
   max-width:108px;
 }
 
+#panicCardSelectModal
+{
+  padding: 20px;
+  text-align: center;
+  vertical-align: center;
+  min-width: 60%;
+  max-height: 80%;
+  /*background-color: rgb(251, 248, 229);*/
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-weight: 500;
+  font-style: italic;
+  border-radius: 15px;}
+
+.restrictImage img
+{
+  max-height:150px;
+}
 .turnButtonPanel
 {
   padding:2px;
@@ -472,6 +495,12 @@ z-index: 1;
 max-height: 20vh;
 }
 
+
+.underlay
+{
+z-index: 1;
+}
+
 .sheriffStar
 {
 margin-top:60%;
@@ -491,6 +520,29 @@ grid-column: 1;
 grid-row: 1;
 z-index: 1;
 max-height: 20vh;
+}
+
+.overlay
+{
+z-index: 1;
+position: absolute;
+  top: 370px;
+  margin-left: -40px;
+  padding:15px;
+text-align: center;
+  min-height: 60px;
+  width: 200px;
+  border-radius:15px;
+  opacity: 0.8;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: 0.8em;
+  vertical-align: middle;
+
+ /* background-color: black; 
+  color: rgb(216, 216, 247);*/
+color: black;
+background-color: rgb(253, 252, 241);
+  text-align:center
 }
 
 .leftGrid .cardsInPlay
@@ -717,7 +769,6 @@ direction:rtl;
   border-radius: 15px;
 }
 
-
 #endGameModal img 
 {
   max-width: 50%;
@@ -733,9 +784,6 @@ direction:rtl;
   font-size: 1.8em;
   margin: 5px;
 }
-
-
-
 
 .hidden
 {

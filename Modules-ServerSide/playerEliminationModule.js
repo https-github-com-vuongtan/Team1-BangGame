@@ -1,3 +1,17 @@
+//automatically discard last cards of hand till under the hand limit // $$$$$
+function forceUnderHandLimit(data) {
+  player = data.limitPlayer;
+  discardPile = data.discardPile;
+  while (player.hand.length > player.currentLife) { // $$$$$
+    let index = (player.hand.length - 1); // $$$$$
+    let discardedCard = player.hand.splice(index, 1); // $$$$$
+    discardPile.push({ "card": discardedCard[0].card }); // $$$$$
+  }
+  for (i = 0; i < player.hand.length; i++) { // $$$$$
+    player.hand[i].id = i + 1; // $$$$$
+  } //$$$$$
+} // $$$$$
+
 //removes all players cards and returns as array of discarded cards
 function discardPlayerCards(player) {
   let discarded = [];
@@ -101,7 +115,7 @@ function endGameCheck(playerData) {
   let renegadeAlive = false;
   let deputyAlive = false;
   let winRole = 'None';
-  let winArray =[];
+  let winArray = [];
 
   playerData.forEach((player) => {
     if (!player.eliminated) {
@@ -137,20 +151,21 @@ function endGameCheck(playerData) {
   } else {
     console.log("Not at endgame: keep playing");
   }
-  
+
   playerData.forEach((player) => {
-    if ((player.role == winRole) || ((winRole == "Sheriff") && (player.role == ("Deputy")))){
-      winArray.push({name:player.name, role:player.role});
+    if ((player.role == winRole) || ((winRole == "Sheriff") && (player.role == ("Deputy")))) {
+      winArray.push({ name: player.name, role: player.role });
     }
   })
-    let winnerData = {
-      winnerRole: winRole,
-      winners: winArray
-    }
-    return winnerData; 
+  let winnerData = {
+    winnerRole: winRole,
+    winners: winArray
+  }
+  return winnerData;
 }
 
 module.exports = {
   eliminationLogic,
-  endGameCheck
+  endGameCheck,
+  forceUnderHandLimit
 }
