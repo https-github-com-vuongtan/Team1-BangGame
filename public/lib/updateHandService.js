@@ -63,19 +63,19 @@ function displayHand() {
             weapon = "true"
           }
           else if (hand[i].card == "rev carabine") {
-            $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Rev Carabine" data-range="4" class="responsive weapon ${hand[i].card} hoverCard" data-handpos="${i}">`)
+            $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="rev carabine" data-range="4" class="responsive weapon ${hand[i].card} hoverCard" data-handpos="${i}">`)
             weapon = "true"
           }
           else if (hand[i].card == "schofield") {
-            $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Schofield" data-range="2" class="responsive weapon ${hand[i].card} hoverCard" data-handpos="${i}">`)
+            $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="schofield" data-range="2" class="responsive weapon ${hand[i].card} hoverCard" data-handpos="${i}">`)
             weapon = "true"
           }
           else if (hand[i].card == "volcanic") {
-            $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Volcanic" data-range="1" class="responsive weapon ${hand[i].card} hoverCard" data-handpos="${i}">`)
+            $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="volcanic" data-range="1" class="responsive weapon ${hand[i].card} hoverCard" data-handpos="${i}">`)
             weapon = "true"
           }
           else if (hand[i].card == "winchester") {
-            $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Winchester" data-range="5" class="responsive weapon ${hand[i].card} hoverCard" data-handpos="${i}">`)
+            $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="winchester" data-range="5" class="responsive weapon ${hand[i].card} hoverCard" data-handpos="${i}">`)
             weapon = "true"
           }
           else if (hand[i].card == "Wells Fargo") {
@@ -83,11 +83,11 @@ function displayHand() {
             wellfargo = "true"
           }
           else if (hand[i].card == "general store") {
-            $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="general" class="responsive ${hand[i].card}" data-handpos="${i}">`)
+            $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="general" class="responsive ${hand[i].card } hoverCard" data-handpos="${i}">`)
             generalstore = "true"
           }
           else {
-            $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card}" data-handpos="${i}">`)
+            $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card} hoverCard" data-handpos="${i}">`)
           }
 
 
