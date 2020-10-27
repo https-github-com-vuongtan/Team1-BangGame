@@ -343,6 +343,12 @@ function descriptionFinder(data) {
       break;
       case ("weapon"): desc = "Current weapon"; 
       break;
+      case ("OutlawLeft"): desc = "An Outlaw (Kill the Sheriff) remains alive"; 
+      break;
+      case ("RenegadeLeft"): desc = "A Renegade (Be the last one in play) remains alive"; 
+      break;
+      case ("DeputyLeft"): desc = "A Deputy (Protect the Sheriff; kill the Outlaws and Renegade) remains alive"; 
+      break;
   }
   return desc;
 }
