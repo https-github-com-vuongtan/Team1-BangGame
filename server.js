@@ -1552,7 +1552,7 @@ io.on('connection', (socket) => {
   }
 http.listen(3000, () => {
   
-  readcharactercardfromdb()
+    readcharactercardfromdb()
     console.log('listening on *:3000');
 });
 
