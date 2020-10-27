@@ -14,7 +14,9 @@ var targetDistance = parseInt(data.distance)
   playerData.forEach(target=>{
     if (target.id==data.targetId){
       console.log(target.distanceMod)
-      targetDistance = targetDistance + target.distanceMod
+      if (target.mustang == true){
+        targetDistance = targetDistance + 1
+      }
       console.log(targetDistance)
     }
   })

@@ -11,6 +11,7 @@
           let bang = "false"
           let weapon = "false"
           let scope = "false"
+          let stageCoach = "false"
 
 
 
@@ -47,6 +48,9 @@
                if(hand[i].card=="scope"){
                 scope ="true"
                }
+               if(hand[i].card=="stagecoach"){
+                stageCoach ="true"
+               }
 
                if(hand[i].card=="remington"){
                 $('#mainHand').append(`<img data-item="${hand[i].card}" src="assets/cards/${hand[i].card}.png" alt="Remington"  data-range="3" class="responsive weapon ${hand[i].card}">`)  
@@ -73,11 +77,11 @@
                 wellfargo="true"
                }
                else if(hand[i].card=="general store"){
-                $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="general" class="responsive ${hand[i].card}">`)  
+                $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="general" class="responsive ${hand[i].card}" data-handpos="${i}">`)  
                 generalstore="true"
                }
                 else{
-                  $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card}">`)  
+                  $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="${hand[i].card}" class="responsive ${hand[i].card}" data-handpos="${i}">`)  
                 }
 
 
@@ -91,6 +95,9 @@
               }
               if(scope =="true"){
                 scopeAdd(socketid)
+              }
+              if(stageCoach=="true"){
+                stageCoachClick(socketid)
               }
               if(galtingstatus=="true"){
                 GatlingAttack(socketid)
@@ -111,8 +118,28 @@
                 if(generalstore=="true"){
                   general(socketid)
                 }
-                            //update (private) handsize
-    updateHandSizeDisplay(mydata, data)
+                $(`.saloon`).click(function () {
+                  console.log(`Saloon Hit`)
+                  let sData = {
+                    index: parseInt($(this).data("handpos")),
+                    gameData: mydata
+                  }
+                  console.log(sData.index)
+                  saloon(sData);
+                });
+        
+                $(`.panic`).click(function () {
+                    let pData = {
+                    index: parseInt($(this).data("handpos")),
+                    gameData: mydata
+                  }
+                    console.log(`Panic Hit`)
+                    panic(pData);
+                  });  
+                
+                applytoIndexElement("mainHand", endOfTurnDiscard);
+                  //update (private) handsize
+                  updateHandSizeDisplay(mydata, data);
             }
             })      
           })

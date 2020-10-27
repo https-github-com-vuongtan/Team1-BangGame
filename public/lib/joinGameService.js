@@ -2,16 +2,15 @@
 //Join Game button
 $(document).ready(function () {
   $('.modal').modal();
-
-  $("#joinGameBtn").click(function () {
-    let username = $('#joinName').val()
-    let action = 'joined the game'
-    if (username != "") {
-      const user = {
-        user: username,
-        socket: socketid,
-      }
-      $.get('/submitname', user, function (responsedata) {
+    $("#joinGameBtn").click(function(){
+      let username=$('#joinName').val()
+      let action= 'joined the game'
+      if(username!=""){
+      const user={
+        user:username,
+        socket:socketid,
+        }
+      $.get('/submitname',user, function (responsedata) {
         alert(responsedata)
         if (responsedata == "Successful") {
           nameplayer = user.user

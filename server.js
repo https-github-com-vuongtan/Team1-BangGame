@@ -22,6 +22,7 @@ const weapon = require("./Modules-ServerSide/weaponChange")
 const elimination = require("./Modules-ServerSide/playerEliminationModule")
 
 
+
 let countgatling=0
 let countresponsegatling=0
 let pausetimeforgatling="false"
@@ -53,14 +54,36 @@ let Sheriffrole="false"
 let statusphase=""
 let statuspause=""
 let pausetime=0
-let listcharactercards= require("./json lists/CharacterCardsList.json")
-let listedrolecards = require("./json lists/roleCardList.json")
+let listcharactercards= []
+let listedrolecards = []
 let newPlayer = require("./json lists/playerDataList.json");
 const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
 const { Console } = require('console');
 let myvar2;
-let listplaycards = require("./json lists/playingCardsList.json")
+let listplaycards=[]
 
+
+//Add db infor tolist playcards
+  function pushdbtolistplaycards(dbdata){
+    dbdata.forEach(function(data,index,object){
+      let element={"id":index,"playcard":data["PlayingCardName"]}
+      listplaycards.push(element)
+    })
+  }
+//Add db infor tolist role cards
+function pushdbtolistrole(dbdata){
+  dbdata.forEach(function(data,index,object){
+    let element={"id":index,"RoleCardName":data["RoleCardName"]}
+    listedrolecards.push(element)
+  })
+}
+//Add db infor tolist character cards
+function pushtolistcharacter(dbdata){
+  dbdata.forEach(function(data,index,object){
+    let element={"id":index,"charactername":data["charactername"],"maxLife":data["maxLife"]}
+    listcharactercards.push(element)
+  })
+}
 
   function getrandomplaycards(playerData,items){
   playerData.forEach(player=>{
@@ -87,28 +110,6 @@ let myVar1 = setInterval(updatephase, 100);
 
 //Run node as a web server for hosting static files (html)
 app.use(express.static(__dirname + "/public"))
-
-// Katrina //if no killer (eg, killed by dynamite), playerKiller is null
-function eliminatePlayer(deadPlayer, killerPlayer) {
-  elimination.eliminationLogic(playerData, deadPlayer, killerPlayer, discardPile);
-  let data = {
-    name: `${deadPlayer.role} ${deadPlayer.name} `,
-    action: 'been killed'
-  }
-  io.emit("updateactionlog", data);
-  io.emit("handUpdate", JSON.stringify(playerData));
-  io.emit("playerEliminated", JSON.stringify(playerData));
-  let winner = elimination.endGameCheck(playerData);
-  if (winner != "None") {
-    let endData = {
-      playerData: playerData,
-      winningRole: winner
-    }
-    //can add those with matching roles (include deputy for sheriff) to winner history DB *****
-    io.emit("endGame", endData);
-  }
-}
-
 
 
 function checkcurrenttime(){
@@ -194,8 +195,6 @@ if(phasestatus=="Starting"&&Sheriffrole=="true"){
   return;
 }
 if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
-  let data1 = {socket:playerData[idround-1].socket}
-  
   statusphase={id:idround,phase:2,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
   drawCards(playerData, listplaycards,statusphase,io)
   phasetime=new Date (currenttime );
@@ -205,18 +204,34 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
   io.emit("infophase",statusphase)  
   return;
 
-}
-if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==2){
-  statusphase={id:idround,phase:3,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
-  playerData[idround-1].bangPlayed = false
-  console.log(playerData[idround-1].bangPlayed)
-   phasetime=new Date (currenttime );
-   phasetime.setSeconds (phasetime.getSeconds() + 20 );
-   data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
-   io.emit("updateactionlog",data)
-   io.emit("infophase",statusphase)    
-   return;
+  }
 
+  if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 2) {
+    playerData[idround-1].bangPlayed = false
+    //if hand under limit go straight to next turn (skip phase 3)
+    if (playerData[idround - 1].hand.length <= playerData[idround - 1].currentLife) {
+      if (idround == 5) {
+        idround = 1
+      }
+      else {
+        idround++
+      }
+
+      statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket, discardNeeded: false }
+      phasetime = getpauseandend.endphase(phasetime, currenttime)
+      phasetime.setSeconds(phasetime.getSeconds() + 15);
+      io.emit("infophase", statusphase)
+      return;
+    } else {
+      //otherwise go to phase 3 as normal
+      statusphase = { id: idround, phase: 3, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
+      phasetime = new Date(currenttime);
+      phasetime.setSeconds(phasetime.getSeconds() + 20);
+      data = { name: statusphase.name, action: ` Started Phase ${statusphase.phase} ` }
+      io.emit("updateactionlog", data)
+      io.emit("infophase", statusphase)
+      return;
+    }
   }
 
   if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 2) {
@@ -344,14 +359,14 @@ function pushdatatolist(username, socketid) {
     weapon: "colt45",
     range: 1,
     distanceMod: 0,
-    scope: true,
-    mustang: true,
+    scope: false,
+    mustang: false,
     barrel: false,
     jail: false,
     dynamite: false,
     eliminated: false,
     bangPlayed: false,
-    hand: [ ],
+    hand: [{ id: 2, card: 'stagecoach' }, ],
   }
   playerData.push(newPlayer);
   io.emit("descriptionuser", JSON.stringify(playerData))
@@ -416,22 +431,30 @@ function userdisconnection(socketidout) {
     io.emit("statusgame", "Wating for " + (5 - playerData.length) + " more")
   }
 }
-
-
 app.get('/submitname', function (req, res) {
   const username = req.query.user
   const socketid = req.query.socket
   message = checkvalidation(username, socketid, res)
+  //Testing phase for adding player
+  testingvalidation1(socketid)
+  //testingvalidataion2(socketid,res)
+
+
+
   res.send(message)
   if (message == "Successful") {
     pushdatatolist(username, socketid)
+    //io.emit("updatePlayerName", JSON.stringify(playerData))
+
   }
   checknumberofplayer()
+  //Testing phase for counting number
 });
 
-app.get('/desuser', function (req, res) {
-  res.send("Wating for " + (5 - playerData.length) + " more")
-  io.emit("descriptionuser", JSON.stringify(playerData))
+
+app.get('/desuser', function(req, res){
+  res.send("Wating for more " +(5-playerData.length)+ " People")
+  io.emit("descriptionuser",JSON.stringify(playerData)) 
 });
 
 app.get('/status', function (req, res) {
@@ -453,19 +476,218 @@ app.get('/chatbox', function (req, res) {
   res.send("OK")
 });
 
-app.get('/actionLog', function (req, res) {
-  const name = req.query.name
-  const action = req.query.action
-  const data = {
-    name: name,
-    action: action
+
+
+app.get('/actionLog', function(req, res){
+    const name = req.query.name
+    const action = req.query.action
+    const data={
+      name:name,
+      action:action
+    }
+    io.emit("updateactionlog",data)
+    res.send("action log hit")
+    });
+
+app.get('/playSaloon', function (req, res) {
+      const data = {
+        name: req.query.name,
+        action: `played saloon`
+      }
+      io.emit("updateactionlog", data);
+    
+      playerData.forEach(player => {
+    
+        if (player.currentLife < player.maxLife && !player.eliminated) {
+          player.currentLife++;
+          const data = {
+            name: player.name,
+            action: `gained a life point`
+          }
+          io.emit("updateactionlog", data)
+        }
+      })
+      io.emit("bulletUpdate", JSON.stringify(playerData));
+      res.send("saloon played");
+    })
+
+app.get('/playPanic', function (req, res) {
+      let panicPlayerName = req.query.name;
+      let targetIndex = req.query.targetPlayerIndex;
+      let targetCard = req.query.targetCard;
+      let card = "none";
+      let cardIndex;
+      switch (targetCard) {
+        //if mystery "in hand" card chosen, pick a random card and remove from target
+    
+        case ("mystery"):
+          cardIndex = Math.floor(Math.random() * (playerData[targetIndex].hand.length))
+          let cardHand = playerData[targetIndex].hand.splice(cardIndex, 1);
+          card = cardHand[0].card;
+          //fix target hand indexing post card removal
+          for (i = 0; i < playerData[targetIndex].hand.length; i++) {
+            playerData[targetIndex].hand[i].id = i + 1;
+          }
+          break;
+        //if an "in play" card, set target value to false and make it the card to be added to panic player
+        case ("scope"):
+          playerData[targetIndex].scope = false
+          card = "scope";
+          break;
+        case ("mustang"):
+          playerData[targetIndex].mustang = false
+          card = "mustang";
+          break;
+        case ("barrel"):
+          playerData[targetIndex].barrel = false
+          card = "barrel";
+          break;
+        case ("jail"):
+          playerData[targetIndex].jail = false
+          card = "jail";
+          break;
+        case ("dynamite"):
+          playerData[targetIndex].dynamite = false
+          card = "dynamite";
+          break;
+        case ("remington"):
+          playerData[targetIndex].weapon = "colt45"
+          card = "remington";
+          break;
+        case ("rev carabine"):
+          playerData[targetIndex].weapon = "colt45"
+          card = "rev carabine";
+          break;
+        case ("schofield"):
+          playerData[targetIndex].weapon = "colt45"
+          card = "schofield";
+          break;
+        case ("volcanic"):
+          playerData[targetIndex].weapon = "colt45"
+          card = "volcanic";
+          break;
+        case ("winchester"):
+          playerData[targetIndex].weapon = "colt45"
+          card = "winchester";
+          break;
+        default:
+          console.log("card not found");
+      }
+      if (card != "none") {
+        playerData.forEach(player => {
+          //add the card to panic player's hand
+          if (player.name == panicPlayerName) {
+            player.hand.push({ id: (player.hand.length + 1), card: card })
+          }
+        })
+      } else {
+        console.log("panic error: no card selection found")
+      }
+    
+      io.emit("handUpdate", JSON.stringify(playerData));
+      io.emit("cardsInPlayUpdate", JSON.stringify(playerData));
+    
+      const data = {
+        name: req.query.name,
+        action: `played panic on ${playerData[targetIndex].name}`
+      }
+      io.emit("updateactionlog", data);
+      res.send("panic played");
+    })
+
+app.get('/discardHandCard', function (req, res) {
+      let index = req.query.index;
+      let name = req.query.name;
+      let discardedCard = [];
+      playerData.forEach(player => {
+        if (player.name == name) {
+          discardedCard = player.hand.splice(index, 1);
+          discardPile.push({ "card": discardedCard[0].card });
+    
+          for (i = 0; i < player.hand.length; i++) {
+            player.hand[i].id = i + 1;
+          }
+        }
+      })
+      io.emit("handUpdate", JSON.stringify(playerData))
+      res.send(console.log(`${discardedCard[0].card} added to the discard pile`));
+    })
+
+app.get('/checkHandSizeEndTurn', function (req, res) {
+      let name = req.query.name;
+      playerData.forEach(player => {
+        if (player.name == name) {
+          if (player.hand.length <= player.currentLife) {
+            //do the same as endphase method
+            phasetime = getpauseandend.endphase(phasetime, currenttime);
+            res.send(console.log(`${player.name} turn ended`));
+          } else {
+            res.send(console.log(`${player.name} must discard another card`));
+          }
+        }
+      })
+    })
+
+
+
+//if no killer (eg, killed by dynamite), playerKiller is null
+function eliminatePlayer(deadPlayer, killerPlayer) {
+  let outcome = elimination.eliminationLogic(playerData, deadPlayer, killerPlayer, discardPile);
+  for (i = 0; i < outcome.actionLogArray.length; i++) {
+    let actionData = outcome.actionLogArray[i];
+    io.emit("updateactionlog", actionData);
   }
-  io.emit("updateactionlog", data)
-  res.send("action log hit")
-});
+  io.emit("handUpdate", JSON.stringify(playerData));
+  io.emit("playerEliminated", JSON.stringify(playerData));
+
+  if (outcome.winnerRole != "None") {
+
+    let endData = {
+      winningRole: outcome.winnerRole,
+      winnerArray: outcome.winnerArray
+    }
+    //can add those with matching roles (include deputy for sheriff) to winner history DB *****
+    io.emit("endGame", JSON.stringify(endData));
+    statusgame = 'gameover';
+    //clear playerdata for newgame
+    initialiseGameData();
+  }
+}
+
+function initialiseGameData() {
+  count = 0;
+  listdesuser = [];
+  checkuserexist = false;
+  statusgame = ""
+  socketofeachuser = "";
+  checksocketexist = false;
+  currenttime = "";
+  phasetime = "";
+  phasestatus = "";
+  statuscharactercard = "";
+  minutes = "";
+  seconds = "";
+  idround = 1;
+  statusphase = "";
+  statuspause = "";
+  pausetime = 0;
+  listcharactercards = require("./json lists/CharacterCardsList.json");
+  listedrolecards = require("./json lists/roleCardList.json");
+  newPlayer = require("./json lists/playerDataList.json");
+  setTimeout(() => {
+    playerData.splice(0, playerData.length);
+    discardPile.splice(0, playerData.length);
+  }, 3000)
+}
 
 
-//Function to get currentlife
+
+
+
+
+
+
+    //Function to get currentlife
 app.get("/getcurrentlife",function(req,res){
   let socket=req.query.socket
   let currentlife
@@ -527,6 +749,10 @@ function drawCards(playerData,items,data, io){
 
   }) 
   }
+
+
+
+
 
 
 //Function get pausetime
@@ -600,12 +826,15 @@ app.get("/wellsfargo",function(req,res){
   }
   io.emit("handUpdate",JSON.stringify(playerData))
   res.send("OK")
+  //Testing phase WellFargo
+  testingWellFargo(playerData,socket)
 })
 
 //Trigger Indians
 app.get("/indianstrigger",function(req,res){
   countgatling=0
   countresponsegatling=0
+  let checkhavingbang="false"
   let socket=req.query.socket
   let attackername
   getindians.removeIndians(playerData,socket)
@@ -615,9 +844,10 @@ app.get("/indianstrigger",function(req,res){
       attackername=player.name
     }
   })
+  let statusbang="false"
   playerData.forEach(player=>{
-    let statusbang="false"
     let statusbeer="false"
+   let  statusbang="false"
     let currentlife="true"
     if(player.currentLife<1){
       currentlife="false"
@@ -634,9 +864,7 @@ if(currentlife=="true")
     })
   if(statusbang=="true"){
     countgatling++
-    pausetime=0
-    getpauseandend.setintervaltime(pausetime)
-    statuspause="off"
+    checkhavingbang="true"
     io.to(player.socket).emit("IndiansOption",attackername)
   }
 
@@ -649,7 +877,7 @@ else{
   else{
   player.currentLife = player.currentLife -1
   const data ={
-    name: req.query.attackname,
+    name: attackername,
     action: `shot ${player.name}`
   }
   if (player.currentLife < 1) {
@@ -662,6 +890,11 @@ else{
 }
 }
   })
+  if(checkhavingbang=="true"){
+    pausetime=0
+    getpauseandend.setintervaltime(pausetime)
+    statuspause="off"
+  }
     if(countgatling==0){
     playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
     io.emit("bulletUpdate", JSON.stringify(playerData))
@@ -723,8 +956,6 @@ if(countresponsegatling==countgatling){
   countgatling=0
   countresponsegatling=0
 }
-
-
 res.send("OK")
 })
 
@@ -859,6 +1090,7 @@ app.get("/gatlingattack",function(req,res){
   pausetimeforgatling="false"
   let sock=req.query.socket
   let attackerName=getgatling.getattackername(playerData,sock)
+  console.log(attackerName)
   //After Playing Gatling card => Remove this card from hand
   getgatling.removeGatling(playerData,sock)
   io.emit("handUpdate",JSON.stringify(playerData))
@@ -938,6 +1170,10 @@ app.get("/beertrigger",function(req,res){
   }
   io.emit("handUpdate",JSON.stringify(playerData))
   io.emit("bulletUpdate", JSON.stringify(playerData))
+
+  //Testing for beer
+  testingbeer(sock)
+
 
 })
 
@@ -1187,7 +1423,7 @@ if(checklivestatus=="true"){
    else if(checkstatusbangcard=="false"){
      let beercardstatus="false"
       const data ={
-        name: req.query.attackname,
+        name: nameattacker,
         action: `shot ${player.name}`
       }
             //Check beer card
@@ -1231,13 +1467,43 @@ const data ={
 }
 console.log(data)
 bang.checkDistance(data,playerData, io)
+playerData.forEach(player=>{
+  if(player.id==targetId){
+    if (player.currentLife < 1) {
+      eliminatePlayer(player, null);
+    }
+  }
+})
 res.send("200")
 })
 
 /* ---------------------------------------------------Bang/Miss End ------------------------------------------------------*/
 
+/* ---------------------------------------------------stageCoach Start ---------------------------------------------------*/
+app.get("/stagecoach",function(req,res){
+  const data ={
+    socket: req.query.socket
+   }
 
+  drawCards(playerData,listplaycards,data,io)
+  playerData.forEach(player=>{
+    if(player.socket== data.socket){
+    let status="true"  
+      player.hand.forEach(function(data,index,object){
+        if(data.card=="stagecoach"&&status=="true"){
+          status="false"  
+          object.splice(index,1)
+          return
+        }
+      })
+    }
+  })
+  io.emit("handUpdate",JSON.stringify(playerData))
+  res.send("200")
 
+})
+
+/*------------------------------------------------------stageCoach End-------------------------------------------------*/
 io.on('connection', (socket) => {
   socketofeachuser = socket.id
   socket.on('disconnect', (reason) => {
@@ -1260,153 +1526,216 @@ function insertion() {
   const client = new MongoClient(url);
 
   async function run() {
-    try {
-      await client.connect();
-      console.log("Connected correctly to server");
-      const db = client.db("project");
-
-      var col = db.collection("login");
-      var myobj = { username: "voungtan", address: "Highway 37" };
-      await col.insertOne(myobj);
-
-      col = db.collection("viewuserscoredata");
-      myobj = { user_name: "voungtan", Score: 37000, Round: 1, Datetime: "04/30/2020 13:01:01" };
-      await col.insertOne(myobj);
-      col = db.collection("historytabledata");
-      myobj = { user_name: "voungtan", Score: 37000, Round: 1, Datetime: "04/30/2020 13:01:01" };
-      await col.insertOne(myobj);
-
-      col = db.collection("startinggamedata");
-      myobj = {
-        user_name: "voungtan", Total_players: 5, Character_Cards: 16, Role_Cards: 7, Playing_Cards: 80, Character_Card_Name: "Bart Cassidy", Character_Card_Feature_Description: "This is a card", Character_Bullets: 4, Role_Card_Name: "Sheriff"
-        , Role_Card_Feature_Description: "This is Description", Playing_Card_Name: "Playing_Card_Name", Color_Playing_Card: "Blue", Character_Card_Images: "", Role_Card_Images: "", Playing_Card_Images: ""
-      };
-      await col.insertOne(myobj);
-      col = db.collection("Displaygameinterface");
-      myobj = { user_name: "voungtan", User_character_card_Images: "", User_Role_Card_Images: "", User_Playing_card_Images: "", Current_Bullets: "", Table_Card_Images: "" };
-      await col.insertOne(myobj);
-      col = db.collection("Randomlygiveonecharactercard");
-      myobj = { user_name: "voungtan", Character_Cards: "Highway 37", Character_Card_Name: "" };
-      await col.insertOne(myobj);
-      col = db.collection("Applylimitedtimeplayerturn");
-      myobj = { user_name: "voungtan", Current_time: "Highway 37", Limited_time: "" };
-      await col.insertOne(myobj);
-      col = db.collection("Applyfeatureofcharactercard");
-      myobj = { user_name: "voungtan", Character_Card_Name: "Highway 37", CharacterCard_Feature_Description: "" };
-      await col.insertOne(myobj);
-      col = db.collection("Applyfeatureofrolecard");
-      myobj = { user_name: "voungtan", Role_Card_name: "Highway 37", Role_Card_Feature_Description: "" };
-      await col.insertOne(myobj);
-      col = db.collection("Applyplayersorder");
-      myobj = { user_name: "voungtan", User_Order: 4 };
-      await col.insertOne(myobj);
-      col = db.collection("Applycurrentdistance");
-      myobj = { user_name: "voungtan", Distance_user_to_opponents: 4, Distance_opponents_to_user: 2 };
-      await col.insertOne(myobj);
-      col = db.collection("Drawingcards");
-      myobj = { user_name: "voungtan", Current_user_cards: "tst", Updated_user_cards: "order", Current_user_card_images: "", Updated_user_card_images: "" };
-      await col.insertOne(myobj);
-      col = db.collection("Usercanplayspecificcards");
-      myobj = { user_name: "voungtan", Current_user_cards: "tst", Updated_user_cards: "order", Current_user_card_images: "", Updated_user_card_images: "" };
-      await col.insertOne(myobj);
-      col = db.collection("Rewardfunction");
-      myobj = { user_name: "voungtan", Current_user_cards: "tst", Updated_user_cards: "order", Current_user_card_images: "", Updated_user_card_images: "" };
-      await col.insertOne(myobj);
-      col = db.collection("Bangfunction");
-      myobj = { user_name: "voungtan", Target_name: "tst", Playing_Card_Name: "order", Updated_Bullets: "", Current_Bullets: "" };
-      await col.insertOne(myobj);
-      col = db.collection("Missedfunction");
-      myobj = { user_name: "voungtan", Target_name: "tst", Playing_Card_Name: "order" };
-      await col.insertOne(myobj);
-      col = db.collection("ncreaseandDecreaseDistance");
-      myobj = {
-        user_name: "voungtan", Target_name: "tst", increaseorDecrease_Distance_user_opponents: "order", IncreaseorDecreaseDistance_opponents_user: "",
-        Distance_user_to_opponents: "Distance_user_to_opponents", Distance_opponents_to_user: 'Distance_opponents_to_user'
-      };
-      await col.insertOne(myobj);
-      col = db.collection("changingweapon");
-      myobj = { user_name: "voungtan", Current_Weapon: "tst", Distance_current_weapon: "order", Updated_Weapon: "", Distance_updated_weapon: "" }
-      await col.insertOne(myobj);
-
-      col = db.collection("DrawFunction");
-      myobj = { user_name: "voungtan", Playing_Card_Name: "tst", Used_Compared_Card: "order", Updated_user_cards: "" }
-      await col.insertOne(myobj);
-      col = db.collection("Drawoneplayerscard");
-      myobj = { user_name: "voungtan", Target_name: "tst", Playing_Card_Name: "order", Updated_user_cards: "" }
-      await col.insertOne(myobj);
-      col = db.collection("Discardingcardfromanotherperson");
-      myobj = { user_name: "voungtan", Target_name: "tst", Playing_Card_Name: "order", Updated_user_cards: "" }
-      await col.insertOne(myobj);
-      col = db.collection("Discardingcardfromgame");
-      myobj = { user_name: "voungtan", Playing_Card_Name: "tst", Updated_Table_Card: "order" }
-      await col.insertOne(myobj);
-      col = db.collection("Jailfunction");
-      myobj = { user_name: "voungtan", Targetname: "tst", Playing_Card_Name: "order" }
-      await col.insertOne(myobj);
-      col = db.collection("Gunbattle");
-      myobj = { user_name: "voungtan", Targetname: "tst", Playing_Card_Name: "order", Current_Bullets: 3, Updated_Bullets: 2 }
-      await col.insertOne(myobj);
-      col = db.collection("Storeusersscore");
-      myobj = { user_name: "voungtan", Rank: 1, Round: 1 }
-      await col.insertOne(myobj);
-      col = db.collection("Displaywinningplayer");
-      myobj = { user_name: "voungtan", Rank: 1, Round: 1 }
-      await col.insertOne(myobj);
-      col = db.collection("Disconnection");
-      myobj = { user_name: "voungtan", Rank: 1, Round: 1, User_Order: 4 }
-      await col.insertOne(myobj);
-      col = db.collection("HistoryRecord");
-      myobj = { RecordID: 1, Username: "Abo", Rank: 1, Round: 4 }
-      await col.insertOne(myobj);
-      col = db.collection("PlayingCard");
-      myobj = { PlayingCardID: 1, PlayingCardID: "ACE", PlayingCardDescription: "hbchj", PlayingCardImages: "101124" }
-      await col.insertOne(myobj);
-      col = db.collection("RoleCard");
-      myobj = { RoleCardID: 1, RoleCardName: "ACE", RoleCardDescription: "hbchj", RoleCardImages: "101124" }
-      await col.insertOne(myobj);
-      col = db.collection("CharacterCard");
-      myobj = { CharacterCardID: 1, CharacterCardName: "ACE", CharacterCardDescription: "hbchj", CharacterCardImages: "101124" }
-      await col.insertOne(myobj);
-
-
-      console.log("Inserted");
-
-
-
-
-    } catch (err) {
-      console.log(err.stack);
-    }
-    finally {
-      await client.close();
-    }
+      try {
+          await client.connect();
+          console.log("Connected correctly to server");
+          const db = client.db("project");
+  
+           var col = db.collection("login");
+           var myobj = { username: "voungtan", address: "Highway 37" };
+           await col.insertOne(myobj);
+  
+           col = db.collection("viewuserscoredata");
+           myobj = { user_name: "voungtan", Score: 37000 ,Round:1,Datetime:"04/30/2020 13:01:01"};
+           await col.insertOne(myobj);
+           col = db.collection("historytabledata");
+           myobj = { user_name: "voungtan", Score: 37000 ,Round:1,Datetime:"04/30/2020 13:01:01"};
+           await col.insertOne(myobj);
+  
+           col = db.collection("startinggamedata");
+           myobj = { user_name: "voungtan", Total_players: 5,Character_Cards:16,Role_Cards:7,Playing_Cards:80,Character_Card_Name:"Bart Cassidy" ,Character_Card_Feature_Description:"This is a card",Character_Bullets:4,Role_Card_Name:"Sheriff"
+           ,Role_Card_Feature_Description:"This is Description",Playing_Card_Name:"Playing_Card_Name",Color_Playing_Card :"Blue",Character_Card_Images:"",Role_Card_Images:"",Playing_Card_Images:""};
+           await col.insertOne(myobj);
+           col = db.collection("Displaygameinterface");
+           myobj = { user_name: "voungtan", User_character_card_Images: "",User_Role_Card_Images:"",User_Playing_card_Images:"",Current_Bullets:"",Table_Card_Images:"" };
+           await col.insertOne(myobj);
+           col = db.collection("Randomlygiveonecharactercard");
+           myobj = { user_name: "voungtan", Character_Cards: "Highway 37",Character_Card_Name:"" };
+           await col.insertOne(myobj);
+           col = db.collection("Applylimitedtimeplayerturn");
+           myobj = { user_name: "voungtan", Current_time: "Highway 37",Limited_time:"" };
+           await col.insertOne(myobj);
+           col = db.collection("Applyfeatureofcharactercard");
+           myobj = { user_name: "voungtan", Character_Card_Name: "Highway 37",CharacterCard_Feature_Description:"" };
+           await col.insertOne(myobj);
+           col = db.collection("Applyfeatureofrolecard");
+           myobj = { user_name: "voungtan", Role_Card_name: "Highway 37",Role_Card_Feature_Description:"" };
+           await col.insertOne(myobj);
+           col = db.collection("Applyplayersorder");
+           myobj = { user_name: "voungtan", User_Order: 4};
+           await col.insertOne(myobj);
+           col = db.collection("Applycurrentdistance");
+           myobj = { user_name: "voungtan", Distance_user_to_opponents: 4,Distance_opponents_to_user:2};
+           await col.insertOne(myobj);
+           col = db.collection("Drawingcards");
+           myobj = { user_name: "voungtan", Current_user_cards: "tst",Updated_user_cards:"order",Current_user_card_images:"",Updated_user_card_images:""};
+           await col.insertOne(myobj);
+           col = db.collection("Usercanplayspecificcards");
+           myobj = { user_name: "voungtan", Current_user_cards: "tst",Updated_user_cards:"order",Current_user_card_images:"",Updated_user_card_images:""};
+           await col.insertOne(myobj);
+           col = db.collection("Rewardfunction");
+           myobj = { user_name: "voungtan", Current_user_cards: "tst",Updated_user_cards:"order",Current_user_card_images:"",Updated_user_card_images:""};
+           await col.insertOne(myobj);
+           col = db.collection("Bangfunction");
+           myobj = { user_name: "voungtan", Target_name: "tst",Playing_Card_Name:"order",Updated_Bullets:"",Current_Bullets:""};
+           await col.insertOne(myobj);
+           col = db.collection("Missedfunction");
+           myobj = { user_name: "voungtan", Target_name: "tst",Playing_Card_Name:"order"};
+           await col.insertOne(myobj);
+           col = db.collection("ncreaseandDecreaseDistance");
+           myobj = { user_name: "voungtan", Target_name: "tst",increaseorDecrease_Distance_user_opponents:"order",IncreaseorDecreaseDistance_opponents_user:"",
+           Distance_user_to_opponents:"Distance_user_to_opponents",Distance_opponents_to_user:'Distance_opponents_to_user'};
+           await col.insertOne(myobj);
+           col = db.collection("changingweapon");
+           myobj = { user_name: "voungtan", Current_Weapon: "tst",Distance_current_weapon:"order",Updated_Weapon:"",Distance_updated_weapon:""}
+           await col.insertOne(myobj);
+         
+           col = db.collection("DrawFunction");
+           myobj = { user_name: "voungtan", Playing_Card_Name: "tst",Used_Compared_Card:"order",Updated_user_cards:""}
+           await col.insertOne(myobj);
+           col = db.collection("Drawoneplayerscard");
+           myobj = { user_name: "voungtan", Target_name: "tst",Playing_Card_Name:"order",Updated_user_cards:""}
+           await col.insertOne(myobj);
+           col = db.collection("Discardingcardfromanotherperson");
+           myobj = { user_name: "voungtan", Target_name: "tst",Playing_Card_Name:"order",Updated_user_cards:""}
+           await col.insertOne(myobj);
+           col = db.collection("Discardingcardfromgame");
+           myobj = { user_name: "voungtan", Playing_Card_Name: "tst",Updated_Table_Card :"order"}
+           await col.insertOne(myobj);
+           col = db.collection("Jailfunction");
+           myobj = { user_name: "voungtan", Targetname : "tst",Playing_Card_Name :"order"}
+           await col.insertOne(myobj);
+           col = db.collection("Gunbattle");
+           myobj = { user_name: "voungtan", Targetname : "tst",Playing_Card_Name :"order",Current_Bullets:3,Updated_Bullets:2}
+           await col.insertOne(myobj);
+           col = db.collection("Storeusersscore");
+           myobj = { user_name: "voungtan", Rank : 1,Round :1}
+           await col.insertOne(myobj);
+           col = db.collection("Displaywinningplayer");
+           myobj = { user_name: "voungtan", Rank : 1,Round :1}
+           await col.insertOne(myobj);
+           col = db.collection("Disconnection");
+           myobj = { user_name: "voungtan", Rank : 1,Round :1,User_Order:4}
+           await col.insertOne(myobj);
+           col = db.collection("HistoryRecord");
+           myobj = { RecordID: 1, Username : "Abo",Rank :1,Round:4}
+           await col.insertOne(myobj);
+           col = db.collection("PlayingCard");
+           myobj = { PlayingCardID: 1, PlayingCardID :"ACE",PlayingCardDescription :"hbchj",PlayingCardImages:"101124"}
+           await col.insertOne(myobj);
+           col = db.collection("RoleCard");
+           myobj = { RoleCardID: 1, RoleCardName :"ACE",RoleCardDescription :"hbchj",RoleCardImages:"101124"}
+           await col.insertOne(myobj);
+           col = db.collection("CharacterCard");
+           myobj = { CharacterCardID: 1, CharacterCardName :"ACE",CharacterCardDescription :"hbchj",CharacterCardImages:"101124"}
+           await col.insertOne(myobj);
+           console.log("Inserted");
+      } catch (err) {
+          console.log(err.stack);
+      }
+      finally {
+          await client.close();
+      }
   }
   run().catch(console.dir);
-}
-function connection() {
-  // Replace the following with your Atlas connection string                                                                                                                                        
+  }
+  function readcharactercardfromdb(){
+    MongoClient.connect("mongodb+srv://eGTB4yl0HFJQ6lzD:eGTB4yl0HFJQ6lzD@project.wdfid.mongodb.net/Project?retryWrites=true&w=majority", function(err, db) {
+      if (err) throw err;
+      var dbo = db.db("project");
+      //Find all documents in the customers collection:
+      dbo.collection("PlayingCardDB").find({}).toArray(function(err, result) {
+        if (err) throw err;
+        pushdbtolistplaycards(result)
+      });
+      dbo.collection("CharacterCardDB").find({}).toArray(function(err, result) {
+        if (err) throw err;
+        pushtolistcharacter(result)
+      });
+      dbo.collection("RoleCardDB").find({}).toArray(function(err, result) {
+        if (err) throw err;
+        pushdbtolistrole(result)
+      });
+      db.close()
+
+
+    });
+  }
+
+  function connection(){
+    // Replace the following with your Atlas connection string                                                                                                                                        
   const url = "mongodb+srv://eGTB4yl0HFJQ6lzD:eGTB4yl0HFJQ6lzD@project.wdfid.mongodb.net/Project?retryWrites=true&w=majority";
   const client = new MongoClient(url);
 
   async function run() {
-    try {
-      await client.connect();
-      console.log("Connected correctly to server");
-
-
-
-    } catch (err) {
-      console.log(err.stack);
-    }
-    finally {
-      await client.close();
-    }
+      try {
+          await client.connect();
+          console.log("Connected correctly to server");
+      } catch (err) {
+          console.log(err.stack);
+      }
+      finally {
+          await client.close();
+      }
   }
 
   run().catch(console.dir);
 }
 http.listen(3000, () => {
-  connection();
-  insertion(); //insertion now
-  console.log('listening on *:3000');
+  
+    readcharactercardfromdb()
+    console.log('listening on *:3000');
 });
+
+//-----------------------Testing phase--------------------------//
+function testingvalidation1(socketid){
+  if(socketid==null){
+      error=("Error in Testing validation 1")
+      throw error
+  }
+  else{
+      console.log("Passed Testing validation 1")
+  }
+  }
+  
+  function testingvalidataion2(socketid,res){
+   let usernametest=null
+   let messagetest
+   messagetest=checkvalidation(usernametest,socketid,res)
+   if(messagetest!="Error"){
+      error=("Error in Testing validation 2")
+      throw error
+  }
+  else{
+      console.log("Passed  Testing validation 2")
+  }
+  }
+
+  function testingWellFargo(playerData,socket){
+    let listcard=[{"id":1,"playingcard":"bang"},
+    {"id":1,"playingcard":"bang"}
+      ]
+      let statuspicktest
+     statuspicktest=getwellfargo.randompickthreecards(listcard,playerData,socket)
+    if(statuspicktest!="Cannotpick"){
+      error=("Error in Testing Well Fargo")
+      throw error
+  }
+  else{
+      console.log("Passed  Testing Well Fargo")
+  }
+  }
+  function testingbeer(sockettest){
+    playerData.forEach(data=>{
+      if(data.socket==sockettest){
+        if(data.currentLife>data.maxLife){
+          error=("Error in Testing Beer Function")
+          throw error
+      }
+      else{
+          console.log("Passed  Testing Beer Function")
+      }
+        
+      }
+    })
+  }
