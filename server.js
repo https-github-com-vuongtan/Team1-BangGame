@@ -17,6 +17,7 @@ const getwellfargo = require("./Modules-ServerSide/WellsFargoModule")
 const getduel = require("./Modules-ServerSide/DuelModule")
 const getindians = require("./Modules-ServerSide/IndiansModule")
 const getgeneral = require("./Modules-ServerSide/GeneralModule")
+const weapon = require("./Modules-ServerSide/weaponChange")
 //Katrina
 const elimination = require("./Modules-ServerSide/playerEliminationModule")
 
@@ -58,52 +59,9 @@ let newPlayer = require("./json lists/playerDataList.json");
 const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
 const { Console } = require('console');
 let myvar2;
-let listplaycards=[{ "id":1,"playcard":"general store"},{
-  "id":2,"playcard":"duel"},{
-  "id":3,"playcard":"Gatling"},{
-  "id":4,"playcard":"general store"},{
-  "id":5,"playcard":"Wells Fargo"},{
-  "id":6,"playcard":"general store"},{
-  "id":7,"playcard":"bang"},{
-  "id":8,"playcard":"duel"},{
-  "id":9,"playcard":"Gatling"},{
-  "id":10,"playcard":"general store"},{
-  "id":11,"playcard":"general store"},{
-  "id":12,"playcard":"duel"},{
-  "id":13,"playcard":"Wells Fargo"},{
-  "id":14,"playcard":"duel"},{
-  "id":15,"playcard":"Gatling"},{
-  "id":16,"playcard":"general store"},{
-  "id":17,"playcard":"Gatling"},{
-  "id":18,"playcard":"indians"},{
-  "id":19,"playcard":"missed"},{
-  "id":20,"playcard":"Gatling"},{
-  "id":21,"playcard":"duel"},{
-  "id":22,"playcard":"Wells Fargo"},
-  {"id":23,"playcard":"missed"},
-  {"id":24,"playcard":"general store"},
-  {"id":25,"playcard":"Wells Fargo"},
-  {"id":26,"playcard":"general store"},
-  {"id":27,"playcard":"beer"},
-  {"id":28,"playcard":"beer"},
-  {"id":29,"playcard":"duel"},{
-    "id":30,"playcard":"Wells Fargo"},{
-    "id":31,"playcard":"duel"},{
-    "id":32,"playcard":"Gatling"},{
-    "id":33,"playcard":"general store"},{
-    "id":34,"playcard":"Gatling"},{
-    "id":35,"playcard":"indians"},{
-    "id":36,"playcard":"missed"},{
-    "id":37,"playcard":"Gatling"},{
-    "id":38,"playcard":"Gatling"},{
-    "id":39,"playcard":"Wells Fargo"},
-    {"id":40,"playcard":"missed"},
-    {"id":41,"playcard":"general store"},
-    {"id":42,"playcard":"Wells Fargo"},
-    {"id":43,"playcard":"general store"},
-    {"id":44,"playcard":"beer"},
-    {"id":45,"playcard":"beer"},
-]
+let listplaycards = require("./json lists/playingCardsList.json")
+
+
   function getrandomplaycards(playerData,items){
   playerData.forEach(player=>{
     let maxlife=player.maxLife
@@ -112,8 +70,7 @@ let listplaycards=[{ "id":1,"playcard":"general store"},{
       let charactername=item["playcard"]
       let element={"id":i+1,"card":charactername}
       player.hand.push(element)
-      let index = items.indexOf(item);
-      items.splice(index, 1);
+
     }
   }) 
   }
@@ -237,7 +194,10 @@ if(phasestatus=="Starting"&&Sheriffrole=="true"){
   return;
 }
 if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
+  let data1 = {socket:playerData[idround-1].socket}
+  
   statusphase={id:idround,phase:2,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
+  drawCards(playerData, listplaycards,statusphase,io)
   phasetime=new Date (currenttime );
   phasetime.setSeconds ( phasetime.getSeconds() + 60 );  
   data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
@@ -248,6 +208,8 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
 }
 if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==2){
   statusphase={id:idround,phase:3,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
+  playerData[idround-1].bangPlayed = false
+  console.log(playerData[idround-1].bangPlayed)
    phasetime=new Date (currenttime );
    phasetime.setSeconds (phasetime.getSeconds() + 20 );
    data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
@@ -388,12 +350,8 @@ function pushdatatolist(username, socketid) {
     jail: false,
     dynamite: false,
     eliminated: false,
-    hand: [
-      { "id": 1, "card": 'bang', },
-      { "id": 2, "card": 'bang', },
-      { "id": 3, "card": 'missed', },
-      { "id": 4, "card": 'missed', },
-    ],
+    bangPlayed: false,
+    hand: [ ],
   }
   playerData.push(newPlayer);
   io.emit("descriptionuser", JSON.stringify(playerData))
@@ -506,16 +464,7 @@ app.get('/actionLog', function (req, res) {
   res.send("action log hit")
 });
 
-app.get('/actionLog', function(req, res){
-    const name = req.query.name
-    const action = req.query.action
-    const data={
-      name:name,
-      action:action
-    }
-    io.emit("updateactionlog",data)
-    res.send("action log hit")
-    });
+
 //Function to get currentlife
 app.get("/getcurrentlife",function(req,res){
   let socket=req.query.socket
@@ -528,6 +477,56 @@ app.get("/getcurrentlife",function(req,res){
   console.log(currentlife)
   res.send({life:currentlife})
 })
+
+app.get("/getcurrentbang",function(req,res){
+  let socket=req.query.socket
+  let currentBang
+  playerData.forEach(player=>{
+    if(player.socket==socket){
+       currentBang=player.bangPlayed
+    }
+  })
+  console.log(currentBang)
+  res.send({bang:currentBang})
+})
+
+app.get("/weaponChange",function(req,res){
+const data ={
+  item:req.query.item,
+  socket: req.query.socket,
+  range: req.query.range
+}
+weapon.weaponChange(data,playerData,io);
+res.send("200")
+})
+
+app.get("/drawCards", function(req,res){
+const data ={
+ socket: req.query.socket
+}
+drawCards(playerData,listplaycards,data,io)
+})
+
+function drawCards(playerData,items,data, io){
+  playerData.forEach(player=>{
+    if (player.socket == data.socket){
+      for(var i=0;i<2;i++){
+        let item = items[Math.floor(Math.random() * items.length)];
+        let charactername=item["playcard"]
+        let element={"id":i+1,"card":charactername}
+        player.hand.push(element)
+
+      }
+      const data2 ={
+        name: player.name,
+        action: ` drew two cards from the deck!`,
+      }
+      io.emit("updateactionlog",data2)
+      io.emit("handUpdate",JSON.stringify(playerData))
+    } 
+
+  }) 
+  }
 
 
 //Function get pausetime
@@ -1220,7 +1219,7 @@ if(checklivestatus=="true"){
   res.send("Finished Duel")   
 })
 
-/* ---------------------------------------------------Bang/Miss End ------------------------------------------------------*/
+/* ---------------------------------------------------Bang/Miss Start ------------------------------------------------------*/
 app.get('/shootBang', function(req,res){
   const targetId = req.query.targetId
   const attackerName = req.query.name
@@ -1236,6 +1235,7 @@ res.send("200")
 })
 
 /* ---------------------------------------------------Bang/Miss End ------------------------------------------------------*/
+
 
 
 io.on('connection', (socket) => {

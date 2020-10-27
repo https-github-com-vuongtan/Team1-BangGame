@@ -30,6 +30,12 @@ function playBang(data, playerData, io){
     playerData.forEach(attacker =>{
       if (attacker.name == data.attackerName){
         let handSize = attacker.hand.length
+        if (attacker.character == "Willy The Kid" || attacker.weapon == "volcanic"){
+          attacker.bangPlayed = false
+        } else {
+          attacker.bangPlayed = true
+        }
+        console.log(attacker.bangPlayed)
         console.log(handSize)
         for( let i= 0; i < handSize; i++){
           if (attacker.hand[i].card == "bang"){

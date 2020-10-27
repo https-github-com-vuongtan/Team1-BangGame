@@ -9,6 +9,8 @@
           let indians="false"
           let generalstore="false"
           let bang = "false"
+          let weapon = "false"
+          let scope = "false"
 
 
 
@@ -42,9 +44,31 @@
                if(hand[i].card=="bang"){
                 bang="true"
                }
+               if(hand[i].card=="scope"){
+                scope ="true"
+               }
 
-
-               if(hand[i].card=="Wells Fargo"){
+               if(hand[i].card=="remington"){
+                $('#mainHand').append(`<img data-item="${hand[i].card}" src="assets/cards/${hand[i].card}.png" alt="Remington"  data-range="3" class="responsive weapon ${hand[i].card}">`)  
+                weapon="true"
+               }
+               else if(hand[i].card=="rev carabine"){
+                $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Rev Carabine" data-range="4" class="responsive weapon ${hand[i].card}">`)  
+                weapon="true"
+               }
+               else if(hand[i].card=="schofield"){
+                $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Schofield" data-range="2" class="responsive weapon ${hand[i].card}">`)  
+                weapon="true"
+               }
+               else if(hand[i].card=="volcanic"){
+                $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Volcanic" data-range="1" class="responsive weapon ${hand[i].card}">`)  
+                weapon="true"
+               }
+               else if(hand[i].card=="winchester"){
+                $('#mainHand').append(`<img data-item="${hand[i].card}" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Winchester" data-range="5" class="responsive weapon ${hand[i].card}">`)  
+                weapon="true"
+               }
+               else if(hand[i].card=="Wells Fargo"){
                 $('#mainHand').append(`<img data-target="${hand[i].card}Modal" href="#${hand[i].card}Modal"src="assets/cards/${hand[i].card}.png" alt="Wells" class="responsive ${hand[i].card}">`)  
                 wellfargo="true"
                }
@@ -59,17 +83,23 @@
 
                   }
 
-                  if(bang=="true"){
-                    BangAttack(socketid)
-                    }
+              if(bang=="true"){
+                bangAttack(socketid)
+              }
+              if(weapon =="true"){
+                weaponChange(socketid)
+              }
+              if(scope =="true"){
+                scopeAdd(socketid)
+              }
               if(galtingstatus=="true"){
-              GatlingAttack(socketid)
+                GatlingAttack(socketid)
               }
               if(beerstatus=="true"){
                 BeerHeal(socketid,countliveuser)
                 }
               if(wellfargo=="true"){
-                  WellFar(socketid)
+                WellFar(socketid)
               }
               if(duel=="true"){
                 Duel(socketid)

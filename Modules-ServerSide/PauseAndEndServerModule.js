@@ -22,6 +22,7 @@ function resettime(){
 function endphase(phasetime,currenttime){
     phasetime=new Date (currenttime );
     phasetime.setSeconds (phasetime.getSeconds() + 1 );
+
     return phasetime
 }
 

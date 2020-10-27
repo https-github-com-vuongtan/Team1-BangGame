@@ -7,7 +7,6 @@ function updateWeapon(){
         let weapon = data.weapon
          console.log(weapon)
          $("#a5weapon").attr('src',"assets/cards/"+data.weapon+".png")
-        // $("#mainCardsInPlay").append(`<img src="assets/cards/${data.weapon}.png" alt="weapon" class="responsive">`)
          displayWeapon(mydata,data)
       }
       })
@@ -48,3 +47,32 @@ function updateWeapon(){
     $("#e5WeaponCard").attr('src',"assets/cards/"+mydata[3].weapon+".png")
   }
   }
+
+  function weaponChange(socketid){
+    $('.weapon').click(function(){
+      data1 ={
+        item: $(this).data("item"),
+        socket: socketid,
+        range: $(this).data("range")
+      }
+        let pausetime;
+        let data2
+        let lifecurrent
+        let req={
+            socket:socketid
+        }
+        $.get("/getcurrentlife",req,data2=>{
+          lifecurrent=data2
+        })
+        $.get("/getpausetime",data=>{
+            let req={
+                socket:socketid
+            }
+            console.log(lifecurrent.life)
+            if(socketphase==socketid&&phasenumber==2&&data.pause==0&&lifecurrent.life>0){ 
+            $.get("/weaponChange",data1)
+        }
+        })
+ 
+    })
+}

@@ -21,6 +21,8 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
 }
 if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==2){
   statusphase={id:idround,phase:3,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
+  playerData[idround-1].bangPlayed = false
+  console.log(playerData[idround-1].bangPlayed)
    phasetime=new Date (currenttime );
    phasetime.setSeconds (phasetime.getSeconds() + 1 );
    io.emit("infophase",statusphase)    
