@@ -69,7 +69,8 @@ function eliminationLogic(playerData, player, playerKiller, discardPile) {
       let data = {
         socket: playerKiller.socket
       }
-      $.get("/drawRewardCards", data)
+      //can include when killerPlayer is being included
+      //$.get("/drawRewardCards", data)
     } else if (player.role == "Deputy") {
       //if deputy killed by sheriff, sheriff discards all cards in hand and in play.
       let sheriffCards = discardPlayerCards(playerKiller)
