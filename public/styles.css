@@ -362,7 +362,31 @@ direction: rtl;
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
   font-weight: 500;
   font-style: italic;
-  border-radius: 15px;}
+  border-radius: 15px;
+}
+
+  #leaderModal
+  {
+    padding: 20px;
+    text-align: center;
+    /*max-height: 60%;*/
+    background-color: rgb(251, 248, 229);
+    color: black;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-weight: 500;
+    font-style: italic;
+    border-radius: 15px;
+
+  }
+
+  #leaderBoardText
+  {
+    display: grid;
+    grid-template-rows: repeat(11,1fr);
+    grid-template-columns: 2fr 1fr 1fr 2fr;
+    background-color: rgb(251, 248, 229);
+
+  }
 
 .restrictImage img
 {

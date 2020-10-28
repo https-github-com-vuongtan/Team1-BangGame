@@ -186,6 +186,7 @@ function updatephase() {
     })
     Sheriffrole = "true"
     phasestatus = "Starting"
+    io.emit("infophase", statusphase)
   }
   if (phasestatus == "Starting" && Sheriffrole == "true") {
     statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
@@ -1896,7 +1897,7 @@ function insertgameround(data) {
 
   run().catch(console.dir);
 }
-function gettopwinners() {
+function gettopwinners(res) {
   const url = "mongodb+srv://eGTB4yl0HFJQ6lzD:eGTB4yl0HFJQ6lzD@project.wdfid.mongodb.net/Project?retryWrites=true&w=majority";
   const client = new MongoClient(url);
 
@@ -1907,15 +1908,11 @@ function gettopwinners() {
       console.log("Connected correctly to server");
       const db = client.db("project");
 
-      db.collection("Game").find().sort({ rounds: -1 }).limit(10).toArray(function (err, result) {
+      db.collection("Game").find().sort({ rounds: 1 }).limit(10).toArray(function (err, result) {
         if (err) throw err;
         console.log(result);
-        winnerTable = result;
+        res.send(JSON.stringify(result));
       });
-
-
-
-
 
     } catch (err) {
       console.log(err.stack);
@@ -1929,10 +1926,5 @@ function gettopwinners() {
 }
 
 app.get('/updateWinners', function (req, res) {
-  console.log('a check')
-
-  gettopwinners();
-  console.log('the winner '+winnerTable[0])
-  io.emit("updateWinners", JSON.stringify(winnerTable))
-  res.send("winner results updated");
+  gettopwinners(res);
 });

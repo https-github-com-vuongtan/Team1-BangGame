@@ -354,25 +354,25 @@ function descriptionFinder(data) {
 
 $(document).ready(function () {
   $('.leaderBoardTrigger').click(function () {
-let data = {
-  userSocket: socketid
-}
-   //get the winners
-    $.get("/updateWinners", data)
-    $('#LeaderModal').modal('open');
+
+    let i = 0;
+    //get the winners
+    $.get("/updateWinners", res => {
+      let divString = `<div></div><div style="text-align: center; size:1.5em"><b>Username</b></div><div style="text-align: center; size:1.5em"><b>Rounds to Win</b></div><div></div>`;
+      console.log(res);
+      let winners = jQuery.parseJSON(res);
+
+      console.log(winners[i].username);
+
+
+      for (i=0;i<10;i++){
+        divString += `<div></div><div style="text-align: center">${winners[i].username}</div><div style="text-align: center">${winners[i].rounds}</div><div></div>`;
+      }
+      $("#leaderBoardText").html(divString);
+
+    });
+    setInterval(function(){$('#LeaderModal').modal('open')},1000);
+
   });
 });
 
-//orders/updates winner table
-function updateWinnerTable() {
-  socket.on('updateWinners', data => {
-    alert('got to update winner table');
-    let divString = "";
-    data.forEach(winner, index => {
-      while (index < 10) {
-        divString += `<div>${winner.username}</div><div>${winner.rounds}</div>`
-      }
-      $("#LeaderModal").html(divString);
-    });
-  })
-}
