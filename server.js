@@ -25,6 +25,7 @@ const elimination = require("./Modules-ServerSide/playerEliminationModule")
 
 
 
+
 let countgatling = 0
 let countresponsegatling = 0
 let pausetimeforgatling = "false"
@@ -62,7 +63,7 @@ const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
 const { Console } = require('console');
 let myvar2;
 let listplaycards = []
-
+let winnerTable
 
 //Add db infor tolist playcards
 function pushdbtolistplaycards(dbdata) {
@@ -652,8 +653,14 @@ function eliminatePlayer(deadPlayer, killerPlayer) {
     let endData = {
       winningRole: outcome.winnerRole,
       winnerArray: outcome.winnerArray
-    }
-    //can add those with matching roles (include deputy for sheriff) to winner history DB *****
+    };
+    winners = outcome.winnerArray;
+    //can add those with matching roles (include deputy for sheriff) to winner history DB 
+    winners.forEach(winner => {
+      let lData = { name: winner.name, rounds: idround };
+      insertgameround(lData);
+    })
+
     io.emit("endGame", JSON.stringify(endData));
     statusgame = 'gameover';
     //clear playerdata for newgame
@@ -1332,29 +1339,6 @@ app.get('/checkHandSizeEndTurn', function (req, res) {
 })
 
 
-//if no killer (eg, killed by dynamite), playerKiller is null
-function eliminatePlayer(deadPlayer, killerPlayer) {
-  let outcome = elimination.eliminationLogic(playerData, deadPlayer, killerPlayer, discardPile);
-  for (i = 0; i < outcome.actionLogArray.length; i++) {
-    let actionData = outcome.actionLogArray[i];
-    io.emit("updateactionlog", actionData);
-  }
-  io.emit("handUpdate", JSON.stringify(playerData));
-  io.emit("playerEliminated", JSON.stringify(playerData));
-
-  if (outcome.winnerRole != "None") {
-
-    let endData = {
-      winningRole: outcome.winnerRole,
-      winnerArray: outcome.winnerArray
-    }
-    //can add those with matching roles (include deputy for sheriff) to winner history DB *****
-    io.emit("endGame", JSON.stringify(endData));
-    statusgame = 'gameover';
-    //clear playerdata for newgame
-    initialiseGameData();
-  }
-}
 
 function initialiseGameData() {
   count = 0;
@@ -1884,3 +1868,71 @@ function triggerduel(idvictim, nameattacker) {
   }
 
 }
+
+function insertgameround(data) {
+  const url = "mongodb+srv://eGTB4yl0HFJQ6lzD:eGTB4yl0HFJQ6lzD@project.wdfid.mongodb.net/Project?retryWrites=true&w=majority";
+  const client = new MongoClient(url);
+
+  async function run() {
+    try {
+      await client.connect();
+      console.log("Connected correctly to server", data.name, data.rounds);
+      console.log("Connected correctly to server");
+      const db = client.db("project");
+      var col = db.collection("Game");
+      var myobj = { username: data.name, rounds: data.rounds };
+      await col.insertOne(myobj);
+
+
+
+
+    } catch (err) {
+      console.log(err.stack);
+    }
+    finally {
+      await client.close();
+    }
+  }
+
+  run().catch(console.dir);
+}
+function gettopwinners() {
+  const url = "mongodb+srv://eGTB4yl0HFJQ6lzD:eGTB4yl0HFJQ6lzD@project.wdfid.mongodb.net/Project?retryWrites=true&w=majority";
+  const client = new MongoClient(url);
+
+  async function run() {
+    try {
+      await client.connect();
+      console.log("Connected correctly to server");
+      console.log("Connected correctly to server");
+      const db = client.db("project");
+
+      db.collection("Game").find().sort({ rounds: -1 }).limit(10).toArray(function (err, result) {
+        if (err) throw err;
+        console.log(result);
+        winnerTable = result;
+      });
+
+
+
+
+
+    } catch (err) {
+      console.log(err.stack);
+    }
+    finally {
+      await client.close();
+    }
+  }
+
+  run().catch(console.dir);
+}
+
+app.get('/updateWinners', function (req, res) {
+  console.log('a check')
+
+  gettopwinners();
+  console.log('the winner '+winnerTable[0])
+  io.emit("updateWinners", JSON.stringify(winnerTable))
+  res.send("winner results updated");
+});
