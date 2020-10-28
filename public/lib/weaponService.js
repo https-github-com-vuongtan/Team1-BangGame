@@ -6,7 +6,7 @@ function updateWeapon(){
     if(data.socket==socketid){
       let weapon = data.weapon
        console.log(weapon)
-       $("#a5weapon").attr('src',"assets/cards/"+data.weapon+".png")
+       $("#a5WeaponCard").attr('src',"assets/cards/"+data.weapon+".png")
        displayWeapon(mydata,data)
     }
     })
