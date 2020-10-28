@@ -1421,10 +1421,8 @@ if(checklivestatus=="true"){
       })  
       //If having bang card=> Starting Duello
   if(checkstatusbangcard=="true"){
-    io.to(player.socket).emit("DuelOption", nameattacker)
-    pausetime=0
-    getpauseandend.setintervaltime(pausetime)
-    statuspause="off"
+    triggerduel(idvictim,nameattacker)
+    io.emit("handUpdate",JSON.stringify(playerData))
   }
 //If do not have bang card=> Continue check beer card=> If do not have beer card, user will be automatically decresed their life
    else if(checkstatusbangcard=="false"){
@@ -1461,6 +1459,100 @@ if(checklivestatus=="true"){
 
   res.send("Finished Duel")   
 })
+
+//New function for duel
+function triggerduel(idvictim,nameattacker){
+  let countbangvictim=0
+  let countbangattacker=0
+  let socketvictim
+  let socketattacker
+  let nameattack
+  let namevictim
+
+
+  playerData.forEach(player=>{
+    if(player.id==idvictim){
+      socketvictim=player.socket
+      namevictim=player.name
+      player.hand.forEach(function(data,index,object){
+        if(data.card=="bang"){
+          countbangvictim++
+        }
+      })
+    }
+  })
+  playerData.forEach(player=>{
+    if(player.name==nameattacker){
+      socketattacker=player.socket
+      nameattack=player.name
+      player.hand.forEach(function(data,index,object){
+        if(data.card=="bang"){
+          countbangattacker++
+
+        }
+      })
+    }
+  })
+
+
+
+  io.emit("handUpdate",JSON.stringify(playerData))
+
+  console.log("Countvictim "+countbangvictim)
+  console.log("Countvictim "+countbangattacker)
+
+  if(countbangattacker>=countbangvictim){    
+    for(let i=0;i<countbangvictim;i++){
+      getduel.removeBangCard(playerData,socketvictim)
+      getduel.removeBangCard(playerData,socketattacker)
+    }
+    const data ={
+      name: nameattack,
+      action: "shot " +namevictim
+    }
+    io.emit("updateactionlog",data)
+
+    playerData.forEach(player=>{
+      if(player.id==idvictim){
+        player.currentLife--
+        console.log(player.currentLife)
+        if (player.currentLife < 1) {
+          eliminatePlayer(player, null);
+        }
+      }
+    })
+
+  }
+  else{
+    const data ={
+      name: namevictim,
+      action: "shot " +nameattack
+    }
+    io.emit("updateactionlog",data)
+
+    if(countbangattacker==0){
+      getduel.removeBangCard(playerData,socketvictim)
+    }
+    else{
+    for(let i=0;i<countbangattacker;i++){
+      getduel.removeBangCard(playerData,socketvictim)
+      getduel.removeBangCard(playerData,socketattacker)
+    }
+  }
+    playerData.forEach(player=>{
+      if(player.name==nameattacker){
+        player.currentLife--
+        console.log(player.currentLife)
+        if (player.currentLife < 1) {
+          eliminatePlayer(player, null);
+        }
+      }
+    })
+  }
+
+}
+
+
 
 /* ---------------------------------------------------Bang/Miss Start ------------------------------------------------------*/
 app.get('/shootBang', function(req,res){
