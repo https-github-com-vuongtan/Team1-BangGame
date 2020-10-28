@@ -1,16 +1,16 @@
-//automatically discard last cards of hand till under the hand limit // $$$$$
+//automatically discard last cards of hand till under the hand limit 
 function forceUnderHandLimit(data) {
   player = data.limitPlayer;
   discardPile = data.discardPile;
-  while (player.hand.length > player.currentLife) { // $$$$$
-    let index = (player.hand.length - 1); // $$$$$
-    let discardedCard = player.hand.splice(index, 1); // $$$$$
-    discardPile.push({ "card": discardedCard[0].card }); // $$$$$
+  while (player.hand.length > player.currentLife) { 
+    let index = (player.hand.length - 1); 
+    let discardedCard = player.hand.splice(index, 1); 
+    discardPile.push({ "card": discardedCard[0].card }); 
   }
-  for (i = 0; i < player.hand.length; i++) { // $$$$$
-    player.hand[i].id = i + 1; // $$$$$
-  } //$$$$$
-} // $$$$$
+  for (i = 0; i < player.hand.length; i++) { 
+    player.hand[i].id = i + 1; 
+  } 
+} 
 
 //removes all players cards and returns as array of discarded cards
 function discardPlayerCards(player) {
@@ -63,8 +63,13 @@ function eliminationLogic(playerData, player, playerKiller, discardPile) {
   if (playerKiller != null) {
     //if victim was outlaw, killer gets reward cards
     if (player.role == "Outlaw") {
-      //draw three cards (needs draw function *****) and add to playerKiller's hand
       actionLogData.push({ name: playerKiller.name, action: 'won Outlaw Reward' });
+      //draw three cards (needs draw function and add to playerKiller's hand
+      //drawCards(playerData, listplaycards, statusphase, io)
+      let data = {
+        socket: playerKiller.socket
+      }
+      $.get("/drawRewardCards", data)
     } else if (player.role == "Deputy") {
       //if deputy killed by sheriff, sheriff discards all cards in hand and in play.
       let sheriffCards = discardPlayerCards(playerKiller)

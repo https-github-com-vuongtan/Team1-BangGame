@@ -25,9 +25,9 @@ const elimination = require("./Modules-ServerSide/playerEliminationModule")
 
 
 
-let countgatling=0
-let countresponsegatling=0
-let pausetimeforgatling="false"
+let countgatling = 0
+let countresponsegatling = 0
+let pausetimeforgatling = "false"
 
 
 let count = 0
@@ -35,8 +35,8 @@ let listdesuser = []
 let checkuserexist = false
 let statusgame = ""
 let socketofeachuser;
-let checksocketexist=false
-let playerData=[]
+let checksocketexist = false
+let playerData = []
 let discardPile = []
 
 let currenttime = ""
@@ -52,53 +52,53 @@ let listcards
 
 
 
-let Sheriffrole="false"
-let statusphase=""
-let statuspause=""
-let pausetime=0
+let Sheriffrole = "false"
+let statusphase = ""
+let statuspause = ""
+let pausetime = 0
 let listcharactercards = []
 let listedrolecards = []
 const { removeGatling } = require('./Modules-ServerSide/GaltingModule');
 const { Console } = require('console');
 let myvar2;
-let listplaycards=[]
+let listplaycards = []
 
 
 //Add db infor tolist playcards
-  function pushdbtolistplaycards(dbdata){
-    dbdata.forEach(function(data,index,object){
-      let element={"id":index,"playcard":data["PlayingCardName"]}
-      listplaycards.push(element)
-    })
-  }
+function pushdbtolistplaycards(dbdata) {
+  dbdata.forEach(function (data, index, object) {
+    let element = { "id": index, "playcard": data["PlayingCardName"] }
+    listplaycards.push(element)
+  })
+}
 //Add db infor tolist role cards
-function pushdbtolistrole(dbdata){
-  dbdata.forEach(function(data,index,object){
-    let element={"id":index,"RoleCardName":data["RoleCardName"]}
+function pushdbtolistrole(dbdata) {
+  dbdata.forEach(function (data, index, object) {
+    let element = { "id": index, "RoleCardName": data["RoleCardName"] }
     listedrolecards.push(element)
   })
 }
 //Add db infor tolist character cards
-function pushtolistcharacter(dbdata){
-  dbdata.forEach(function(data,index,object){
-    let element={"id":index,"charactername":data["charactername"],"maxLife":data["maxLife"]}
+function pushtolistcharacter(dbdata) {
+  dbdata.forEach(function (data, index, object) {
+    let element = { "id": index, "charactername": data["charactername"], "maxLife": data["maxLife"] }
     listcharactercards.push(element)
-    
+
   })
 }
 
-  function getrandomplaycards(playerData,items){
-  playerData.forEach(player=>{
-    let maxlife=player.maxLife
-    for(var i=0;i<maxlife;i++){
+function getrandomplaycards(playerData, items) {
+  playerData.forEach(player => {
+    let maxlife = player.maxLife
+    for (var i = 0; i < maxlife; i++) {
       let item = items[Math.floor(Math.random() * items.length)];
-      let charactername=item["playcard"]
-      let element={"id":i+1,"card":charactername}
+      let charactername = item["playcard"]
+      let element = { "id": i + 1, "card": charactername }
       player.hand.push(element)
 
     }
-  }) 
-  }
+  })
+}
 
 
 
@@ -114,57 +114,57 @@ let myVar1 = setInterval(updatephase, 100);
 app.use(express.static(__dirname + "/public"))
 
 
-function checkcurrenttime(){
-  if(statuspause!="off"){
-    currenttime=new Date()
+function checkcurrenttime() {
+  if (statuspause != "off") {
+    currenttime = new Date()
   }
-    if(statuspause=="on"){
-      phasetime.setSeconds (phasetime.getSeconds() + pausetime);
-      pausetime=0
-      statuspause=""
-    }
-      // Find the distance between now and the count down date
-    let distance = phasetime - currenttime;  
-     minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-     seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      //When starting game, we will start randomly give character card to each user
-  if(statusgame=='START GAME'&&statuscharactercard==""){
+  if (statuspause == "on") {
+    phasetime.setSeconds(phasetime.getSeconds() + pausetime);
+    pausetime = 0
+    statuspause = ""
+  }
+  // Find the distance between now and the count down date
+  let distance = phasetime - currenttime;
+  minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  //When starting game, we will start randomly give character card to each user
+  if (statusgame == 'START GAME' && statuscharactercard == "") {
     getrandomcharactercards.getrandomcharactercards(listcharactercards, playerData)
     io.emit("randomgivecharacter", JSON.stringify(playerData))
     getrandomrolecards.getrandomRole(listedrolecards, playerData)
-    getrandomplaycards(playerData,listplaycards)
+    getrandomplaycards(playerData, listplaycards)
     console.log(playerData)
-    io.emit("updateRole",JSON.stringify(playerData))
+    io.emit("updateRole", JSON.stringify(playerData))
     io.emit("bulletUpdate", JSON.stringify(playerData))
-    io.emit("weaponUpdate",JSON.stringify(playerData))
-    io.emit("updatePlayerName",JSON.stringify(playerData))
-    io.emit("handUpdate",JSON.stringify(playerData))
-    io.emit("bangUpdate",JSON.stringify(playerData))
+    io.emit("weaponUpdate", JSON.stringify(playerData))
+    io.emit("updatePlayerName", JSON.stringify(playerData))
+    io.emit("handUpdate", JSON.stringify(playerData))
+    io.emit("bangUpdate", JSON.stringify(playerData))
     io.emit("cardsInHandUpdate", JSON.stringify(playerData))
 
-    statuscharactercard="Finished"
+    statuscharactercard = "Finished"
   }
-  if(phasetime!=""){
-    let data={min:minutes,sec:seconds,name:statusphase.name,phase:statusphase.phase}
-    io.emit("timeupdate",data)
+  if (phasetime != "") {
+    let data = { min: minutes, sec: seconds, name: statusphase.name, phase: statusphase.phase }
+    io.emit("timeupdate", data)
   }
 }
 app.get("/pause", function (req, res) {
   let status = req.query.stat
   console.log(status)
-  if(status=="off"&&countgatling==0){
+  if (status == "off" && countgatling == 0) {
     res.send("OK")
     pausetime = 0
     getpauseandend.setintervaltime(pausetime)
     statuspause = "off"
   }
-  else if(status=="on"&&countgatling==0){
+  else if (status == "on" && countgatling == 0) {
     res.send("OK")
-    pausetime= getpauseandend.returnpausetime()
+    pausetime = getpauseandend.returnpausetime()
     getpauseandend.resettime()
-    statuspause="on"
+    statuspause = "on"
   }
-  else{
+  else {
     res.send("OK")
   }
 })
@@ -176,40 +176,40 @@ app.get("/endphase", function (req, res) {
 
 
 //Function for updating phase
-function updatephase(){
-if(statusgame=='START GAME'&&phasestatus==""){
-  playerData.forEach(player=>{
-    if(player.role=="Sheriff"){
-      idround=player.id
-    }
-  })
-  Sheriffrole="true"
-  phasestatus="Starting"
-}
-if(phasestatus=="Starting"&&Sheriffrole=="true"){
-   statusphase={id:idround,phase:1,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
-   phasetime=new Date (currenttime );
-   phasetime.setSeconds (phasetime.getSeconds() + 15 );
-   data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
-   io.emit("updateactionlog",data)
-   io.emit("infophase",statusphase)  
-   phasestatus="Ongoing"
-  return;
-}
-if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
-  statusphase={id:idround,phase:2,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
-  drawCards(playerData, listplaycards,statusphase,io)
-  phasetime=new Date (currenttime );
-  phasetime.setSeconds ( phasetime.getSeconds() + 60 );  
-  data = {name: statusphase.name, action: ` Started Phase ${statusphase.phase} `}
-  io.emit("updateactionlog",data)
-  io.emit("infophase",statusphase)  
-  return;
+function updatephase() {
+  if (statusgame == 'START GAME' && phasestatus == "") {
+    playerData.forEach(player => {
+      if (player.role == "Sheriff") {
+        idround = player.id
+      }
+    })
+    Sheriffrole = "true"
+    phasestatus = "Starting"
+  }
+  if (phasestatus == "Starting" && Sheriffrole == "true") {
+    statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
+    phasetime = new Date(currenttime);
+    phasetime.setSeconds(phasetime.getSeconds() + 15);
+    data = { name: statusphase.name, action: ` Started Phase ${statusphase.phase} ` }
+    io.emit("updateactionlog", data)
+    io.emit("infophase", statusphase)
+    phasestatus = "Ongoing"
+    return;
+  }
+  if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 1) {
+    statusphase = { id: idround, phase: 2, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
+    drawCards(playerData, listplaycards, statusphase, io)
+    phasetime = new Date(currenttime);
+    phasetime.setSeconds(phasetime.getSeconds() + 60);
+    data = { name: statusphase.name, action: ` Started Phase ${statusphase.phase} ` }
+    io.emit("updateactionlog", data)
+    io.emit("infophase", statusphase)
+    return;
 
   }
 
   if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 2) {
-    playerData[idround-1].bangPlayed = false
+    playerData[idround - 1].bangPlayed = false
     //if hand under limit go straight to next turn (skip phase 3)
     if (playerData[idround - 1].hand.length <= playerData[idround - 1].currentLife) {
       if (idround == 5) {
@@ -265,27 +265,27 @@ if(minutes==0&&seconds==0&&phasestatus=="Ongoing"&&statusphase.phase==1){
 
   if (minutes == 0 && seconds == 0 && phasestatus == "Ongoing" && statusphase.phase == 3) {
     let data = {
-            limitPlayer: playerData[idround - 1],
-            discardPile: discardPile
-           }
-          elimination.forceUnderHandLimit(data);
-          io.emit("handUpdate", JSON.stringify(playerData));
+      limitPlayer: playerData[idround - 1],
+      discardPile: discardPile
+    }
+    elimination.forceUnderHandLimit(data);
+    io.emit("handUpdate", JSON.stringify(playerData));
     if (idround == 5) {
       idround = 1
     }
-    else{
+    else {
       idround++
     }
-    if(playerData[idround-1].currentLife==0){
-      statusphase.phase=3
-      phasetime=getpauseandend.endphase(phasetime,currenttime)
-      phasestatus="Ongoing"
+    if (playerData[idround - 1].currentLife == 0) {
+      statusphase.phase = 3
+      phasetime = getpauseandend.endphase(phasetime, currenttime)
+      phasestatus = "Ongoing"
     }
-    else{
-    statusphase={id:idround,phase:1,name:playerData[idround-1].name,socket:playerData[idround-1].socket}
-    phasetime=new Date (currenttime );
-    phasetime.setSeconds (phasetime.getSeconds() + 15 );
-    io.emit("infophase",statusphase)  
+    else {
+      statusphase = { id: idround, phase: 1, name: playerData[idround - 1].name, socket: playerData[idround - 1].socket }
+      phasetime = new Date(currenttime);
+      phasetime.setSeconds(phasetime.getSeconds() + 15);
+      io.emit("infophase", statusphase)
     }
     return;
   }
@@ -374,7 +374,7 @@ function pushdatatolist(username, socketid) {
     dynamite: false,
     eliminated: false,
     bangPlayed: false,
-    hand: [{ id: 7, card: 'scope' }, ],
+    hand: [{ id: 7, card: 'scope' },],
   }
   playerData.push(newPlayer);
   io.emit("descriptionuser", JSON.stringify(playerData))
@@ -459,9 +459,9 @@ app.get('/submitname', function (req, res) {
 });
 
 
-app.get('/desuser', function(req, res){
-  res.send("Wating for more " +(5-playerData.length)+ " People")
-  io.emit("descriptionuser",JSON.stringify(playerData)) 
+app.get('/desuser', function (req, res) {
+  res.send("Wating for more " + (5 - playerData.length) + " People")
+  io.emit("descriptionuser", JSON.stringify(playerData))
 });
 
 app.get('/status', function (req, res) {
@@ -485,155 +485,155 @@ app.get('/chatbox', function (req, res) {
 
 
 
-app.get('/actionLog', function(req, res){
-    const name = req.query.name
-    const action = req.query.action
-    const data={
-      name:name,
-      action:action
-    }
-    io.emit("updateactionlog",data)
-    res.send("action log hit")
-    });
+app.get('/actionLog', function (req, res) {
+  const name = req.query.name
+  const action = req.query.action
+  const data = {
+    name: name,
+    action: action
+  }
+  io.emit("updateactionlog", data)
+  res.send("action log hit")
+});
 
 app.get('/playSaloon', function (req, res) {
+  const data = {
+    name: req.query.name,
+    action: `played saloon`
+  }
+  io.emit("updateactionlog", data);
+
+  playerData.forEach(player => {
+
+    if (player.currentLife < player.maxLife && !player.eliminated) {
+      player.currentLife++;
       const data = {
-        name: req.query.name,
-        action: `played saloon`
+        name: player.name,
+        action: `gained a life point`
       }
-      io.emit("updateactionlog", data);
-    
-      playerData.forEach(player => {
-    
-        if (player.currentLife < player.maxLife && !player.eliminated) {
-          player.currentLife++;
-          const data = {
-            name: player.name,
-            action: `gained a life point`
-          }
-          io.emit("updateactionlog", data)
-        }
-      })
-      io.emit("bulletUpdate", JSON.stringify(playerData));
-      res.send("saloon played");
-    })
+      io.emit("updateactionlog", data)
+    }
+  })
+  io.emit("bulletUpdate", JSON.stringify(playerData));
+  res.send("saloon played");
+})
 
 app.get('/playPanic', function (req, res) {
-      let panicPlayerName = req.query.name;
-      let targetIndex = req.query.targetPlayerIndex;
-      let targetCard = req.query.targetCard;
-      let card = "none";
-      let cardIndex;
-      switch (targetCard) {
-        //if mystery "in hand" card chosen, pick a random card and remove from target
-    
-        case ("mystery"):
-          cardIndex = Math.floor(Math.random() * (playerData[targetIndex].hand.length))
-          let cardHand = playerData[targetIndex].hand.splice(cardIndex, 1);
-          card = cardHand[0].card;
-          //fix target hand indexing post card removal
-          for (i = 0; i < playerData[targetIndex].hand.length; i++) {
-            playerData[targetIndex].hand[i].id = i + 1;
-          }
-          break;
-        //if an "in play" card, set target value to false and make it the card to be added to panic player
-        case ("scope"):
-          playerData[targetIndex].scope = false
-          card = "scope";
-          break;
-        case ("mustang"):
-          playerData[targetIndex].mustang = false
-          card = "mustang";
-          break;
-        case ("barrel"):
-          playerData[targetIndex].barrel = false
-          card = "barrel";
-          break;
-        case ("jail"):
-          playerData[targetIndex].jail = false
-          card = "jail";
-          break;
-        case ("dynamite"):
-          playerData[targetIndex].dynamite = false
-          card = "dynamite";
-          break;
-        case ("remington"):
-          playerData[targetIndex].weapon = "colt45"
-          card = "remington";
-          break;
-        case ("rev carabine"):
-          playerData[targetIndex].weapon = "colt45"
-          card = "rev carabine";
-          break;
-        case ("schofield"):
-          playerData[targetIndex].weapon = "colt45"
-          card = "schofield";
-          break;
-        case ("volcanic"):
-          playerData[targetIndex].weapon = "colt45"
-          card = "volcanic";
-          break;
-        case ("winchester"):
-          playerData[targetIndex].weapon = "colt45"
-          card = "winchester";
-          break;
-        default:
-          console.log("card not found");
+  let panicPlayerName = req.query.name;
+  let targetIndex = req.query.targetPlayerIndex;
+  let targetCard = req.query.targetCard;
+  let card = "none";
+  let cardIndex;
+  switch (targetCard) {
+    //if mystery "in hand" card chosen, pick a random card and remove from target
+
+    case ("mystery"):
+      cardIndex = Math.floor(Math.random() * (playerData[targetIndex].hand.length))
+      let cardHand = playerData[targetIndex].hand.splice(cardIndex, 1);
+      card = cardHand[0].card;
+      //fix target hand indexing post card removal
+      for (i = 0; i < playerData[targetIndex].hand.length; i++) {
+        playerData[targetIndex].hand[i].id = i + 1;
       }
-      if (card != "none") {
-        playerData.forEach(player => {
-          //add the card to panic player's hand
-          if (player.name == panicPlayerName) {
-            player.hand.push({ id: (player.hand.length + 1), card: card })
-          }
-        })
-      } else {
-        console.log("panic error: no card selection found")
+      break;
+    //if an "in play" card, set target value to false and make it the card to be added to panic player
+    case ("scope"):
+      playerData[targetIndex].scope = false
+      card = "scope";
+      break;
+    case ("mustang"):
+      playerData[targetIndex].mustang = false
+      card = "mustang";
+      break;
+    case ("barrel"):
+      playerData[targetIndex].barrel = false
+      card = "barrel";
+      break;
+    case ("jail"):
+      playerData[targetIndex].jail = false
+      card = "jail";
+      break;
+    case ("dynamite"):
+      playerData[targetIndex].dynamite = false
+      card = "dynamite";
+      break;
+    case ("remington"):
+      playerData[targetIndex].weapon = "colt45"
+      card = "remington";
+      break;
+    case ("rev carabine"):
+      playerData[targetIndex].weapon = "colt45"
+      card = "rev carabine";
+      break;
+    case ("schofield"):
+      playerData[targetIndex].weapon = "colt45"
+      card = "schofield";
+      break;
+    case ("volcanic"):
+      playerData[targetIndex].weapon = "colt45"
+      card = "volcanic";
+      break;
+    case ("winchester"):
+      playerData[targetIndex].weapon = "colt45"
+      card = "winchester";
+      break;
+    default:
+      console.log("card not found");
+  }
+  if (card != "none") {
+    playerData.forEach(player => {
+      //add the card to panic player's hand
+      if (player.name == panicPlayerName) {
+        player.hand.push({ id: (player.hand.length + 1), card: card })
       }
-    
-      io.emit("handUpdate", JSON.stringify(playerData));
-      io.emit("cardsInPlayUpdate", JSON.stringify(playerData));
-    
-      const data = {
-        name: req.query.name,
-        action: `played panic on ${playerData[targetIndex].name}`
-      }
-      io.emit("updateactionlog", data);
-      res.send("panic played");
     })
+  } else {
+    console.log("panic error: no card selection found")
+  }
+
+  io.emit("handUpdate", JSON.stringify(playerData));
+  io.emit("cardsInPlayUpdate", JSON.stringify(playerData));
+
+  const data = {
+    name: req.query.name,
+    action: `played panic on ${playerData[targetIndex].name}`
+  }
+  io.emit("updateactionlog", data);
+  res.send("panic played");
+})
 
 app.get('/discardHandCard', function (req, res) {
-      let index = req.query.index;
-      let name = req.query.name;
-      let discardedCard = [];
-      playerData.forEach(player => {
-        if (player.name == name) {
-          discardedCard = player.hand.splice(index, 1);
-          discardPile.push({ "card": discardedCard[0].card });
-    
-          for (i = 0; i < player.hand.length; i++) {
-            player.hand[i].id = i + 1;
-          }
-        }
-      })
-      io.emit("handUpdate", JSON.stringify(playerData))
-      res.send(console.log(`${discardedCard[0].card} added to the discard pile`));
-    })
+  let index = req.query.index;
+  let name = req.query.name;
+  let discardedCard = [];
+  playerData.forEach(player => {
+    if (player.name == name) {
+      discardedCard = player.hand.splice(index, 1);
+      discardPile.push({ "card": discardedCard[0].card });
+
+      for (i = 0; i < player.hand.length; i++) {
+        player.hand[i].id = i + 1;
+      }
+    }
+  })
+  io.emit("handUpdate", JSON.stringify(playerData))
+  res.send(console.log(`${discardedCard[0].card} added to the discard pile`));
+})
 
 app.get('/checkHandSizeEndTurn', function (req, res) {
-      let name = req.query.name;
-      playerData.forEach(player => {
-        if (player.name == name) {
-          if (player.hand.length <= player.currentLife) {
-            //do the same as endphase method
-            phasetime = getpauseandend.endphase(phasetime, currenttime);
-            res.send(console.log(`${player.name} turn ended`));
-          } else {
-            res.send(console.log(`${player.name} must discard another card`));
-          }
-        }
-      })
-    })
+  let name = req.query.name;
+  playerData.forEach(player => {
+    if (player.name == name) {
+      if (player.hand.length <= player.currentLife) {
+        //do the same as endphase method
+        phasetime = getpauseandend.endphase(phasetime, currenttime);
+        res.send(console.log(`${player.name} turn ended`));
+      } else {
+        res.send(console.log(`${player.name} must discard another card`));
+      }
+    }
+  })
+})
 
 
 
@@ -694,68 +694,68 @@ function initialiseGameData() {
 
 
 
-    //Function to get currentlife
-app.get("/getcurrentlife",function(req,res){
-  let socket=req.query.socket
+//Function to get currentlife
+app.get("/getcurrentlife", function (req, res) {
+  let socket = req.query.socket
   let currentlife
-  playerData.forEach(player=>{
-    if(player.socket==socket){
-       currentlife=player.currentLife
+  playerData.forEach(player => {
+    if (player.socket == socket) {
+      currentlife = player.currentLife
     }
   })
   console.log(currentlife)
-  res.send({life:currentlife})
+  res.send({ life: currentlife })
 })
 
-app.get("/getcurrentbang",function(req,res){
-  let socket=req.query.socket
+app.get("/getcurrentbang", function (req, res) {
+  let socket = req.query.socket
   let currentBang
-  playerData.forEach(player=>{
-    if(player.socket==socket){
-       currentBang=player.bangPlayed
+  playerData.forEach(player => {
+    if (player.socket == socket) {
+      currentBang = player.bangPlayed
     }
   })
   console.log(currentBang)
-  res.send({bang:currentBang})
+  res.send({ bang: currentBang })
 })
 
-app.get("/weaponChange",function(req,res){
-const data ={
-  item:req.query.item,
-  socket: req.query.socket,
-  range: req.query.range
-}
-weapon.weaponChange(data,playerData,io);
-res.send("200")
+app.get("/weaponChange", function (req, res) {
+  const data = {
+    item: req.query.item,
+    socket: req.query.socket,
+    range: req.query.range
+  }
+  weapon.weaponChange(data, playerData, io);
+  res.send("200")
 })
 
-app.get("/drawCards", function(req,res){
-const data ={
- socket: req.query.socket
-}
-drawCards(playerData,listplaycards,data,io)
+app.get("/drawCards", function (req, res) {
+  const data = {
+    socket: req.query.socket
+  }
+  drawCards(playerData, listplaycards, data, io)
 })
 
-function drawCards(playerData,items,data, io){
-  playerData.forEach(player=>{
-    if (player.socket == data.socket){
-      for(var i=0;i<2;i++){
+function drawCards(playerData, items, data, io) {
+  playerData.forEach(player => {
+    if (player.socket == data.socket) {
+      for (var i = 0; i < 2; i++) {
         let item = items[Math.floor(Math.random() * items.length)];
-        let charactername=item["playcard"]
-        let element={"id":i+1,"card":charactername}
+        let charactername = item["playcard"]
+        let element = { "id": i + 1, "card": charactername }
         player.hand.push(element)
 
       }
-      const data2 ={
+      const data2 = {
         name: player.name,
         action: ` drew two cards from the deck!`,
       }
-      io.emit("updateactionlog",data2)
-      io.emit("handUpdate",JSON.stringify(playerData))
-    } 
+      io.emit("updateactionlog", data2)
+      io.emit("handUpdate", JSON.stringify(playerData))
+    }
 
-  }) 
-  }
+  })
+}
 
 
 
@@ -763,61 +763,61 @@ function drawCards(playerData,items,data, io){
 
 
 //Function get pausetime
-app.get("/getpausetime",function(req,res){
-  let time=getpauseandend.returntime()
+app.get("/getpausetime", function (req, res) {
+  let time = getpauseandend.returntime()
   console.log(time)
-  res.send({pause:time})
+  res.send({ pause: time })
 })
 
 
 
 //Trigger General Store
-app.get("/generaltrigger",function(req,res){
-  let socket=req.query.socket
+app.get("/generaltrigger", function (req, res) {
+  let socket = req.query.socket
   //Count live number
-  let livecount=0
-  playerData.forEach(player=>{
-    if(player.currentLife>0){
+  let livecount = 0
+  playerData.forEach(player => {
+    if (player.currentLife > 0) {
       livecount++
     }
   })
-let countlistplayingcards=listplaycards.length
-if(countlistplayingcards>=livecount&&livecount>1){
-listcards= getgeneral.getplayingcards(listplaycards,livecount)
-getgeneral.removegeneralcard(playerData,socket)
-io.emit("handUpdate",JSON.stringify(playerData))
-io.to(socket).emit("GeneralModal",listcards)
-pausetime=0
-getpauseandend.setintervaltime(pausetime)
-statuspause="off"
-res.send("OK")
-}
-else{
-res.send("Do not have enough playing cards or All others players was died")
-}
+  let countlistplayingcards = listplaycards.length
+  if (countlistplayingcards >= livecount && livecount > 1) {
+    listcards = getgeneral.getplayingcards(listplaycards, livecount)
+    getgeneral.removegeneralcard(playerData, socket)
+    io.emit("handUpdate", JSON.stringify(playerData))
+    io.to(socket).emit("GeneralModal", listcards)
+    pausetime = 0
+    getpauseandend.setintervaltime(pausetime)
+    statuspause = "off"
+    res.send("OK")
+  }
+  else {
+    res.send("Do not have enough playing cards or All others players was died")
+  }
 })
 //Continue General Store Process
-app.get("/continueprocessgeneral",function(req,res){
-  let position=req.query.position
-  let socket=req.query.socket
-  let namecard=req.query.namecard
+app.get("/continueprocessgeneral", function (req, res) {
+  let position = req.query.position
+  let socket = req.query.socket
+  let namecard = req.query.namecard
   let socketnext
-  if(listcards.length!=0){
-    listcards.splice(position,1)
+  if (listcards.length != 0) {
+    listcards.splice(position, 1)
 
-  getgeneral.pushcardtohand(playerData,socket,namecard)
-  io.emit("handUpdate",JSON.stringify(playerData))
-  if(listcards.length!=0){
-  socketnext= getgeneral.checknextuser(playerData,socket)
- io.to(socketnext).emit("GeneralModal",listcards)
+    getgeneral.pushcardtohand(playerData, socket, namecard)
+    io.emit("handUpdate", JSON.stringify(playerData))
+    if (listcards.length != 0) {
+      socketnext = getgeneral.checknextuser(playerData, socket)
+      io.to(socketnext).emit("GeneralModal", listcards)
+    }
   }
+  if (listcards.length == 0) {
+    pausetime = getpauseandend.returnpausetime()
+    getpauseandend.resettime()
+    playerData.forEach(player => { console.log(player.name + "is now on " + player.currentLife) })
+    statuspause = "on"
   }
-if(listcards.length==0){
-  pausetime=getpauseandend.returnpausetime()
-  getpauseandend.resettime()
-  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
-  statuspause="on"
-}
 
 
   res.send("OK")
@@ -825,265 +825,264 @@ if(listcards.length==0){
 
 
 //Trigger wells fargo
-app.get("/wellsfargo",function(req,res){
-  let socket=req.query.socket
-  let statuspick=getwellfargo.randompickthreecards(listplaycards,playerData,socket)
-  if(statuspick=="Canpick"){
-  getwellfargo.removeWells(playerData,socket)
+app.get("/wellsfargo", function (req, res) {
+  let socket = req.query.socket
+  let statuspick = getwellfargo.randompickthreecards(listplaycards, playerData, socket)
+  if (statuspick == "Canpick") {
+    getwellfargo.removeWells(playerData, socket)
   }
-  io.emit("handUpdate",JSON.stringify(playerData))
+  io.emit("handUpdate", JSON.stringify(playerData))
   res.send("OK")
   //Testing phase WellFargo
-  testingWellFargo(playerData,socket)
+  testingWellFargo(playerData, socket)
 })
 
 //Trigger Indians
-app.get("/indianstrigger",function(req,res){
-  countgatling=0
-  countresponsegatling=0
-  let checkhavingbang="false"
-  let socket=req.query.socket
+app.get("/indianstrigger", function (req, res) {
+  countgatling = 0
+  countresponsegatling = 0
+  let checkhavingbang = "false"
+  let socket = req.query.socket
   let attackername
-  getindians.removeIndians(playerData,socket)
-  io.emit("handUpdate",JSON.stringify(playerData))
-  playerData.forEach(player=>{
-    if(player.socket==socket){
-      attackername=player.name
+  getindians.removeIndians(playerData, socket)
+  io.emit("handUpdate", JSON.stringify(playerData))
+  playerData.forEach(player => {
+    if (player.socket == socket) {
+      attackername = player.name
     }
   })
-  let statusbang="false"
-  playerData.forEach(player=>{
-    let statusbeer="false"
-   let  statusbang="false"
-    let currentlife="true"
-    if(player.currentLife<1){
-      currentlife="false"
+  let statusbang = "false"
+  playerData.forEach(player => {
+    let statusbeer = "false"
+    let statusbang = "false"
+    let currentlife = "true"
+    if (player.currentLife < 1) {
+      currentlife = "false"
     }
-if(currentlife=="true")
-{
-    player.hand.forEach(data=>{
-      if(data.card=="bang"){
-        statusbang="true"
+    if (currentlife == "true") {
+      player.hand.forEach(data => {
+        if (data.card == "bang") {
+          statusbang = "true"
+        }
+        if (data.card == "beer") {
+          statusbeer = "true"
+        }
+      })
+      if (statusbang == "true") {
+        countgatling++
+        checkhavingbang = "true"
+        io.to(player.socket).emit("IndiansOption", attackername)
       }
-      if(data.card=="beer"){
-        statusbeer="true"
+
+      else {
+        if (statusbeer == "true" && player.currentLife == 1) {
+          player.currentLife = player.currentLife
+          getbeer.removebeerGalting(playerData, player.socket)
+          io.emit("handUpdate", JSON.stringify(playerData))
+        }
+        else {
+          player.currentLife = player.currentLife - 1
+          const data = {
+            name: attackername,
+            action: `shot ${player.name}`
+          }
+          if (player.currentLife < 1) {
+            eliminatePlayer(player, null);
+          }
+          io.emit("bulletUpdate", JSON.stringify(playerData))
+          io.emit("updateactionlog", data)
+        }
+
       }
-    })
-  if(statusbang=="true"){
-    countgatling++
-    checkhavingbang="true"
-    io.to(player.socket).emit("IndiansOption",attackername)
-  }
-
-else{
-  if(statusbeer=="true"&&player.currentLife==1){
-    player.currentLife = player.currentLife
-    getbeer.removebeerGalting(playerData,player.socket)
-    io.emit("handUpdate",JSON.stringify(playerData))
-  }
-  else{
-  player.currentLife = player.currentLife -1
-  const data ={
-    name: attackername,
-    action: `shot ${player.name}`
-  }
-  if (player.currentLife < 1) {
-    eliminatePlayer(player, null);
-  }
-  io.emit("bulletUpdate", JSON.stringify(playerData))
-  io.emit("updateactionlog",data)
-  }
-
-}
-}
+    }
   })
-  if(checkhavingbang=="true"){
-    pausetime=0
+  if (checkhavingbang == "true") {
+    pausetime = 0
     getpauseandend.setintervaltime(pausetime)
-    statuspause="off"
+    statuspause = "off"
   }
-    if(countgatling==0){
-    playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
+  if (countgatling == 0) {
+    playerData.forEach(player => { console.log(player.name + "is now on " + player.currentLife) })
     io.emit("bulletUpdate", JSON.stringify(playerData))
-    }
-res.send("OK")
+  }
+  res.send("OK")
 })
 
 
 //Response Indians
-app.get("/responseIndians",function(req,res){
-  let msg=req.query.msg
-  let socket=req.query.socket
-  
-if(msg=="No"){
-countresponsegatling++
-playerData.forEach(player=>{
-  if(player.socket==socket){
-    let statusbeer="false"
-    player.hand.forEach(data=>{
-      if(data.card=="beer"){
-        statusbeer="true"
+app.get("/responseIndians", function (req, res) {
+  let msg = req.query.msg
+  let socket = req.query.socket
+
+  if (msg == "No") {
+    countresponsegatling++
+    playerData.forEach(player => {
+      if (player.socket == socket) {
+        let statusbeer = "false"
+        player.hand.forEach(data => {
+          if (data.card == "beer") {
+            statusbeer = "true"
+          }
+        })
+        if (statusbeer == "true" && player.currentLife == 1) {
+          console.log("OK")
+          getbeer.removebeerGalting(playerData, socket)
+          io.emit("handUpdate", JSON.stringify(playerData))
+        }
+        else {
+          const data = {
+            name: req.query.attackname,
+            action: `shot ${player.name}`
+          }
+          player.currentLife = player.currentLife - 1
+          if (player.currentLife < 1) {
+            eliminatePlayer(player, null);
+          }
+          io.emit("bulletUpdate", JSON.stringify(playerData))
+          io.emit("updateactionlog", data)
+        }
       }
     })
-    if(statusbeer=="true"&&player.currentLife==1){
-      console.log("OK")
-      getbeer.removebeerGalting(playerData,socket)
-      io.emit("handUpdate",JSON.stringify(playerData))
-    }
-    else{
-      const data ={
-        name: req.query.attackname,
-        action: `shot ${player.name}`
-      }
-    player.currentLife = player.currentLife -1
-    if (player.currentLife < 1) {
-      eliminatePlayer(player, null);
-    }
-    io.emit("bulletUpdate", JSON.stringify(playerData))
-    io.emit("updateactionlog",data)
-    }
   }
-})
-}
-else{
-countresponsegatling++
-getduel.removeBangCard(playerData,socket)
-io.emit("handUpdate",JSON.stringify(playerData))
-}
-console.log(countresponsegatling)
-console.log(countgatling)
+  else {
+    countresponsegatling++
+    getduel.removeBangCard(playerData, socket)
+    io.emit("handUpdate", JSON.stringify(playerData))
+  }
+  console.log(countresponsegatling)
+  console.log(countgatling)
 
 
-if(countresponsegatling==countgatling){
-  pausetime=getpauseandend.returnpausetime()
-  getpauseandend.resettime()
-  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
-  io.emit("bulletUpdate", JSON.stringify(playerData))
-  statuspause="on"
-  countgatling=0
-  countresponsegatling=0
-}
-res.send("OK")
+  if (countresponsegatling == countgatling) {
+    pausetime = getpauseandend.returnpausetime()
+    getpauseandend.resettime()
+    playerData.forEach(player => { console.log(player.name + "is now on " + player.currentLife) })
+    io.emit("bulletUpdate", JSON.stringify(playerData))
+    statuspause = "on"
+    countgatling = 0
+    countresponsegatling = 0
+  }
+  res.send("OK")
 })
 
 
 //Function to manage victim repsonse using beer card when gatling attack
-app.get("/responsebeercard",function(req,res){
-  let msg=req.query.msg
-  let socket=req.query.socket
+app.get("/responsebeercard", function (req, res) {
+  let msg = req.query.msg
+  let socket = req.query.socket
   countresponsegatling++
-  if(msg=="No"){
-    playerData.forEach(player=>{
-      if(player.socket==socket){
-        player.currentLife = player.currentLife -1
-        const data ={
+  if (msg == "No") {
+    playerData.forEach(player => {
+      if (player.socket == socket) {
+        player.currentLife = player.currentLife - 1
+        const data = {
           name: req.query.attackname,
           action: `shot ${player.name}`
         }
-        io.emit("updateactionlog",data)
-        res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+        io.emit("updateactionlog", data)
+        res.send(console.log(`${player.name} is now on ${player.currentLife} lives`))
       }
     })
 
   }
-else{
-res.send("Finish")
-playerData.forEach(player=>{
-  if(player.socket==socket){
-    getbeer.removebeerGalting(playerData,socket)
-io.emit("handUpdate",JSON.stringify(playerData))
-console.log(player.name +" use 1 beer card")
+  else {
+    res.send("Finish")
+    playerData.forEach(player => {
+      if (player.socket == socket) {
+        getbeer.removebeerGalting(playerData, socket)
+        io.emit("handUpdate", JSON.stringify(playerData))
+        console.log(player.name + " use 1 beer card")
+      }
+    })
   }
-})
-}
 
-playerData.forEach(player=>{
-  if(player.socket==socket){
-    if (player.currentLife < 1) {
-      eliminatePlayer(player, null);
+  playerData.forEach(player => {
+    if (player.socket == socket) {
+      if (player.currentLife < 1) {
+        eliminatePlayer(player, null);
+      }
     }
+    io.emit("bulletUpdate", JSON.stringify(playerData))
+  })
+
+
+  //Check enough response from victim to restart time
+  if (countresponsegatling == countgatling) {
+    pausetime = getpauseandend.returnpausetime()
+    getpauseandend.resettime()
+    playerData.forEach(player => { console.log(player.name + "is now on " + player.currentLife) })
+    statuspause = "on"
+    countgatling = 0
+    countresponsegatling = 0
   }
-  io.emit("bulletUpdate", JSON.stringify(playerData))
-})
-
-
-//Check enough response from victim to restart time
-if(countresponsegatling==countgatling){
-  pausetime=getpauseandend.returnpausetime()
-  getpauseandend.resettime()
-  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
-  statuspause="on"
-  countgatling=0
-  countresponsegatling=0
-}
 })
 
 //Function to manage victim repsonse using missed card when gatling attack
-app.get("/responsemissedcard",function(req,res){
-let msg=req.query.msg
-let attackerName=req.query.attackname
-let socket=req.query.socket
-//When victim do not want use missed card=> server will check beer card
-if(msg=="No"){
-  playerData.forEach(player=>{
-    if(player.socket==socket){
-      let statusbeercard="false"
-      //Check beer card and victim life=1
-      player.hand.forEach(data=>{
-        if(data.card=="beer" && player.currentLife==1){
-          io.to(player.socket).emit("beerOptionVT", attackerName)
-          statusbeercard="true"
-          return
-        }
-      })
-      // If victim do not have beer card or their life>1=> They will be decreased their life
-      if(statusbeercard=="false"){
-           countresponsegatling++     
-          player.currentLife = player.currentLife -1
-          const data ={
+app.get("/responsemissedcard", function (req, res) {
+  let msg = req.query.msg
+  let attackerName = req.query.attackname
+  let socket = req.query.socket
+  //When victim do not want use missed card=> server will check beer card
+  if (msg == "No") {
+    playerData.forEach(player => {
+      if (player.socket == socket) {
+        let statusbeercard = "false"
+        //Check beer card and victim life=1
+        player.hand.forEach(data => {
+          if (data.card == "beer" && player.currentLife == 1) {
+            io.to(player.socket).emit("beerOptionVT", attackerName)
+            statusbeercard = "true"
+            return
+          }
+        })
+        // If victim do not have beer card or their life>1=> They will be decreased their life
+        if (statusbeercard == "false") {
+          countresponsegatling++
+          player.currentLife = player.currentLife - 1
+          const data = {
             name: req.query.attackname,
             action: `shot ${player.name}`
           }
-          io.emit("updateactionlog",data)
-          console.log(player.name+"is now on " +player.currentLife)   
+          io.emit("updateactionlog", data)
+          console.log(player.name + "is now on " + player.currentLife)
+        }
+        res.send(console.log(`${player.name} is now on ${player.currentLife} lives`))
       }
-      res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+    })
+  }
+  //If they choose use missed card=> They are not decreased their life but one missed card will be lost.
+  else {
+    countresponsegatling++
+    res.send("Finish")
+    playerData.forEach(player => {
+      if (player.socket == socket) {
+        getgatling.removemissedinGalting(playerData, socket)
+        io.emit("handUpdate", JSON.stringify(playerData))
+        console.log(player.name + " With Current Life " + player.currentLife)
+        console.log(player.name + " use 1 missed card")
+      }
+    })
+
+  }
+  playerData.forEach(player => {
+    if (player.socket == socket) {
+      if (player.currentLife < 1) {
+        eliminatePlayer(player, null);
+      }
     }
+    io.emit("bulletUpdate", JSON.stringify(playerData))
+
   })
-}
-//If they choose use missed card=> They are not decreased their life but one missed card will be lost.
-else{
-countresponsegatling++
-res.send("Finish")
-playerData.forEach(player=>{
-  if(player.socket==socket){
-getgatling.removemissedinGalting(playerData,socket)
-io.emit("handUpdate",JSON.stringify(playerData))
-console.log(player.name+" With Current Life "+player.currentLife)
-console.log(player.name +" use 1 missed card")
+
+  //Function to check enough response from victim to restart time
+  if (countresponsegatling == countgatling) {
+    pausetime = getpauseandend.returnpausetime()
+    getpauseandend.resettime()
+    playerData.forEach(player => { console.log(player.name + "is now on " + player.currentLife) })
+    statuspause = "on"
+    countgatling = 0
+    countresponsegatling = 0
   }
-})
-
-}
-playerData.forEach(player=>{
-  if(player.socket==socket){
-    if (player.currentLife < 1) {
-      eliminatePlayer(player, null);
-    }
-  }
-  io.emit("bulletUpdate", JSON.stringify(playerData))
-
-})
-
-//Function to check enough response from victim to restart time
-if(countresponsegatling==countgatling){
-  pausetime=getpauseandend.returnpausetime()
-  getpauseandend.resettime()
-  playerData.forEach(player=>{console.log(player.name+"is now on " +player.currentLife)})
-  statuspause="on"
-  countgatling=0
-  countresponsegatling=0
-}
 
 })
 
@@ -1091,91 +1090,91 @@ if(countresponsegatling==countgatling){
 
 
 //This function happens when Galting card active
-app.get("/gatlingattack",function(req,res){
-  countgatling=0
-  countresponsegatling=0
-  pausetimeforgatling="false"
-  let sock=req.query.socket
-  let attackerName=getgatling.getattackername(playerData,sock)
+app.get("/gatlingattack", function (req, res) {
+  countgatling = 0
+  countresponsegatling = 0
+  pausetimeforgatling = "false"
+  let sock = req.query.socket
+  let attackerName = getgatling.getattackername(playerData, sock)
   console.log(attackerName)
   //After Playing Gatling card => Remove this card from hand
-  getgatling.removeGatling(playerData,sock)
-  io.emit("handUpdate",JSON.stringify(playerData))
+  getgatling.removeGatling(playerData, sock)
+  io.emit("handUpdate", JSON.stringify(playerData))
 
-  playerData.forEach(player=>{
-     if(player.socket!=sock){
-      let checklivestatus="true"
-      if(player.currentLife<1){
-        checklivestatus="false"
+  playerData.forEach(player => {
+    if (player.socket != sock) {
+      let checklivestatus = "true"
+      if (player.currentLife < 1) {
+        checklivestatus = "false"
       }
-      let checkmissedcard="false"
-      if(checklivestatus=="true"){
- 
-      //If victim has missed card=> They can choose use it or cancel
-      player.hand.forEach(data=>{
-        if(data.card=="missed"&&checkmissedcard=="false"){
-          countgatling++
-          //Emit to all victims for choosing use missed card or not
-          io.to(player.socket).emit("missedOptionVT", attackerName)
-          checkmissedcard="true"
-          pausetimeforgatling="true"
-          res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
-        }
-      })
+      let checkmissedcard = "false"
+      if (checklivestatus == "true") {
 
-      //If victim do not have missed card=> server will check victim have beer cards or not?
-      if(checkmissedcard=="false"){
-              //Check beer card
-        let checkbeercard="false"
-        //If victim has beer cards and their life==1=> Server will ask them use beer card or not        
-        player.hand.forEach(data=>{
-        if(data.card=="beer"&&player.currentLife==1&&checkbeercard=="false"){
-          countgatling++
-          pausetimeforgatling="true"
-          checkbeercard="true"
-          io.to(player.socket).emit("beerOptionVT", attackerName)
-          return
+        //If victim has missed card=> They can choose use it or cancel
+        player.hand.forEach(data => {
+          if (data.card == "missed" && checkmissedcard == "false") {
+            countgatling++
+            //Emit to all victims for choosing use missed card or not
+            io.to(player.socket).emit("missedOptionVT", attackerName)
+            checkmissedcard = "true"
+            pausetimeforgatling = "true"
+            res.send(console.log(`${player.name} is now on ${player.currentLife} lives`))
+          }
+        })
+
+        //If victim do not have missed card=> server will check victim have beer cards or not?
+        if (checkmissedcard == "false") {
+          //Check beer card
+          let checkbeercard = "false"
+          //If victim has beer cards and their life==1=> Server will ask them use beer card or not        
+          player.hand.forEach(data => {
+            if (data.card == "beer" && player.currentLife == 1 && checkbeercard == "false") {
+              countgatling++
+              pausetimeforgatling = "true"
+              checkbeercard = "true"
+              io.to(player.socket).emit("beerOptionVT", attackerName)
+              return
+            }
+          })
+          //If victim do not have beer card=> They will be decreased their life
+          if (checkbeercard == "false") {
+            player.currentLife = player.currentLife - 1
+            const data = {
+              name: attackerName,
+              action: `shot ${player.name}`
+            }
+            io.emit("updateactionlog", data)
+            console.log(player.name + " is now on " + player.currentLife)
+          }
+          res.send(console.log(`${player.name} is now on ${player.currentLife} lives`))
         }
-      })
-              //If victim do not have beer card=> They will be decreased their life
-              if(checkbeercard=="false"){
-                player.currentLife = player.currentLife -1
-                const data ={
-                  name: attackerName,
-                  action: `shot ${player.name}`
-                }
-                io.emit("updateactionlog",data)
-                console.log(player.name+" is now on " +player.currentLife)   
-              }
-        res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
       }
-    }
-    res.send (console.log(`${player.name} is now on ${player.currentLife} lives`))
+      res.send(console.log(`${player.name} is now on ${player.currentLife} lives`))
 
       if (player.currentLife < 1) {
         eliminatePlayer(player, null);
       }
-    
-  }
+
+    }
   })
   // If gatling is active and waiting response from victim, we will temporarily stop the time for waiting victims response
-if(pausetimeforgatling=="true"){
-  pausetime=0
-  getpauseandend.setintervaltime(pausetime)
-  statuspause="off"
-}
-io.emit("bulletUpdate", JSON.stringify(playerData))
+  if (pausetimeforgatling == "true") {
+    pausetime = 0
+    getpauseandend.setintervaltime(pausetime)
+    statuspause = "off"
+  }
+  io.emit("bulletUpdate", JSON.stringify(playerData))
 
 })
 
 //Function for trigger beer action in phase 2 of user
-app.get("/beertrigger",function(req,res){
-  let sock=req.query.socket
-  let statusheal=getbeer.BeerHealBlood(sock,playerData,res)
-  if(statusheal!="UnHealed"){
-  getbeer.removebeerGalting(playerData,sock)
+app.get("/beertrigger", function (req, res) {
+  let sock = req.query.socket
+  let statusheal = getbeer.BeerHealBlood(sock, playerData, res)
+  if (statusheal != "UnHealed") {
+    getbeer.removebeerGalting(playerData, sock)
   }
-  io.emit("handUpdate",JSON.stringify(playerData))
+  io.emit("handUpdate", JSON.stringify(playerData))
   io.emit("bulletUpdate", JSON.stringify(playerData))
 
   //Testing for beer
@@ -1186,120 +1185,120 @@ app.get("/beertrigger",function(req,res){
 
 
 //Function in replying Duel action
-app.get("/responseduel",function(req,res){
-  let msg=req.query.msg
-  let attackerName=req.query.attackname
+app.get("/responseduel", function (req, res) {
+  let msg = req.query.msg
+  let attackerName = req.query.attackname
   let socketattacker
-  let playerduel=""
+  let playerduel = ""
 
 
   //Find socketid of attacker
-  playerData.forEach(player=>{
-      if(player.name==attackerName){
-        socketattacker=player.socket
-      }
-  })
-
-  let socket=req.query.socket
-if(msg=="No"){
-  playerData.forEach(player=>{
-    if(player.socket==socket){
-      let beercardstatus="false"
-      playerduel=player.name
-      const data ={
-        name: req.query.attackname,
-        action: `shot ${player.name}`
-      }
-      //Check beer card =>If having beer card and current life==1 => Automatically use beer card
-      player.hand.forEach(data=>{
-        if(data.card=="beer"){
-          beercardstatus="true"
-        }
-      })
-      if(beercardstatus=="true"&&player.currentLife==1){
-        player.currentLife=player.currentLife
-        getbeer.removebeerGalting(playerData,socket)
-        io.emit("handUpdate",JSON.stringify(playerData))
-      }
-      else{
-        player.currentLife = player.currentLife -1
-      }
-      io.emit("updateactionlog",data)
-      pausetime=getpauseandend.returnpausetime()
-      getpauseandend.resettime()
-      console.log(pausetime)
-      statuspause="on"
-      console.log(player.name+"is now on " +player.currentLife)
+  playerData.forEach(player => {
+    if (player.name == attackerName) {
+      socketattacker = player.socket
     }
   })
-}
-else{
-  let checkbangcard="false"
-  playerData.forEach(player=>{
-    if(player.socket==socket){
-      playerduel=player.name
-      player.hand.forEach(data=>{
-        if(data.card=="bang"){
-          checkbangcard="true"
+
+  let socket = req.query.socket
+  if (msg == "No") {
+    playerData.forEach(player => {
+      if (player.socket == socket) {
+        let beercardstatus = "false"
+        playerduel = player.name
+        const data = {
+          name: req.query.attackname,
+          action: `shot ${player.name}`
+        }
+        //Check beer card =>If having beer card and current life==1 => Automatically use beer card
+        player.hand.forEach(data => {
+          if (data.card == "beer") {
+            beercardstatus = "true"
+          }
+        })
+        if (beercardstatus == "true" && player.currentLife == 1) {
+          player.currentLife = player.currentLife
+          getbeer.removebeerGalting(playerData, socket)
+          io.emit("handUpdate", JSON.stringify(playerData))
+        }
+        else {
+          player.currentLife = player.currentLife - 1
+        }
+        io.emit("updateactionlog", data)
+        pausetime = getpauseandend.returnpausetime()
+        getpauseandend.resettime()
+        console.log(pausetime)
+        statuspause = "on"
+        console.log(player.name + "is now on " + player.currentLife)
+      }
+    })
+  }
+  else {
+    let checkbangcard = "false"
+    playerData.forEach(player => {
+      if (player.socket == socket) {
+        playerduel = player.name
+        player.hand.forEach(data => {
+          if (data.card == "bang") {
+            checkbangcard = "true"
+          }
+        })
+      }
+    })
+
+
+    //When user do not have bang card
+    if (checkbangcard == "false") {
+      let beercardstatus = "false"
+      playerData.forEach(player => {
+        if (player.socket == socket) {
+          const data = {
+            name: req.query.attackname,
+            action: `shot ${player.name}`
+          }
+
+          //Check beer card =>If having beer card and current life==1 => Automatically use beer card
+          player.hand.forEach(data => {
+            if (data.card == "beer") {
+              beercardstatus = "true"
+            }
+          })
+          if (beercardstatus == "true" && player.currentLife == 1) {
+            player.currentLife = player.currentLife
+            getbeer.removebeerGalting(playerData, socket)
+            io.emit("handUpdate", JSON.stringify(playerData))
+          }
+          else {
+            player.currentLife = player.currentLife - 1
+          }
+
+
+
+          io.emit("updateactionlog", data)
+          pausetime = getpauseandend.returnpausetime()
+          getpauseandend.resettime()
+          console.log(pausetime)
+          statuspause = "on"
+          console.log(player.name + "is now on " + player.currentLife)
         }
       })
     }
-  })
- 
+    //If user have bang card=> User will use bang card for duello
+    else if (checkbangcard == "true") {
+      getduel.removeBangCard(playerData, socket)
 
-//When user do not have bang card
-if(checkbangcard=="false"){
-  let beercardstatus="false"
-  playerData.forEach(player=>{
-    if(player.socket==socket){
-      const data ={
-        name: req.query.attackname,
-        action: `shot ${player.name}`
-      }
-
-      //Check beer card =>If having beer card and current life==1 => Automatically use beer card
-      player.hand.forEach(data=>{
-        if(data.card=="beer"){
-          beercardstatus="true"
-        }
-      })
-      if(beercardstatus=="true"&&player.currentLife==1){
-        player.currentLife=player.currentLife
-        getbeer.removebeerGalting(playerData,socket)
-        io.emit("handUpdate",JSON.stringify(playerData))
-      }
-      else{
-        player.currentLife = player.currentLife -1
-      }
-
-
-
-      io.emit("updateactionlog",data)
-      pausetime=getpauseandend.returnpausetime()
-      getpauseandend.resettime()
-      console.log(pausetime)
-      statuspause="on"
-      console.log(player.name+"is now on " +player.currentLife)
-    }
-  })
-}
-//If user have bang card=> User will use bang card for duello
-else if(checkbangcard=="true"){
-getduel.removeBangCard(playerData,socket)
-
-io.to(socketattacker).emit("DuelOption", playerduel)
-io.emit("handUpdate",JSON.stringify(playerData))
-}
-}
-playerData.forEach(player=>{
-  if(player.socket==socket){
-    if (player.currentLife < 1) {
-      eliminatePlayer(player, null);
+      io.to(socketattacker).emit("DuelOption", playerduel)
+      io.emit("handUpdate", JSON.stringify(playerData))
     }
   }
-})
-io.emit("bulletUpdate", JSON.stringify(playerData))
-res.send ("OK")
+  playerData.forEach(player => {
+    if (player.socket == socket) {
+      if (player.currentLife < 1) {
+        eliminatePlayer(player, null);
+      }
+    }
+  })
+  io.emit("bulletUpdate", JSON.stringify(playerData))
+  res.send("OK")
 })
 
 app.get('/discardHandCard', function (req, res) {
@@ -1354,158 +1353,146 @@ function eliminatePlayer(deadPlayer, killerPlayer) {
     statusgame = 'gameover';
     //clear playerdata for newgame
     initialiseGameData();
-    //once all players have disconnected, clear playerdata for new game
-    /* *****
-    let allEliminated = true;
-    playerData.forEach((user) => {
-      if (user.eliminated != true) {
-        allEliminated = false;
-      }
-    });
-    if (allEliminated) {
-    statusgame = "";
-    playerData.splice(0, playerData.length);
-    }*/
-  } 
+  }
 }
 
-function initialiseGameData(){
- count = 0;
- listdesuser = [];
- checkuserexist = false;
- statusgame = ""
- socketofeachuser ="";
- checksocketexist = false;
- currenttime = "";
- phasetime = "";
- phasestatus = "";
- statuscharactercard = "";
- minutes = "";
- seconds = "";
- idround = 1;
- statusphase = "";
- statuspause = "";
- pausetime = 0;
- listcharactercards =[];
-listedrolecards = [] 
-readcharactercardfromdb()
- setTimeout(()=>{
-  playerData.splice(0, playerData.length);
-  discardPile.splice(0, playerData.length);
-}, 3000)
+function initialiseGameData() {
+  count = 0;
+  listdesuser = [];
+  checkuserexist = false;
+  statusgame = ""
+  socketofeachuser = "";
+  checksocketexist = false;
+  currenttime = "";
+  phasetime = "";
+  phasestatus = "";
+  statuscharactercard = "";
+  minutes = "";
+  seconds = "";
+  idround = 1;
+  statusphase = "";
+  statuspause = "";
+  pausetime = 0;
+  listcharactercards = [];
+  listedrolecards = []
+  readcharactercardfromdb()
+  setTimeout(() => {
+    playerData.splice(0, playerData.length);
+    discardPile.splice(0, playerData.length);
+  }, 3000)
 }
 
 
 //Function trigger DuelService
-app.get("/dueltrigger",function(req,res){
-  let idvictim=req.query.targetId
-   let nameattacker=req.query.name
-   let checklivestatus="true"
-   playerData.forEach(player => {
-    if(player.id==idvictim&&player.currentLife<1){
-      checklivestatus="false"
+app.get("/dueltrigger", function (req, res) {
+  let idvictim = req.query.targetId
+  let nameattacker = req.query.name
+  let checklivestatus = "true"
+  playerData.forEach(player => {
+    if (player.id == idvictim && player.currentLife < 1) {
+      checklivestatus = "false"
     }
-   })
-if(checklivestatus=="true"){
+  })
+  if (checklivestatus == "true") {
 
-   getduel.removeDuelCard(playerData,nameattacker)
-   io.emit("handUpdate",JSON.stringify(playerData))
-// Check user have bang card or not
-   playerData.forEach(player => {
-     if(player.id==idvictim){
-       let checkstatusbangcard="false"
-      player.hand.forEach(data=>{
-        if(data.card=="bang"){
-          checkstatusbangcard="true"
+    getduel.removeDuelCard(playerData, nameattacker)
+    io.emit("handUpdate", JSON.stringify(playerData))
+    // Check user have bang card or not
+    playerData.forEach(player => {
+      if (player.id == idvictim) {
+        let checkstatusbangcard = "false"
+        player.hand.forEach(data => {
+          if (data.card == "bang") {
+            checkstatusbangcard = "true"
+          }
+        })
+        //If having bang card=> Starting Duello
+        if (checkstatusbangcard == "true") {
+          io.to(player.socket).emit("DuelOption", nameattacker)
+          pausetime = 0
+          getpauseandend.setintervaltime(pausetime)
+          statuspause = "off"
         }
-      })  
-      //If having bang card=> Starting Duello
-  if(checkstatusbangcard=="true"){
-    io.to(player.socket).emit("DuelOption", nameattacker)
-    pausetime=0
-    getpauseandend.setintervaltime(pausetime)
-    statuspause="off"
-  }
-//If do not have bang card=> Continue check beer card=> If do not have beer card, user will be automatically decresed their life
-   else if(checkstatusbangcard=="false"){
-     let beercardstatus="false"
-      const data ={
-        name: nameattacker,
-        action: `shot ${player.name}`
-      }
-            //Check beer card
-        player.hand.forEach(data=>{
-              if(data.card=="beer"){
-                beercardstatus="true"
-              }
-            })
-            if(beercardstatus=="true"&&player.currentLife==1){
-              player.currentLife=player.currentLife
-              getbeer.removebeerGalting(playerData,player.socket)
-              io.emit("handUpdate",JSON.stringify(playerData))
+        //If do not have bang card=> Continue check beer card=> If do not have beer card, user will be automatically decresed their life
+        else if (checkstatusbangcard == "false") {
+          let beercardstatus = "false"
+          const data = {
+            name: nameattacker,
+            action: `shot ${player.name}`
+          }
+          //Check beer card
+          player.hand.forEach(data => {
+            if (data.card == "beer") {
+              beercardstatus = "true"
             }
-            else{
-              player.currentLife = player.currentLife -1
-              if (player.currentLife < 1) {
-                eliminatePlayer(player, null);
-              }
+          })
+          if (beercardstatus == "true" && player.currentLife == 1) {
+            player.currentLife = player.currentLife
+            getbeer.removebeerGalting(playerData, player.socket)
+            io.emit("handUpdate", JSON.stringify(playerData))
+          }
+          else {
+            player.currentLife = player.currentLife - 1
+            if (player.currentLife < 1) {
+              eliminatePlayer(player, null);
             }
+          }
 
-      io.emit("updateactionlog",data)
-      console.log(player.name+"is now on " +player.currentLife)
-    }
-     }
-   })
+          io.emit("updateactionlog", data)
+          console.log(player.name + "is now on " + player.currentLife)
+        }
+      }
+    })
   }
   io.emit("bulletUpdate", JSON.stringify(playerData))
 
-  res.send("Finished Duel")   
+  res.send("Finished Duel")
 })
 
 /* ---------------------------------------------------Bang/Miss Start ------------------------------------------------------*/
-app.get('/shootBang', function(req,res){
+app.get('/shootBang', function (req, res) {
   const targetId = req.query.targetId
   const attackerName = req.query.name
   const distance = req.query.distance
-const data ={
-  targetId:targetId,
-  attackerName: attackerName,
-  distance: distance
-}
-console.log(data)
-bang.checkDistance(data,playerData, io)
-playerData.forEach(player=>{
-  if(player.id==targetId){
-    if (player.currentLife < 1) {
-      eliminatePlayer(player, null);
-    }
+  const data = {
+    targetId: targetId,
+    attackerName: attackerName,
+    distance: distance
   }
-})
-res.send("200")
+  console.log(data)
+  bang.checkDistance(data, playerData, io)
+  playerData.forEach(player => {
+    if (player.id == targetId) {
+      if (player.currentLife < 1) {
+        eliminatePlayer(player, null);
+      }
+    }
+  })
+  res.send("200")
 })
 
 /* ---------------------------------------------------Bang/Miss End ------------------------------------------------------*/
 
 /* ---------------------------------------------------stageCoach Start ---------------------------------------------------*/
-app.get("/stagecoach",function(req,res){
-  const data ={
+app.get("/stagecoach", function (req, res) {
+  const data = {
     socket: req.query.socket
-   }
+  }
 
-  drawCards(playerData,listplaycards,data,io)
-  playerData.forEach(player=>{
-    if(player.socket== data.socket){
-    let status="true"  
-      player.hand.forEach(function(data,index,object){
-        if(data.card=="stagecoach"&&status=="true"){
-          status="false"  
-          object.splice(index,1)
+  drawCards(playerData, listplaycards, data, io)
+  playerData.forEach(player => {
+    if (player.socket == data.socket) {
+      let status = "true"
+      player.hand.forEach(function (data, index, object) {
+        if (data.card == "stagecoach" && status == "true") {
+          status = "false"
+          object.splice(index, 1)
           return
         }
       })
     }
   })
-  io.emit("handUpdate",JSON.stringify(playerData))
+  io.emit("handUpdate", JSON.stringify(playerData))
   res.send("200")
 
 })
@@ -1513,22 +1500,22 @@ app.get("/stagecoach",function(req,res){
 /*------------------------------------------------------stageCoach End-------------------------------------------------*/
 
 /* ---------------------------------------------------- scope Start ---------------------------------------------------*/
-app.get("/addSope",function(req,res){
-  const data ={
+app.get("/addSope", function (req, res) {
+  const data = {
     socket: req.query.socket
-   }
-scope.scopeAdd(data,playerData,io)
-res.send("200")
+  }
+  scope.scopeAdd(data, playerData, io)
+  res.send("200")
 })
 
 /*------------------------------------------------------scope End-------------------------------------------------*/
 
-app.get("/addBarrel",function(req,res){
-  const data ={
+app.get("/addBarrel", function (req, res) {
+  const data = {
     socket: req.query.socket
-   }
-barrel.barrelAdd(data,playerData,io)
-res.send("200")
+  }
+  barrel.barrelAdd(data, playerData, io)
+  res.send("200")
 })
 
 /*------------------------------------------------------scope End-------------------------------------------------*/
@@ -1555,220 +1542,254 @@ function insertion() {
   const client = new MongoClient(url);
 
   async function run() {
-      try {
-          await client.connect();
-          console.log("Connected correctly to server");
-          const db = client.db("project");
-  
-           var col = db.collection("login");
-           var myobj = { username: "voungtan", address: "Highway 37" };
-           await col.insertOne(myobj);
-  
-           col = db.collection("viewuserscoredata");
-           myobj = { user_name: "voungtan", Score: 37000 ,Round:1,Datetime:"04/30/2020 13:01:01"};
-           await col.insertOne(myobj);
-           col = db.collection("historytabledata");
-           myobj = { user_name: "voungtan", Score: 37000 ,Round:1,Datetime:"04/30/2020 13:01:01"};
-           await col.insertOne(myobj);
-  
-           col = db.collection("startinggamedata");
-           myobj = { user_name: "voungtan", Total_players: 5,Character_Cards:16,Role_Cards:7,Playing_Cards:80,Character_Card_Name:"Bart Cassidy" ,Character_Card_Feature_Description:"This is a card",Character_Bullets:4,Role_Card_Name:"Sheriff"
-           ,Role_Card_Feature_Description:"This is Description",Playing_Card_Name:"Playing_Card_Name",Color_Playing_Card :"Blue",Character_Card_Images:"",Role_Card_Images:"",Playing_Card_Images:""};
-           await col.insertOne(myobj);
-           col = db.collection("Displaygameinterface");
-           myobj = { user_name: "voungtan", User_character_card_Images: "",User_Role_Card_Images:"",User_Playing_card_Images:"",Current_Bullets:"",Table_Card_Images:"" };
-           await col.insertOne(myobj);
-           col = db.collection("Randomlygiveonecharactercard");
-           myobj = { user_name: "voungtan", Character_Cards: "Highway 37",Character_Card_Name:"" };
-           await col.insertOne(myobj);
-           col = db.collection("Applylimitedtimeplayerturn");
-           myobj = { user_name: "voungtan", Current_time: "Highway 37",Limited_time:"" };
-           await col.insertOne(myobj);
-           col = db.collection("Applyfeatureofcharactercard");
-           myobj = { user_name: "voungtan", Character_Card_Name: "Highway 37",CharacterCard_Feature_Description:"" };
-           await col.insertOne(myobj);
-           col = db.collection("Applyfeatureofrolecard");
-           myobj = { user_name: "voungtan", Role_Card_name: "Highway 37",Role_Card_Feature_Description:"" };
-           await col.insertOne(myobj);
-           col = db.collection("Applyplayersorder");
-           myobj = { user_name: "voungtan", User_Order: 4};
-           await col.insertOne(myobj);
-           col = db.collection("Applycurrentdistance");
-           myobj = { user_name: "voungtan", Distance_user_to_opponents: 4,Distance_opponents_to_user:2};
-           await col.insertOne(myobj);
-           col = db.collection("Drawingcards");
-           myobj = { user_name: "voungtan", Current_user_cards: "tst",Updated_user_cards:"order",Current_user_card_images:"",Updated_user_card_images:""};
-           await col.insertOne(myobj);
-           col = db.collection("Usercanplayspecificcards");
-           myobj = { user_name: "voungtan", Current_user_cards: "tst",Updated_user_cards:"order",Current_user_card_images:"",Updated_user_card_images:""};
-           await col.insertOne(myobj);
-           col = db.collection("Rewardfunction");
-           myobj = { user_name: "voungtan", Current_user_cards: "tst",Updated_user_cards:"order",Current_user_card_images:"",Updated_user_card_images:""};
-           await col.insertOne(myobj);
-           col = db.collection("Bangfunction");
-           myobj = { user_name: "voungtan", Target_name: "tst",Playing_Card_Name:"order",Updated_Bullets:"",Current_Bullets:""};
-           await col.insertOne(myobj);
-           col = db.collection("Missedfunction");
-           myobj = { user_name: "voungtan", Target_name: "tst",Playing_Card_Name:"order"};
-           await col.insertOne(myobj);
-           col = db.collection("ncreaseandDecreaseDistance");
-           myobj = { user_name: "voungtan", Target_name: "tst",increaseorDecrease_Distance_user_opponents:"order",IncreaseorDecreaseDistance_opponents_user:"",
-           Distance_user_to_opponents:"Distance_user_to_opponents",Distance_opponents_to_user:'Distance_opponents_to_user'};
-           await col.insertOne(myobj);
-           col = db.collection("changingweapon");
-           myobj = { user_name: "voungtan", Current_Weapon: "tst",Distance_current_weapon:"order",Updated_Weapon:"",Distance_updated_weapon:""}
-           await col.insertOne(myobj);
-         
-           col = db.collection("DrawFunction");
-           myobj = { user_name: "voungtan", Playing_Card_Name: "tst",Used_Compared_Card:"order",Updated_user_cards:""}
-           await col.insertOne(myobj);
-           col = db.collection("Drawoneplayerscard");
-           myobj = { user_name: "voungtan", Target_name: "tst",Playing_Card_Name:"order",Updated_user_cards:""}
-           await col.insertOne(myobj);
-           col = db.collection("Discardingcardfromanotherperson");
-           myobj = { user_name: "voungtan", Target_name: "tst",Playing_Card_Name:"order",Updated_user_cards:""}
-           await col.insertOne(myobj);
-           col = db.collection("Discardingcardfromgame");
-           myobj = { user_name: "voungtan", Playing_Card_Name: "tst",Updated_Table_Card :"order"}
-           await col.insertOne(myobj);
-           col = db.collection("Jailfunction");
-           myobj = { user_name: "voungtan", Targetname : "tst",Playing_Card_Name :"order"}
-           await col.insertOne(myobj);
-           col = db.collection("Gunbattle");
-           myobj = { user_name: "voungtan", Targetname : "tst",Playing_Card_Name :"order",Current_Bullets:3,Updated_Bullets:2}
-           await col.insertOne(myobj);
-           col = db.collection("Storeusersscore");
-           myobj = { user_name: "voungtan", Rank : 1,Round :1}
-           await col.insertOne(myobj);
-           col = db.collection("Displaywinningplayer");
-           myobj = { user_name: "voungtan", Rank : 1,Round :1}
-           await col.insertOne(myobj);
-           col = db.collection("Disconnection");
-           myobj = { user_name: "voungtan", Rank : 1,Round :1,User_Order:4}
-           await col.insertOne(myobj);
-           col = db.collection("HistoryRecord");
-           myobj = { RecordID: 1, Username : "Abo",Rank :1,Round:4}
-           await col.insertOne(myobj);
-           col = db.collection("PlayingCard");
-           myobj = { PlayingCardID: 1, PlayingCardID :"ACE",PlayingCardDescription :"hbchj",PlayingCardImages:"101124"}
-           await col.insertOne(myobj);
-           col = db.collection("RoleCard");
-           myobj = { RoleCardID: 1, RoleCardName :"ACE",RoleCardDescription :"hbchj",RoleCardImages:"101124"}
-           await col.insertOne(myobj);
-           col = db.collection("CharacterCard");
-           myobj = { CharacterCardID: 1, CharacterCardName :"ACE",CharacterCardDescription :"hbchj",CharacterCardImages:"101124"}
-           await col.insertOne(myobj);
-           console.log("Inserted");
-      } catch (err) {
-          console.log(err.stack);
-      }
-      finally {
-          await client.close();
-      }
+    try {
+      await client.connect();
+      console.log("Connected correctly to server");
+      const db = client.db("project");
+
+      var col = db.collection("login");
+      var myobj = { username: "voungtan", address: "Highway 37" };
+      await col.insertOne(myobj);
+
+      col = db.collection("viewuserscoredata");
+      myobj = { user_name: "voungtan", Score: 37000, Round: 1, Datetime: "04/30/2020 13:01:01" };
+      await col.insertOne(myobj);
+      col = db.collection("historytabledata");
+      myobj = { user_name: "voungtan", Score: 37000, Round: 1, Datetime: "04/30/2020 13:01:01" };
+      await col.insertOne(myobj);
+
+      col = db.collection("startinggamedata");
+      myobj = {
+        user_name: "voungtan", Total_players: 5, Character_Cards: 16, Role_Cards: 7, Playing_Cards: 80, Character_Card_Name: "Bart Cassidy", Character_Card_Feature_Description: "This is a card", Character_Bullets: 4, Role_Card_Name: "Sheriff"
+        , Role_Card_Feature_Description: "This is Description", Playing_Card_Name: "Playing_Card_Name", Color_Playing_Card: "Blue", Character_Card_Images: "", Role_Card_Images: "", Playing_Card_Images: ""
+      };
+      await col.insertOne(myobj);
+      col = db.collection("Displaygameinterface");
+      myobj = { user_name: "voungtan", User_character_card_Images: "", User_Role_Card_Images: "", User_Playing_card_Images: "", Current_Bullets: "", Table_Card_Images: "" };
+      await col.insertOne(myobj);
+      col = db.collection("Randomlygiveonecharactercard");
+      myobj = { user_name: "voungtan", Character_Cards: "Highway 37", Character_Card_Name: "" };
+      await col.insertOne(myobj);
+      col = db.collection("Applylimitedtimeplayerturn");
+      myobj = { user_name: "voungtan", Current_time: "Highway 37", Limited_time: "" };
+      await col.insertOne(myobj);
+      col = db.collection("Applyfeatureofcharactercard");
+      myobj = { user_name: "voungtan", Character_Card_Name: "Highway 37", CharacterCard_Feature_Description: "" };
+      await col.insertOne(myobj);
+      col = db.collection("Applyfeatureofrolecard");
+      myobj = { user_name: "voungtan", Role_Card_name: "Highway 37", Role_Card_Feature_Description: "" };
+      await col.insertOne(myobj);
+      col = db.collection("Applyplayersorder");
+      myobj = { user_name: "voungtan", User_Order: 4 };
+      await col.insertOne(myobj);
+      col = db.collection("Applycurrentdistance");
+      myobj = { user_name: "voungtan", Distance_user_to_opponents: 4, Distance_opponents_to_user: 2 };
+      await col.insertOne(myobj);
+      col = db.collection("Drawingcards");
+      myobj = { user_name: "voungtan", Current_user_cards: "tst", Updated_user_cards: "order", Current_user_card_images: "", Updated_user_card_images: "" };
+      await col.insertOne(myobj);
+      col = db.collection("Usercanplayspecificcards");
+      myobj = { user_name: "voungtan", Current_user_cards: "tst", Updated_user_cards: "order", Current_user_card_images: "", Updated_user_card_images: "" };
+      await col.insertOne(myobj);
+      col = db.collection("Rewardfunction");
+      myobj = { user_name: "voungtan", Current_user_cards: "tst", Updated_user_cards: "order", Current_user_card_images: "", Updated_user_card_images: "" };
+      await col.insertOne(myobj);
+      col = db.collection("Bangfunction");
+      myobj = { user_name: "voungtan", Target_name: "tst", Playing_Card_Name: "order", Updated_Bullets: "", Current_Bullets: "" };
+      await col.insertOne(myobj);
+      col = db.collection("Missedfunction");
+      myobj = { user_name: "voungtan", Target_name: "tst", Playing_Card_Name: "order" };
+      await col.insertOne(myobj);
+      col = db.collection("ncreaseandDecreaseDistance");
+      myobj = {
+        user_name: "voungtan", Target_name: "tst", increaseorDecrease_Distance_user_opponents: "order", IncreaseorDecreaseDistance_opponents_user: "",
+        Distance_user_to_opponents: "Distance_user_to_opponents", Distance_opponents_to_user: 'Distance_opponents_to_user'
+      };
+      await col.insertOne(myobj);
+      col = db.collection("changingweapon");
+      myobj = { user_name: "voungtan", Current_Weapon: "tst", Distance_current_weapon: "order", Updated_Weapon: "", Distance_updated_weapon: "" }
+      await col.insertOne(myobj);
+
+      col = db.collection("DrawFunction");
+      myobj = { user_name: "voungtan", Playing_Card_Name: "tst", Used_Compared_Card: "order", Updated_user_cards: "" }
+      await col.insertOne(myobj);
+      col = db.collection("Drawoneplayerscard");
+      myobj = { user_name: "voungtan", Target_name: "tst", Playing_Card_Name: "order", Updated_user_cards: "" }
+      await col.insertOne(myobj);
+      col = db.collection("Discardingcardfromanotherperson");
+      myobj = { user_name: "voungtan", Target_name: "tst", Playing_Card_Name: "order", Updated_user_cards: "" }
+      await col.insertOne(myobj);
+      col = db.collection("Discardingcardfromgame");
+      myobj = { user_name: "voungtan", Playing_Card_Name: "tst", Updated_Table_Card: "order" }
+      await col.insertOne(myobj);
+      col = db.collection("Jailfunction");
+      myobj = { user_name: "voungtan", Targetname: "tst", Playing_Card_Name: "order" }
+      await col.insertOne(myobj);
+      col = db.collection("Gunbattle");
+      myobj = { user_name: "voungtan", Targetname: "tst", Playing_Card_Name: "order", Current_Bullets: 3, Updated_Bullets: 2 }
+      await col.insertOne(myobj);
+      col = db.collection("Storeusersscore");
+      myobj = { user_name: "voungtan", Rank: 1, Round: 1 }
+      await col.insertOne(myobj);
+      col = db.collection("Displaywinningplayer");
+      myobj = { user_name: "voungtan", Rank: 1, Round: 1 }
+      await col.insertOne(myobj);
+      col = db.collection("Disconnection");
+      myobj = { user_name: "voungtan", Rank: 1, Round: 1, User_Order: 4 }
+      await col.insertOne(myobj);
+      col = db.collection("HistoryRecord");
+      myobj = { RecordID: 1, Username: "Abo", Rank: 1, Round: 4 }
+      await col.insertOne(myobj);
+      col = db.collection("PlayingCard");
+      myobj = { PlayingCardID: 1, PlayingCardID: "ACE", PlayingCardDescription: "hbchj", PlayingCardImages: "101124" }
+      await col.insertOne(myobj);
+      col = db.collection("RoleCard");
+      myobj = { RoleCardID: 1, RoleCardName: "ACE", RoleCardDescription: "hbchj", RoleCardImages: "101124" }
+      await col.insertOne(myobj);
+      col = db.collection("CharacterCard");
+      myobj = { CharacterCardID: 1, CharacterCardName: "ACE", CharacterCardDescription: "hbchj", CharacterCardImages: "101124" }
+      await col.insertOne(myobj);
+      console.log("Inserted");
+    } catch (err) {
+      console.log(err.stack);
+    }
+    finally {
+      await client.close();
+    }
   }
   run().catch(console.dir);
-  }
-  function readcharactercardfromdb(){
-    MongoClient.connect("mongodb+srv://eGTB4yl0HFJQ6lzD:eGTB4yl0HFJQ6lzD@project.wdfid.mongodb.net/Project?retryWrites=true&w=majority", function(err, db) {
+}
+function readcharactercardfromdb() {
+  MongoClient.connect("mongodb+srv://eGTB4yl0HFJQ6lzD:eGTB4yl0HFJQ6lzD@project.wdfid.mongodb.net/Project?retryWrites=true&w=majority", function (err, db) {
+    if (err) throw err;
+    var dbo = db.db("project");
+    //Find all documents in the customers collection:
+    dbo.collection("PlayingCardDB").find({}).toArray(function (err, result) {
       if (err) throw err;
-      var dbo = db.db("project");
-      //Find all documents in the customers collection:
-      dbo.collection("PlayingCardDB").find({}).toArray(function(err, result) {
-        if (err) throw err;
-        pushdbtolistplaycards(result)
-      });
-      dbo.collection("CharacterCardDB").find({}).toArray(function(err, result) {
-        if (err) throw err;
-        pushtolistcharacter(result)
-      });
-      dbo.collection("RoleCardDB").find({}).toArray(function(err, result) {
-        if (err) throw err;
-        pushdbtolistrole(result)
-      });
-      db.close()
-
-
+      pushdbtolistplaycards(result)
     });
-  }
+    dbo.collection("CharacterCardDB").find({}).toArray(function (err, result) {
+      if (err) throw err;
+      pushtolistcharacter(result)
+    });
+    dbo.collection("RoleCardDB").find({}).toArray(function (err, result) {
+      if (err) throw err;
+      pushdbtolistrole(result)
+    });
+    db.close()
 
-  function connection(){
-    // Replace the following with your Atlas connection string                                                                                                                                        
+
+  });
+}
+
+function connection() {
+  // Replace the following with your Atlas connection string                                                                                                                                        
   const url = "mongodb+srv://eGTB4yl0HFJQ6lzD:eGTB4yl0HFJQ6lzD@project.wdfid.mongodb.net/Project?retryWrites=true&w=majority";
   const client = new MongoClient(url);
 
   async function run() {
-      try {
-          await client.connect();
-          console.log("Connected correctly to server");
-      } catch (err) {
-          console.log(err.stack);
-      }
-      finally {
-          await client.close();
-      }
+    try {
+      await client.connect();
+      console.log("Connected correctly to server");
+    } catch (err) {
+      console.log(err.stack);
+    }
+    finally {
+      await client.close();
+    }
   }
 
   run().catch(console.dir);
 }
 http.listen(3000, () => {
-  
-    readcharactercardfromdb()
-    console.log('listening on *:3000');
+
+  readcharactercardfromdb()
+  console.log('listening on *:3000');
 });
 
 app.get('/newUser', function (data) {
   const name = data.name
-  const socketid = data.socket })
+  const socketid = data.socket
+})
 
 //-----------------------Testing phase--------------------------//
-function testingvalidation1(socketid){
-  if(socketid==null){
-      error=("Error in Testing validation 1")
-      throw error
+function testingvalidation1(socketid) {
+  if (socketid == null) {
+    error = ("Error in Testing validation 1")
+    throw error
   }
-  else{
-      console.log("Passed Testing validation 1")
+  else {
+    console.log("Passed Testing validation 1")
   }
-  }
-  
-  function testingvalidataion2(socketid,res){
-   let usernametest=null
-   let messagetest
-   messagetest=checkvalidation(usernametest,socketid,res)
-   if(messagetest!="Error"){
-      error=("Error in Testing validation 2")
-      throw error
-  }
-  else{
-      console.log("Passed  Testing validation 2")
-  }
-  }
+}
 
-  function testingWellFargo(playerData,socket){
-    let listcard=[{"id":1,"playingcard":"bang"},
-    {"id":1,"playingcard":"bang"}
-      ]
-      let statuspicktest
-     statuspicktest=getwellfargo.randompickthreecards(listcard,playerData,socket)
-    if(statuspicktest!="Cannotpick"){
-      error=("Error in Testing Well Fargo")
-      throw error
+function testingvalidataion2(socketid, res) {
+  let usernametest = null
+  let messagetest
+  messagetest = checkvalidation(usernametest, socketid, res)
+  if (messagetest != "Error") {
+    error = ("Error in Testing validation 2")
+    throw error
   }
-  else{
-      console.log("Passed  Testing Well Fargo")
+  else {
+    console.log("Passed  Testing validation 2")
   }
+}
+
+function testingWellFargo(playerData, socket) {
+  let listcard = [{ "id": 1, "playingcard": "bang" },
+  { "id": 1, "playingcard": "bang" }
+  ]
+  let statuspicktest
+  statuspicktest = getwellfargo.randompickthreecards(listcard, playerData, socket)
+  if (statuspicktest != "Cannotpick") {
+    error = ("Error in Testing Well Fargo")
+    throw error
   }
-  function testingbeer(sockettest){
-    playerData.forEach(data=>{
-      if(data.socket==sockettest){
-        if(data.currentLife>data.maxLife){
-          error=("Error in Testing Beer Function")
-          throw error
+  else {
+    console.log("Passed  Testing Well Fargo")
+  }
+}
+function testingbeer(sockettest) {
+  playerData.forEach(data => {
+    if (data.socket == sockettest) {
+      if (data.currentLife > data.maxLife) {
+        error = ("Error in Testing Beer Function")
+        throw error
       }
-      else{
-          console.log("Passed  Testing Beer Function")
+      else {
+        console.log("Passed  Testing Beer Function")
       }
-        
-      }
-    })
+
+    }
+  })
+}
+
+
+app.get("/drawRewardCards", function (req, res) {
+  const data = {
+    socket: req.query.socket,
   }
+  drawRewardCards(playerData, listplaycards, data, io)
+})
+
+function drawRewardCards(playerData, items, data, io) {
+  playerData.forEach(player => {
+    if (player.socket == data.socket) {
+      for (var i = 0; i < 3; i++) {
+        let item = items[Math.floor(Math.random() * items.length)];
+        let charactername = item["playcard"]
+        let element = { "id": i + 1, "card": charactername }
+        player.hand.push(element)
+
+      }
+      const data2 = {
+        name: player.name,
+        action: ` received 3 reward cards!`,
+      }
+      io.emit("updateactionlog", data2)
+      io.emit("handUpdate", JSON.stringify(playerData))
+    }
+
+  })
+}
