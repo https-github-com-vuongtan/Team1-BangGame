@@ -10,6 +10,7 @@ function weaponChange(data, playerData,io){
             console.log(player.hand[i].card)
             player.hand.splice(i,1)
             io.emit("handUpdate",JSON.stringify(playerData))
+            io.emit("cardsInPlayUpdate", JSON.stringify(playerData));
             i = handSize
          }
          }
@@ -21,6 +22,7 @@ function weaponChange(data, playerData,io){
         io.emit("updateactionlog",data2)
         io.emit("handUpdate",JSON.stringify(playerData))
         io.emit("weaponUpdate",JSON.stringify(playerData))
+        io.emit("cardsInPlayUpdate", JSON.stringify(playerData));
       }
     })
     }

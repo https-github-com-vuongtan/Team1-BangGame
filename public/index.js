@@ -37,9 +37,6 @@ window.onload = function(e){
   displayBullets()
   updateRole()
   updateBang()
-  endGame()
-  displayCardsInPlay()
-  displayEliminations()
   //missedOption()
   //Vuong Tan
   GeneralOption()

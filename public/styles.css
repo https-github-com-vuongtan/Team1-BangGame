@@ -753,6 +753,18 @@ direction:rtl;
   size: 2em;
 }
 
+#rulesModal
+{
+  padding: 20px;
+  min-width: 90%;
+  min-height: 80%;
+  vertical-align: center;
+  background-color: rgb(251, 248, 229);
+/*  background-color: rgb(255, 237, 212);*/
+  color: black;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  border-radius: 15px;
+}
 #endGameModal
 {
   padding: 20px;
